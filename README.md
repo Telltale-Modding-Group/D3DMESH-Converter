@@ -13,8 +13,8 @@ ATM those are
 - Version 55: The Walking Dead: The Final Season, The Walking Dead: The Telltale Definitive Series
 
 ## CREDITS
-Author of Original Maxscript - Random Talking Bush
-Script - [Telltale All In One Model Importer script](https://forum.xentax.com/viewtopic.php?f=16&t=11687) (MaxScript)
+- Author of Original Maxscript - Random Talking Bush
+- Script - [Telltale All In One Model Importer script](https://forum.xentax.com/viewtopic.php?f=16&t=11687) (MaxScript)
 
 NOTE TO Random Talking Bush: 
 If you are reading this... I hope you forgive me if your pissed about this project being a thing for whatever reason... I wanted to "de-magic-ify" your script, clean it up as much as I can, but mainly to understand better what the heck the D3DMESH format is, and given that your script is only resource on the internet that "documents" the D3DMESH file format there isn't much else that I can look to. If you are in town also, could you please hit me up and also help me understand as to why you did certain things in the script to get things working?
