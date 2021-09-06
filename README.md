@@ -8,7 +8,7 @@ This app is a translation of [Random Talking Bush's Telltale All In One Model Im
 A lot of the code will be very similar to what RTB has done in his original MaxScript, However I've made some modifications to simplify and break down his script into smaller chunks.
 
 ## DISCLAIMER (Please Read)
-This project is a heavy work in progress, there won't be a GUI standalone release for a long while until functionality wise it's mostly completed and works as planned. Currently as I'm still translating RTB'S absurdly long MaxScript, (11769 LINES!!!!!!!) not all of the games will be supported just yet as I'm prioritizing versions of games that I currently have installed. 
+**This project is a heavy work in progress.** There won't be a GUI standalone release for a long while until functionality wise it's mostly completed and works as planned. Currently as I'm still translating RTB'S absurdly long MaxScript, (11769 LINES!!!!!!!) not all of the games will be supported just yet as I'm prioritizing versions of games that I currently have installed. 
 
 ATM those are 
 - Version 5: The Walking Dead Season 1 [PC]
