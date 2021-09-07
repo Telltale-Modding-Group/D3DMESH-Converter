@@ -3,7 +3,7 @@ This is an application designed for converting **.d3dmesh models (Telltale Tool 
 
 **(THIS PART IS NOT IMPLEMENTED YET)** It can also do the opposite and can be used to do model mods for a Telltale Tool Game.
 
-This app is a translation of [Random Talking Bush's Telltale All In One Model Importer](https://forum.xentax.com/viewtopic.php?f=16&t=11687&sid=6f8042ba574b8db30c500fe4520a66fc) which was originally written in MaxScript (Autodesk 3DS Max), but for various reasons I wanted to translate the script into a standalone application which requires no extra tools or resources, eliminate the need for 3DS Max, and rewritten to be far more readable and easy to understand.
+This app is a translation of [Random Talking Bush's Telltale All In One Model Importer](https://forum.xentax.com/viewtopic.php?f=16&t=11687&sid=6f8042ba574b8db30c500fe4520a66fc) which was originally written in MaxScript (Autodesk 3DS Max), but for various reasons I wanted to translate the script into a standalone application which requires no extra tools or resources, eliminating the need for 3DS Max, and rewritten to be far more readable and easy to understand.
 
 A lot of the code will be very similar to what RTB has done in his original MaxScript, However I've made some modifications to simplify and break down his script into smaller chunks.
 
