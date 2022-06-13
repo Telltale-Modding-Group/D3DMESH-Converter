@@ -1,3 +1,6 @@
+### NEW NOTE (6/13/22)
+This repo is now being deprecated. I won't disclose more information but we have baiscally another resource now into peeking into the full D3DMESH file format, and while that is in the works and will replace this repo when the time comes, this old repo will be deprecated and soon archived. The goal of this was to take RTB's 3Ds max script and generate a simple OBJ converter, and while it technically works there are a LOT of issues with it and it's not perfect at all. 
+
 # D3DMESH-Converter
 This is an application designed for converting **.d3dmesh models (Telltale Tool Models)**, to a standard model format (.OBJ and more...) 
 
@@ -17,6 +20,3 @@ ATM those are
 ## CREDITS
 - Author of Original Maxscript - Random Talking Bush
 - Script - [Telltale All In One Model Importer script](https://forum.xentax.com/viewtopic.php?f=16&t=11687) (MaxScript)
-
-NOTE TO Random Talking Bush: 
-If you are reading this... I hope you forgive me if your pissed about this project being a thing for whatever reason... I wanted to "de-magic-ify" your script, clean it up as much as I can, but mainly to understand better what the heck the D3DMESH format is, and given that your script is only resource on the internet that "documents" the D3DMESH file format there isn't much else that I can look to. If you are in town also, could you please hit me up and also help me understand as to why you did certain things in the script to get things working?
