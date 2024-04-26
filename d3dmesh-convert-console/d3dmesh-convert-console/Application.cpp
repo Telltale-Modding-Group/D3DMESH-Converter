@@ -42,7 +42,7 @@ void ExportAssimpMesh(ExtractedMesh extractedMesh, std::string fileName)
 	if (extractedMesh.vertexNormals0.size() <= 0)
 		return;
 
-	if (extractedMesh.triangleIndicies0.size() <= 0)
+	if (extractedMesh.triangleIndicies.size() <= 0)
 		return;
 
 	//start by building a scene in assimp
@@ -262,7 +262,7 @@ void ExportAssimpMesh(ExtractedMesh extractedMesh, std::string fileName)
 	std::vector<aiFace> faces;
 
 	//iterate through each extracted triangle index
-	for (int faceIndex = 0; faceIndex < extractedMesh.triangleIndicies0.size(); faceIndex += 3)
+	for (int faceIndex = 0; faceIndex < extractedMesh.triangleIndicies.size(); faceIndex += 3)
 	{
 		//initalize a new assimp face object
 		aiFace newFace = aiFace();
@@ -272,9 +272,9 @@ void ExportAssimpMesh(ExtractedMesh extractedMesh, std::string fileName)
 		newFace.mIndices = new unsigned int[newFace.mNumIndices];
 
 		//assign each extracted triangle index to our assimp face
-		newFace.mIndices[0] = extractedMesh.triangleIndicies0[faceIndex + 0];
-		newFace.mIndices[1] = extractedMesh.triangleIndicies0[faceIndex + 1];
-		newFace.mIndices[2] = extractedMesh.triangleIndicies0[faceIndex + 2];
+		newFace.mIndices[0] = extractedMesh.triangleIndicies[faceIndex + 0];
+		newFace.mIndices[1] = extractedMesh.triangleIndicies[faceIndex + 1];
+		newFace.mIndices[2] = extractedMesh.triangleIndicies[faceIndex + 2];
 
 		//accumulate final assimp faces
 		faces.push_back(newFace);
@@ -346,6 +346,528 @@ void ExportAssimpMesh(ExtractedMesh extractedMesh, std::string fileName)
 	aiDetachLogStream(&assimpExportStream);
 }
 
+FileD3DMesh ParseD3DMeshFile(std::ifstream &currentD3DMESH_inputFileStream)
+{
+	//initalize our d3dmesh file object so we can start filling it with data
+	FileD3DMesh d3dmeshFile{};
+
+	//|||||||||||||||||||||||||||||||||||||||| META HEADER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| META HEADER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| META HEADER ||||||||||||||||||||||||||||||||||||||||
+	//telltale files always have a "meta" header serialized ontop of the file
+	//this header is important as it tells the engine (and us) the size of the d3dmesh header, and the size of the file data after the headers.
+	//it also contains misc information like the reference class names and types, which are hashed (CRC64)
+
+	//parse the telltale meta header
+	d3dmeshFile.metaHeader = BinaryDeserialization::ReadTelltaleMetaHeaderVersion6FromBinary(&currentD3DMESH_inputFileStream);
+
+	//we finished going through the meta header, so the offset we left off at matches the size of the meta header
+	unsigned long metaHeaderSize = currentD3DMESH_inputFileStream.tellg();
+
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH HEADER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH HEADER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH HEADER ||||||||||||||||||||||||||||||||||||||||
+	//here we get into the important parts of the file.
+	//after parsing the meta header, the main d3dmesh header is serialized right after it
+	//this is the most important part as it contains all of the necessary information about the mesh so that we can read/extract it properly.
+
+	//initalize our header object
+	d3dmeshFile.d3dmeshHeader = {};
+
+	//parse the inital chunks here, according to ida this is the main D3DMesh chunk
+	d3dmeshFile.d3dmeshHeader.mNameBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mName = BinaryDeserialization::ReadLengthPrefixedStringFromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mVersion = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mToolProps = BinaryDeserialization::ReadInt8FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mLightmapGlobalScale = BinaryDeserialization::ReadFloat32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mLightmapTexCoordVersion = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mLODParamCRC = BinaryDeserialization::ReadSymbolFromBinary(&currentD3DMESH_inputFileStream);
+
+	//parse the internal resources block, this was difficult to track down but this basically contains propertysets or references to resources uses (i.e. materials)
+	d3dmeshFile.d3dmeshHeader.mInternalResourcesCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+
+	for (int mInternalResourceIndex = 0; mInternalResourceIndex < d3dmeshFile.d3dmeshHeader.mInternalResourcesCount; mInternalResourceIndex++)
+	{
+		d3dmeshFile.d3dmeshHeader.mInternalResources.push_back(BinaryDeserialization::ReadTelltaleInternalResourceFromBinary(&currentD3DMESH_inputFileStream)); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+	}
+
+	//parse the tool property set block, this shouldn't technically have any data since this is the final shipped file.
+	d3dmeshFile.d3dmeshHeader.mToolPropsBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mToolPropsData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mToolPropsBlockSize); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+
+	//parse the occlusion data block, this contains occlusion culling information regarding the mesh.
+	d3dmeshFile.d3dmeshHeader.mHasOcclusionData = BinaryDeserialization::ReadInt8FromBinary(&currentD3DMESH_inputFileStream);
+
+	//if this is true then we need to skip it (ASCII '1' is true, ASCII '0' is false)
+	if (d3dmeshFile.d3dmeshHeader.mHasOcclusionData == '1')
+	{
+		d3dmeshFile.d3dmeshHeader.mOcclusionDataBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+		d3dmeshFile.d3dmeshHeader.mOcclusionData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mOcclusionDataBlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+	}
+
+	//this is the start of the main T3MeshData block
+	d3dmeshFile.d3dmeshHeader.mT3MeshDataBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+
+	//parse the LODs associated with the mesh (oddly enough telltale didn't use LODs very often?)
+	d3dmeshFile.d3dmeshHeader.mLODs_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mLODs_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLODs_ArrayLength; i++)
+	{
+		d3dmeshFile.d3dmeshHeader.mLODs.push_back(BinaryDeserialization::ReadTelltaleMeshLODFromBinary(&currentD3DMESH_inputFileStream));
+	}
+
+	//parse the textures block (NOTE: This does not contain actual texture data, just references to it)
+	d3dmeshFile.d3dmeshHeader.mTextures_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mTextures_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mTexturesData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mTextures_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+
+	//parse the materials block
+	d3dmeshFile.d3dmeshHeader.mMaterials_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mMaterials_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mMaterialsData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mMaterials_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+
+	//parse the materials overrides block
+	d3dmeshFile.d3dmeshHeader.mMaterialOverrides_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mMaterialOverrides_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mMaterialOverridesData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mMaterialOverrides_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+
+	//parse the rigging bones block
+	d3dmeshFile.d3dmeshHeader.mBones_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mBones_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mBones_ArrayLength; i++)
+	{
+		d3dmeshFile.d3dmeshHeader.mBones.push_back(BinaryDeserialization::ReadTelltaleMeshBoneEntryFromBinary(&currentD3DMESH_inputFileStream));
+	}
+
+	//parse the rigging bones block
+	d3dmeshFile.d3dmeshHeader.mLocalTransforms_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mLocalTransforms_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLocalTransforms_ArrayLength; i++)
+	{
+		d3dmeshFile.d3dmeshHeader.mLocalTransforms.push_back(BinaryDeserialization::ReadTelltaleMeshLocalTransformEntryFromBinary(&currentD3DMESH_inputFileStream));
+	}
+
+	//parse other misc information in the d3dmesh header
+	d3dmeshFile.d3dmeshHeader.mMaterialRequirements = BinaryDeserialization::ReadTelltaleMaterialRequirementsFromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mVertexStreams_BlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream); //value seems to always be 8
+	d3dmeshFile.d3dmeshHeader.mVertexStreams = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mBoundingBox = BinaryDeserialization::ReadBoundingBoxFromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mBoundingSphere = BinaryDeserialization::ReadBoundingSphereFromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mEndianType = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mPositionScale = BinaryDeserialization::ReadVector3FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mPositionWScale = BinaryDeserialization::ReadVector3FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mPositionOffset = BinaryDeserialization::ReadVector3FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mLightmapTexelAreaPerSurfaceArea = BinaryDeserialization::ReadFloat32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mPropertyKeyBase = BinaryDeserialization::ReadSymbolFromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mVertexCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mFlags = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mMeshPreload_BlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mMeshPreloadData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mMeshPreload_BlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+	d3dmeshFile.d3dmeshHeader.UNKNOWN1 = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.UNKNOWN2 = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mVertexCountPerInstance = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mIndexBufferCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mVertexBufferCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+	d3dmeshFile.d3dmeshHeader.mAttributeCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
+
+	//parse the table of GFXPlatformAttributes, this is important as this is used during the vertex buffer parsing later to identify what buffers contain what data.
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mAttributeCount; i++)
+	{
+		d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray.push_back(BinaryDeserialization::ReadTelltaleGraphicsPlatformAttributeParametersFromBinary(&currentD3DMESH_inputFileStream));
+	}
+
+	//parse the table of GFXBuffer data, these are "index" buffers (i.e. triangle indicies)
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mIndexBufferCount; i++)
+	{
+		d3dmeshFile.d3dmeshHeader.mIndexBuffers.push_back(BinaryDeserialization::ReadTelltaleGFXBufferFromBinary(&currentD3DMESH_inputFileStream));
+	}
+
+	//parse the table of GFXBuffer data, these are "vertex" buffers (i.e. vertex position, normal, uv, etc)
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mVertexBufferCount; i++)
+	{
+		d3dmeshFile.d3dmeshHeader.mVertexBuffers.push_back(BinaryDeserialization::ReadTelltaleGFXBufferFromBinary(&currentD3DMESH_inputFileStream));
+	}
+
+	//we have now reached the end of the d3dmesh header, after this lies the actual data of the mesh
+	//
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA PREPARE ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA PREPARE ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA PREPARE ||||||||||||||||||||||||||||||||||||||||
+	//before we parse the actual d3dmesh data we will first initalize an array of extracted mesh LODs and submeshes
+	//we do this so we can store the extracted results and feed them into assimp to export them to useable meshes
+
+	d3dmeshFile.bufferData = {};
+
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
+	//here we begin actually parsing the d3dmesh data
+	//the first chunks here are the index buffers, these essentially "indexes"
+
+	/*
+	//NOTE: This simply skips through each index buffer.
+	//It's kept here because this is used as a reference to ensure that we can read through an entire index buffer correctly so we can be left at the correct offset for reading vertex buffers.
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mIndexBuffers.size(); i++)
+	{
+		T3GFXBuffer* mIndexBuffer = &d3dmeshFile.d3dmeshHeader.mIndexBuffers[i];
+		BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mIndexBuffer->mCount * mIndexBuffer->mStride); //skip this data block
+	}
+	*/
+
+	//Loop through each index buffer
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mIndexBuffers.size(); i++)
+	{
+		//reference to the main index buffer that we are currently on
+		T3GFXBuffer* mIndexBuffer = &d3dmeshFile.d3dmeshHeader.mIndexBuffers[i];
+
+		switch (mIndexBuffer->mBufferFormat)
+		{
+		case GFXPlatformFormat::eGFXPlatformFormat_U16:
+			//if (mIndexBuffer->mBufferUsage == 2) //eGFXPlatformBuffer_Index
+
+			for (int j = 0; j < mIndexBuffer->mCount; j++)
+			{
+				unsigned short triangleIndex = BinaryDeserialization::ReadUInt16FromBinary(&currentD3DMESH_inputFileStream);
+
+				if (d3dmeshFile.bufferData.indexBufferCount == 0)
+					d3dmeshFile.bufferData.indexBuffer0.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 1)
+					d3dmeshFile.bufferData.indexBuffer1.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 2)
+					d3dmeshFile.bufferData.indexBuffer2.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 3)
+					d3dmeshFile.bufferData.indexBuffer3.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 4)
+					d3dmeshFile.bufferData.indexBuffer4.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 5)
+					d3dmeshFile.bufferData.indexBuffer5.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 6)
+					d3dmeshFile.bufferData.indexBuffer6.push_back(triangleIndex);
+				else if (d3dmeshFile.bufferData.indexBufferCount == 7)
+					d3dmeshFile.bufferData.indexBuffer7.push_back(triangleIndex);
+			}
+
+			std::cout << "Index Buffer: " << d3dmeshFile.bufferData.indexBufferCount << " | mIndexBuffer->mBufferUsage: " << mIndexBuffer->mBufferUsage << std::endl;
+
+			d3dmeshFile.bufferData.indexBufferCount++;
+
+			break;
+		default:
+			BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mIndexBuffer->mCount * mIndexBuffer->mStride); //skip this data block
+			break;
+		}
+	}
+
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mVertexBuffers ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mVertexBuffers ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mVertexBuffers ||||||||||||||||||||||||||||||||||||||||
+	//now the last part of the entire file, which are the vertex buffers
+	//these last chunks are the most important, as these are multiple buffers that contains information like vertex position, normals, etc.
+
+	/*
+	//NOTE: This simply skips through each index buffer.
+	//It's kept here because this is used as a reference to ensure that we can read through an entire index buffer correctly so we can be left at the correct offset for reading vertex buffers.
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mVertexBuffers.size(); i++)
+	{
+		T3GFXBuffer* mVertexBuffer = &d3dmeshFile.d3dmeshHeader.mVertexBuffers[i];
+		BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+	}
+	*/
+
+	///*
+	for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mVertexBuffers.size(); i++)
+	{
+		T3GFXBuffer* mVertexBuffer = &d3dmeshFile.d3dmeshHeader.mVertexBuffers[i];
+		GFXPlatformAttributeParams* attributeParams = &d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray[i];
+
+		//||||||||||||||||||||||||||||||||||||| VERTEX POSITION |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX POSITION |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX POSITION |||||||||||||||||||||||||||||||||||||
+		if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
+		{
+			//if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector4 parsedVertexPosition = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_4x16BitInteger(&currentD3DMESH_inputFileStream);
+
+					//SELF NOTE: DIVIDING BY THE W COMPONENT WILL CREATE VECTORS OF INFINITY/NAN VALUES, SO DONT DO IT!
+					Vector3 convertedVertexPosition;
+					convertedVertexPosition.x = parsedVertexPosition.x * d3dmeshFile.d3dmeshHeader.mPositionScale.x + d3dmeshFile.d3dmeshHeader.mPositionOffset.x;
+					convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshFile.d3dmeshHeader.mPositionScale.y + d3dmeshFile.d3dmeshHeader.mPositionOffset.y;
+					convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshFile.d3dmeshHeader.mPositionScale.z + d3dmeshFile.d3dmeshHeader.mPositionOffset.z;
+
+					d3dmeshFile.bufferData.vertexPositions.push_back(convertedVertexPosition);
+				}
+			}
+			//else if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
+			else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector3 parsedVertexPosition = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mPositionWScale);
+
+					Vector3 convertedVertexPosition;
+					convertedVertexPosition.x = parsedVertexPosition.x * d3dmeshFile.d3dmeshHeader.mPositionScale.x + d3dmeshFile.d3dmeshHeader.mPositionOffset.x;
+					convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshFile.d3dmeshHeader.mPositionScale.y + d3dmeshFile.d3dmeshHeader.mPositionOffset.y;
+					convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshFile.d3dmeshHeader.mPositionScale.z + d3dmeshFile.d3dmeshHeader.mPositionOffset.z;
+
+					d3dmeshFile.bufferData.vertexPositions.push_back(convertedVertexPosition);
+				}
+			}
+			//else if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x3)
+			else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x3)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector3 parsedVertexPosition = BinaryDeserialization::ReadT3GFXBuffer_3x32BitFloat(&currentD3DMESH_inputFileStream);
+
+					Vector3 convertedVertexPosition;
+					convertedVertexPosition.x = parsedVertexPosition.x * d3dmeshFile.d3dmeshHeader.mPositionScale.x + d3dmeshFile.d3dmeshHeader.mPositionOffset.x;
+					convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshFile.d3dmeshHeader.mPositionScale.y + d3dmeshFile.d3dmeshHeader.mPositionOffset.y;
+					convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshFile.d3dmeshHeader.mPositionScale.z + d3dmeshFile.d3dmeshHeader.mPositionOffset.z;
+
+					d3dmeshFile.bufferData.vertexPositions.push_back(convertedVertexPosition);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
+		else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal)
+		{
+			d3dmeshFile.bufferData.vertexNormalsCount++;
+
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector4 parsedVertexNormal = BinaryDeserialization::ReadT3GFXBuffer_Normalized_4x8BitInteger(&currentD3DMESH_inputFileStream);
+
+					//SELF NOTE: DIVIDING BY THE W COMPONENT WILL CREATE VECTORS OF INFINITY/NAN VALUES, SO DONT DO IT!
+					Vector3 convertedVertexNormal;
+					convertedVertexNormal.x = parsedVertexNormal.x;
+					convertedVertexNormal.y = parsedVertexNormal.y;
+					convertedVertexNormal.z = parsedVertexNormal.z;
+
+					if (d3dmeshFile.bufferData.vertexNormalsCount == 1)
+						d3dmeshFile.bufferData.vertexNormals0.push_back(convertedVertexNormal);
+					if (d3dmeshFile.bufferData.vertexNormalsCount == 2)
+						d3dmeshFile.bufferData.vertexNormals1.push_back(convertedVertexNormal);
+					if (d3dmeshFile.bufferData.vertexNormalsCount == 3)
+						d3dmeshFile.bufferData.vertexNormals2.push_back(convertedVertexNormal);
+					if (d3dmeshFile.bufferData.vertexNormalsCount == 4)
+						d3dmeshFile.bufferData.vertexNormals3.push_back(convertedVertexNormal);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
+		else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent)
+		{
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4 && d3dmeshFile.bufferData.vertexTangents.size() <= 0)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector4 parsedVertexTangent = BinaryDeserialization::ReadT3GFXBuffer_Normalized_4x8BitInteger(&currentD3DMESH_inputFileStream);
+
+					//SELF NOTE: DIVIDING BY THE W COMPONENT WILL CREATE VECTORS OF INFINITY/NAN VALUES, SO DONT DO IT!
+					Vector3 convertedVertexTangent;
+					convertedVertexTangent.x = parsedVertexTangent.x;
+					convertedVertexTangent.y = parsedVertexTangent.y;
+					convertedVertexTangent.z = parsedVertexTangent.z;
+
+					d3dmeshFile.bufferData.vertexTangents.push_back(convertedVertexTangent);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
+		else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord)
+		{
+			d3dmeshFile.bufferData.vertexUVsCount++;
+
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x2)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector2 parsedVertexUV = BinaryDeserialization::ReadT3GFXBuffer_2x32BitFloat(&currentD3DMESH_inputFileStream);
+
+					if (d3dmeshFile.bufferData.vertexUVsCount == 1)
+						d3dmeshFile.bufferData.vertexUVs0.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 2)
+						d3dmeshFile.bufferData.vertexUVs1.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 3)
+						d3dmeshFile.bufferData.vertexUVs2.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 4)
+						d3dmeshFile.bufferData.vertexUVs3.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 5)
+						d3dmeshFile.bufferData.vertexUVs4.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 6)
+						d3dmeshFile.bufferData.vertexUVs5.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 7)
+						d3dmeshFile.bufferData.vertexUVs6.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 8)
+						d3dmeshFile.bufferData.vertexUVs7.push_back(parsedVertexUV);
+				}
+			}
+			else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN16x2)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector2 parsedVertexUV = BinaryDeserialization::ReadT3GFXBuffer_Normalized_2x16BitInteger(&currentD3DMESH_inputFileStream);
+
+					if (d3dmeshFile.bufferData.vertexUVsCount == 1)
+						d3dmeshFile.bufferData.vertexUVs0.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 2)
+						d3dmeshFile.bufferData.vertexUVs1.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 3)
+						d3dmeshFile.bufferData.vertexUVs2.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 4)
+						d3dmeshFile.bufferData.vertexUVs3.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 5)
+						d3dmeshFile.bufferData.vertexUVs4.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 6)
+						d3dmeshFile.bufferData.vertexUVs5.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 7)
+						d3dmeshFile.bufferData.vertexUVs6.push_back(parsedVertexUV);
+					if (d3dmeshFile.bufferData.vertexUVsCount == 8)
+						d3dmeshFile.bufferData.vertexUVs7.push_back(parsedVertexUV);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
+		else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color)
+		{
+			d3dmeshFile.bufferData.vertexColorsCount++;
+
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN8x4)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector4 parsedVertexColor = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_4x8BitInteger(&currentD3DMESH_inputFileStream);
+
+					if (d3dmeshFile.bufferData.vertexColorsCount == 1)
+						d3dmeshFile.bufferData.vertexColors0.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 2)
+						d3dmeshFile.bufferData.vertexColors1.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 3)
+						d3dmeshFile.bufferData.vertexColors2.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 4)
+						d3dmeshFile.bufferData.vertexColors3.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 5)
+						d3dmeshFile.bufferData.vertexColors4.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 6)
+						d3dmeshFile.bufferData.vertexColors5.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 7)
+						d3dmeshFile.bufferData.vertexColors6.push_back(parsedVertexColor);
+					if (d3dmeshFile.bufferData.vertexColorsCount == 8)
+						d3dmeshFile.bufferData.vertexColors7.push_back(parsedVertexColor);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEX |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEX |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEX |||||||||||||||||||||||||||||||||||||
+		else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex)
+		{
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_U8x4)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					UnsignedIntegerVector4 parsedVertexBlendIndex = BinaryDeserialization::ReadT3GFXBuffer_Unsigned_4x8BitInteger(&currentD3DMESH_inputFileStream);
+
+					d3dmeshFile.bufferData.vertexBlendIndex0.push_back(parsedVertexBlendIndex);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHT |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHT |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHT |||||||||||||||||||||||||||||||||||||
+		else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight)
+		{
+			if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
+			{
+				for (int j = 0; j < mVertexBuffer->mCount; j++)
+				{
+					Vector3 parsedVertexBlendWeight = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mPositionWScale);
+
+					d3dmeshFile.bufferData.vertexBlendWeight0.push_back(parsedVertexBlendWeight);
+				}
+			}
+			else
+			{
+				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+			}
+		}
+		//||||||||||||||||||||||||||||||||||||| SKIP |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| SKIP |||||||||||||||||||||||||||||||||||||
+		//||||||||||||||||||||||||||||||||||||| SKIP |||||||||||||||||||||||||||||||||||||
+		else
+		{
+			std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
+			BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
+		}
+	}
+	//*/
+
+	//|||||||||||||||||||||||||||||||||||||||| END OF FILE ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| END OF FILE ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| END OF FILE ||||||||||||||||||||||||||||||||||||||||
+	//We have (hopefully) reached the end of the file!
+
+	//print output so we can check if we actually reached the end of the file. If we did then the bytes left to traverse in the file should be 0.
+	unsigned long long totalFileSizeCalculation = metaHeaderSize + d3dmeshFile.metaHeader.mDefaultSectionChunkSize + d3dmeshFile.metaHeader.mAsyncSectionChunkSize;
+	unsigned long long currentSeekPosition = currentD3DMESH_inputFileStream.tellg();
+	std::cout << "[READER INFO] Left Off At Offset: " << currentSeekPosition << std::endl;
+	//std::cout << "[READER INFO] Bytes Left To Traverse In D3DMESH Header: " << (mDefaultSectionChunkSize - (currentSeekPosition - MetaHeaderSize)) << std::endl;
+	std::cout << "[READER INFO] Bytes Left To Traverse In File: " << (long)(totalFileSizeCalculation - currentSeekPosition) << std::endl;
+
+	//close the stream, we are done with reading the file
+	currentD3DMESH_inputFileStream.close();
+
+	return d3dmeshFile;
+}
+
 int main()
 {
 	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM DATA FOLDER ||||||||||||||||||||||||||||||||||||||||
@@ -404,577 +926,123 @@ int main()
 		currentD3DMESH_inputFileStream.open(currentD3DMESH_FilePath, std::fstream::in | std::fstream::binary);
 
 		//initalize our d3dmesh file object so we can start filling it with data
-		FileD3DMesh d3dmeshFile{};
+		FileD3DMesh d3dmeshFile = ParseD3DMeshFile(currentD3DMESH_inputFileStream);
 
-		//|||||||||||||||||||||||||||||||||||||||| META HEADER ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| META HEADER ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| META HEADER ||||||||||||||||||||||||||||||||||||||||
-		//telltale files always have a "meta" header serialized ontop of the file
-		//this header is important as it tells the engine (and us) the size of the d3dmesh header, and the size of the file data after the headers.
-		//it also contains misc information like the reference class names and types, which are hashed (CRC64)
+		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+		//NOTE: This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
+		//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes.
 
-		//parse the telltale meta header
-		d3dmeshFile.metaHeader = BinaryDeserialization::ReadTelltaleMetaHeaderVersion6FromBinary(&currentD3DMESH_inputFileStream);
+		//ExtractedMesh* extractedMesh = &d3dmeshFile.extractedLODs[0].submeshes[0];
+		//extractedMesh->triangleIndicies0 = d3dmeshFile.bufferData.triangleIndicies0;
+		//extractedMesh->vertexPositions = d3dmeshFile.bufferData.vertexPositions;
+		//extractedMesh->vertexNormals0 = d3dmeshFile.bufferData.vertexNormals0;
+		//ExportAssimpMesh(*extractedMesh, currentD3DMESH_FileName);
 
-		//we finished going through the meta header, so the offset we left off at matches the size of the meta header
-		unsigned long metaHeaderSize = currentD3DMESH_inputFileStream.tellg();
+		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
+		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
+		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH HEADER ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH HEADER ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH HEADER ||||||||||||||||||||||||||||||||||||||||
-		//here we get into the important parts of the file.
-		//after parsing the meta header, the main d3dmesh header is serialized right after it
-		//this is the most important part as it contains all of the necessary information about the mesh so that we can read/extract it properly.
+		std::vector<ExtractedLOD> extractedLODs;
 
-		//initalize our header object
-		TelltaleD3DMeshV55 d3dmeshHeader;
-
-		//parse the inital chunks here, according to ida this is the main D3DMesh chunk
-		d3dmeshHeader.mNameBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mName = BinaryDeserialization::ReadLengthPrefixedStringFromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mVersion = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mToolProps = BinaryDeserialization::ReadInt8FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mLightmapGlobalScale = BinaryDeserialization::ReadFloat32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mLightmapTexCoordVersion = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mLODParamCRC = BinaryDeserialization::ReadSymbolFromBinary(&currentD3DMESH_inputFileStream);
-
-		//parse the internal resources block, this was difficult to track down but this basically contains propertysets or references to resources uses (i.e. materials)
-		d3dmeshHeader.mInternalResourcesCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-
-		for (int mInternalResourceIndex = 0; mInternalResourceIndex < d3dmeshHeader.mInternalResourcesCount; mInternalResourceIndex++)
-		{
-			d3dmeshHeader.mInternalResources.push_back(BinaryDeserialization::ReadTelltaleInternalResourceFromBinary(&currentD3DMESH_inputFileStream)); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		}
-
-		//parse the tool property set block, this shouldn't technically have any data since this is the final shipped file.
-		d3dmeshHeader.mToolPropsBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mToolPropsData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshHeader.mToolPropsBlockSize); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		
-		//parse the occlusion data block, this contains occlusion culling information regarding the mesh.
-		d3dmeshHeader.mHasOcclusionData = BinaryDeserialization::ReadInt8FromBinary(&currentD3DMESH_inputFileStream);
-
-		//if this is true then we need to skip it (ASCII '1' is true, ASCII '0' is false)
-		if (d3dmeshHeader.mHasOcclusionData == '1')
-		{
-			d3dmeshHeader.mOcclusionDataBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-			d3dmeshHeader.mOcclusionData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshHeader.mOcclusionDataBlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		}
-
-		//this is the start of the main T3MeshData block
-		d3dmeshHeader.mT3MeshDataBlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-
-		//parse the LODs associated with the mesh (oddly enough telltale didn't use LODs very often?)
-		d3dmeshHeader.mLODs_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mLODs_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-
-		for (int i = 0; i < d3dmeshHeader.mLODs_ArrayLength; i++)
-		{
-			d3dmeshHeader.mLODs.push_back(BinaryDeserialization::ReadTelltaleMeshLODFromBinary(&currentD3DMESH_inputFileStream));
-		}
-
-		//parse the textures block (NOTE: This does not contain actual texture data, just references to it)
-		d3dmeshHeader.mTextures_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mTextures_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mTexturesData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshHeader.mTextures_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		
-		//parse the materials block
-		d3dmeshHeader.mMaterials_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mMaterials_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mMaterialsData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshHeader.mMaterials_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		
-		//parse the materials overrides block
-		d3dmeshHeader.mMaterialOverrides_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mMaterialOverrides_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mMaterialOverridesData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshHeader.mMaterialOverrides_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		
-		//parse the rigging bones block
-		d3dmeshHeader.mBones_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mBones_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-
-		for (int i = 0; i < d3dmeshHeader.mBones_ArrayLength; i++)
-		{
-			d3dmeshHeader.mBones.push_back(BinaryDeserialization::ReadTelltaleMeshBoneEntryFromBinary(&currentD3DMESH_inputFileStream));
-		}
-
-		//parse the rigging bones block
-		d3dmeshHeader.mLocalTransforms_ArrayCapacity = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mLocalTransforms_ArrayLength = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-
-		for (int i = 0; i < d3dmeshHeader.mLocalTransforms_ArrayLength; i++)
-		{
-			d3dmeshHeader.mLocalTransforms.push_back(BinaryDeserialization::ReadTelltaleMeshLocalTransformEntryFromBinary(&currentD3DMESH_inputFileStream));
-		}
-
-		//parse other misc information in the d3dmesh header
-		d3dmeshHeader.mMaterialRequirements = BinaryDeserialization::ReadTelltaleMaterialRequirementsFromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mVertexStreams_BlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream); //value seems to always be 8
-		d3dmeshHeader.mVertexStreams = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mBoundingBox = BinaryDeserialization::ReadBoundingBoxFromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mBoundingSphere = BinaryDeserialization::ReadBoundingSphereFromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mEndianType = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mPositionScale = BinaryDeserialization::ReadVector3FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mPositionWScale = BinaryDeserialization::ReadVector3FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mPositionOffset = BinaryDeserialization::ReadVector3FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mLightmapTexelAreaPerSurfaceArea = BinaryDeserialization::ReadFloat32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mPropertyKeyBase = BinaryDeserialization::ReadSymbolFromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mVertexCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mFlags = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mMeshPreload_BlockSize = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mMeshPreloadData = BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, d3dmeshHeader.mMeshPreload_BlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
-		d3dmeshHeader.UNKNOWN1 = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.UNKNOWN2 = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mVertexCountPerInstance = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mIndexBufferCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mVertexBufferCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-		d3dmeshHeader.mAttributeCount = BinaryDeserialization::ReadUInt32FromBinary(&currentD3DMESH_inputFileStream);
-
-		//parse the table of GFXPlatformAttributes, this is important as this is used during the vertex buffer parsing later to identify what buffers contain what data.
-		for (int i = 0; i < d3dmeshHeader.mAttributeCount; i++)
-		{
-			d3dmeshHeader.GFXPlatformAttributeParamsArray.push_back(BinaryDeserialization::ReadTelltaleGraphicsPlatformAttributeParametersFromBinary(&currentD3DMESH_inputFileStream));
-		}
-
-		//parse the table of GFXBuffer data, these are "index" buffers (i.e. triangle indicies)
-		for (int i = 0; i < d3dmeshHeader.mIndexBufferCount; i++)
-		{
-			d3dmeshHeader.mIndexBuffers.push_back(BinaryDeserialization::ReadTelltaleGFXBufferFromBinary(&currentD3DMESH_inputFileStream));
-		}
-
-		//parse the table of GFXBuffer data, these are "vertex" buffers (i.e. vertex position, normal, uv, etc)
-		for (int i = 0; i < d3dmeshHeader.mVertexBufferCount; i++)
-		{
-			d3dmeshHeader.mVertexBuffers.push_back(BinaryDeserialization::ReadTelltaleGFXBufferFromBinary(&currentD3DMESH_inputFileStream));
-		}
-
-		//we have now reached the end of the d3dmesh header, after this lies the actual data of the mesh
-		d3dmeshFile.d3dmeshHeader = d3dmeshHeader;
-
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA PREPARE ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA PREPARE ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA PREPARE ||||||||||||||||||||||||||||||||||||||||
-		//before we parse the actual d3dmesh data we will first initalize an array of extracted mesh LODs and submeshes
-		//we do this so we can store the extracted results and feed them into assimp to export them to useable meshes
-
-		//iterate through each LOD level of the d3dmesh
 		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLODs.size(); i++)
 		{
-			//reference to the d3dmesh LOD level we are currently on
 			T3MeshLOD* mLOD = &d3dmeshFile.d3dmeshHeader.mLODs[i];
-
-			//initalize the LOD level
 			ExtractedLOD extractedLOD{};
 
-			//iterate through each mesh batch on the d3dmesh
 			for (int j = 0; j < mLOD->mBatches0_ArrayLength; j++)
 			{
-				//initalize a submesh and add it to our submeshes array for the current lod level
-				ExtractedMesh extractedSubmesh{};
-				extractedLOD.submeshes.push_back(extractedSubmesh);
+				ExtractedMesh extractedMesh{};
+				extractedLOD.submeshes.push_back(extractedMesh);
 			}
 
-			//accumulate the initalized lod level with it's submeshes
-			d3dmeshFile.extractedLODs.push_back(extractedLOD);
+			extractedLODs.push_back(extractedLOD);
 		}
-
-		ExtractedBufferData extractedMeshBufferData{};
-
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
-		//here we begin actually parsing the d3dmesh data
-		//the first chunks here are the index buffers, these essentially "indexes"
-
-		/*
-		//NOTE: This simply skips through each index buffer.
-		//It's kept here because this is used as a reference to ensure that we can read through an entire index buffer correctly so we can be left at the correct offset for reading vertex buffers.
-		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mIndexBuffers.size(); i++)
-		{
-			T3GFXBuffer* mIndexBuffer = &d3dmeshFile.d3dmeshHeader.mIndexBuffers[i];
-			BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mIndexBuffer->mCount * mIndexBuffer->mStride); //skip this data block
-		}
-		*/
-
-		//Loop through each index buffer
-		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mIndexBuffers.size(); i++)
-		{
-			//reference to the main index buffer that we are currently on
-			T3GFXBuffer* mIndexBuffer = &d3dmeshFile.d3dmeshHeader.mIndexBuffers[i];
-
-			if (mIndexBuffer->mBufferUsage == 2) //eGFXPlatformBuffer_Index
-			{
-				switch (mIndexBuffer->mBufferFormat)
-				{
-				case GFXPlatformFormat::eGFXPlatformFormat_U16:
-					for (int j = 0; j < mIndexBuffer->mCount; j++)
-					{
-						unsigned short triangleIndex = BinaryDeserialization::ReadUInt16FromBinary(&currentD3DMESH_inputFileStream);
-						extractedMeshBufferData.triangleIndicies0.push_back(triangleIndex);
-					}
-
-					break;
-				default:
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mIndexBuffer->mCount * mIndexBuffer->mStride); //skip this data block
-					break;
-				}
-			}
-			else
-			{
-				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mIndexBuffer->mCount * mIndexBuffer->mStride); //skip this data block
-			}
-		}
-
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mVertexBuffers ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mVertexBuffers ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| D3DMESH DATA - mVertexBuffers ||||||||||||||||||||||||||||||||||||||||
-		//now the last part of the entire file, which are the vertex buffers
-		//these last chunks are the most important, as these are multiple buffers that contains information like vertex position, normals, etc.
-
-		/*
-		//NOTE: This simply skips through each index buffer.
-		//It's kept here because this is used as a reference to ensure that we can read through an entire index buffer correctly so we can be left at the correct offset for reading vertex buffers.
-		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mVertexBuffers.size(); i++)
-		{
-			T3GFXBuffer* mVertexBuffer = &d3dmeshFile.d3dmeshHeader.mVertexBuffers[i];
-			BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-		}
-		*/
 
 		///*
-		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mVertexBuffers.size(); i++)
+		std::ofstream testOutputTextFile;
+		std::string testOutputTextFilePath = "Output/" + currentD3DMESH_FileName + "_EXTRACTED_MESH_DATA.txt";
+		testOutputTextFile.open(testOutputTextFilePath);
+
+		for (int x = 0; x < d3dmeshFile.bufferData.indexBuffer0.size(); x++)
 		{
-			T3GFXBuffer* mVertexBuffer = &d3dmeshFile.d3dmeshHeader.mVertexBuffers[i];
-			GFXPlatformAttributeParams* attributeParams = &d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray[i];
-
-			//||||||||||||||||||||||||||||||||||||| VERTEX POSITION |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX POSITION |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX POSITION |||||||||||||||||||||||||||||||||||||
-			if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
-			{
-				//if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN16x4)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector4 parsedVertexPosition = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_4x16BitInteger(&currentD3DMESH_inputFileStream);
-
-						//SELF NOTE: DIVIDING BY THE W COMPONENT WILL CREATE VECTORS OF INFINITY/NAN VALUES, SO DONT DO IT!
-						Vector3 convertedVertexPosition;
-						convertedVertexPosition.x = parsedVertexPosition.x * d3dmeshFile.d3dmeshHeader.mPositionScale.x + d3dmeshFile.d3dmeshHeader.mPositionOffset.x;
-						convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshFile.d3dmeshHeader.mPositionScale.y + d3dmeshFile.d3dmeshHeader.mPositionOffset.y;
-						convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshFile.d3dmeshHeader.mPositionScale.z + d3dmeshFile.d3dmeshHeader.mPositionOffset.z;
-
-						extractedMeshBufferData.vertexPositions.push_back(convertedVertexPosition);
-					}
-				}
-				//else if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
-				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector3 parsedVertexPosition = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mPositionWScale);
-
-						Vector3 convertedVertexPosition;
-						convertedVertexPosition.x = parsedVertexPosition.x * d3dmeshFile.d3dmeshHeader.mPositionScale.x + d3dmeshFile.d3dmeshHeader.mPositionOffset.x;
-						convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshFile.d3dmeshHeader.mPositionScale.y + d3dmeshFile.d3dmeshHeader.mPositionOffset.y;
-						convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshFile.d3dmeshHeader.mPositionScale.z + d3dmeshFile.d3dmeshHeader.mPositionOffset.z;
-
-						extractedMeshBufferData.vertexPositions.push_back(convertedVertexPosition);
-					}
-				}
-				//else if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x3)
-				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x3)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector3 parsedVertexPosition = BinaryDeserialization::ReadT3GFXBuffer_3x32BitFloat(&currentD3DMESH_inputFileStream);
-
-						Vector3 convertedVertexPosition;
-						convertedVertexPosition.x = parsedVertexPosition.x * d3dmeshFile.d3dmeshHeader.mPositionScale.x + d3dmeshFile.d3dmeshHeader.mPositionOffset.x;
-						convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshFile.d3dmeshHeader.mPositionScale.y + d3dmeshFile.d3dmeshHeader.mPositionOffset.y;
-						convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshFile.d3dmeshHeader.mPositionScale.z + d3dmeshFile.d3dmeshHeader.mPositionOffset.z;
-
-						extractedMeshBufferData.vertexPositions.push_back(convertedVertexPosition);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
-			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal)
-			{
-				extractedMeshBufferData.vertexNormalsCount++;
-
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector4 parsedVertexNormal = BinaryDeserialization::ReadT3GFXBuffer_Normalized_4x8BitInteger(&currentD3DMESH_inputFileStream);
-
-						//SELF NOTE: DIVIDING BY THE W COMPONENT WILL CREATE VECTORS OF INFINITY/NAN VALUES, SO DONT DO IT!
-						Vector3 convertedVertexNormal;
-						convertedVertexNormal.x = parsedVertexNormal.x;
-						convertedVertexNormal.y = parsedVertexNormal.y;
-						convertedVertexNormal.z = parsedVertexNormal.z;
-
-						if (extractedMeshBufferData.vertexNormalsCount == 1)
-							extractedMeshBufferData.vertexNormals0.push_back(convertedVertexNormal);
-						if (extractedMeshBufferData.vertexNormalsCount == 2)
-							extractedMeshBufferData.vertexNormals1.push_back(convertedVertexNormal);
-						if (extractedMeshBufferData.vertexNormalsCount == 3)
-							extractedMeshBufferData.vertexNormals2.push_back(convertedVertexNormal);
-						if (extractedMeshBufferData.vertexNormalsCount == 4)
-							extractedMeshBufferData.vertexNormals3.push_back(convertedVertexNormal);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
-			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent)
-			{
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4 && extractedMeshBufferData.vertexTangents.size() <= 0)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector4 parsedVertexTangent = BinaryDeserialization::ReadT3GFXBuffer_Normalized_4x8BitInteger(&currentD3DMESH_inputFileStream);
-
-						//SELF NOTE: DIVIDING BY THE W COMPONENT WILL CREATE VECTORS OF INFINITY/NAN VALUES, SO DONT DO IT!
-						Vector3 convertedVertexTangent;
-						convertedVertexTangent.x = parsedVertexTangent.x;
-						convertedVertexTangent.y = parsedVertexTangent.y;
-						convertedVertexTangent.z = parsedVertexTangent.z;
-
-						extractedMeshBufferData.vertexTangents.push_back(convertedVertexTangent);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
-			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord)
-			{
-				extractedMeshBufferData.vertexUVsCount++;
-
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x2)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector2 parsedVertexUV = BinaryDeserialization::ReadT3GFXBuffer_2x32BitFloat(&currentD3DMESH_inputFileStream);
-
-						if (extractedMeshBufferData.vertexUVsCount == 1)
-							extractedMeshBufferData.vertexUVs0.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 2)
-							extractedMeshBufferData.vertexUVs1.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 3)
-							extractedMeshBufferData.vertexUVs2.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 4)
-							extractedMeshBufferData.vertexUVs3.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 5)
-							extractedMeshBufferData.vertexUVs4.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 6)
-							extractedMeshBufferData.vertexUVs5.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 7)
-							extractedMeshBufferData.vertexUVs6.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 8)
-							extractedMeshBufferData.vertexUVs7.push_back(parsedVertexUV);
-					}
-				}
-				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN16x2)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector2 parsedVertexUV = BinaryDeserialization::ReadT3GFXBuffer_Normalized_2x16BitInteger(&currentD3DMESH_inputFileStream);
-
-						if (extractedMeshBufferData.vertexUVsCount == 1)
-							extractedMeshBufferData.vertexUVs0.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 2)
-							extractedMeshBufferData.vertexUVs1.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 3)
-							extractedMeshBufferData.vertexUVs2.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 4)
-							extractedMeshBufferData.vertexUVs3.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 5)
-							extractedMeshBufferData.vertexUVs4.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 6)
-							extractedMeshBufferData.vertexUVs5.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 7)
-							extractedMeshBufferData.vertexUVs6.push_back(parsedVertexUV);
-						if (extractedMeshBufferData.vertexUVsCount == 8)
-							extractedMeshBufferData.vertexUVs7.push_back(parsedVertexUV);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
-			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color)
-			{
-				extractedMeshBufferData.vertexColorsCount++;
-
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN8x4)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector4 parsedVertexColor = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_4x8BitInteger(&currentD3DMESH_inputFileStream);
-
-						if (extractedMeshBufferData.vertexColorsCount == 1)
-							extractedMeshBufferData.vertexColors0.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 2)
-							extractedMeshBufferData.vertexColors1.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 3)
-							extractedMeshBufferData.vertexColors2.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 4)
-							extractedMeshBufferData.vertexColors3.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 5)
-							extractedMeshBufferData.vertexColors4.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 6)
-							extractedMeshBufferData.vertexColors5.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 7)
-							extractedMeshBufferData.vertexColors6.push_back(parsedVertexColor);
-						if (extractedMeshBufferData.vertexColorsCount == 8)
-							extractedMeshBufferData.vertexColors7.push_back(parsedVertexColor);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEX |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEX |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEX |||||||||||||||||||||||||||||||||||||
-			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex)
-			{
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_U8x4)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						UnsignedIntegerVector4 parsedVertexBlendIndex = BinaryDeserialization::ReadT3GFXBuffer_Unsigned_4x8BitInteger(&currentD3DMESH_inputFileStream);
-
-						extractedMeshBufferData.vertexBlendIndex0.push_back(parsedVertexBlendIndex);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHT |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHT |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHT |||||||||||||||||||||||||||||||||||||
-			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight)
-			{
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
-				{
-					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector3 parsedVertexBlendWeight = BinaryDeserialization::ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(&currentD3DMESH_inputFileStream, d3dmeshFile.d3dmeshHeader.mPositionWScale);
-
-						extractedMeshBufferData.vertexBlendWeight0.push_back(parsedVertexBlendWeight);
-					}
-				}
-				else
-				{
-					std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-					BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-				}
-			}
-			//||||||||||||||||||||||||||||||||||||| SKIP |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| SKIP |||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||| SKIP |||||||||||||||||||||||||||||||||||||
-			else
-			{
-				std::cout << "SKIPPING DATA IN VERTEX BUFFER!" << d3dmeshFile.d3dmeshHeader.mName << std::endl;
-				BinaryDeserialization::ReadByteBufferFromBinary(&currentD3DMESH_inputFileStream, mVertexBuffer->mCount * mVertexBuffer->mStride); //skip this data block
-			}
+			std::string line = "Item: " + std::to_string(x) + " | Triangle Index: " + std::to_string(d3dmeshFile.bufferData.indexBuffer0[x]) + " \n";
+			testOutputTextFile.write(line.c_str(), line.length());
 		}
-		//*/
 
-		//|||||||||||||||||||||||||||||||||||||||| END OF FILE ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| END OF FILE ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| END OF FILE ||||||||||||||||||||||||||||||||||||||||
-		//We have (hopefully) reached the end of the file!
-
-		//print output so we can check if we actually reached the end of the file. If we did then the bytes left to traverse in the file should be 0.
-		unsigned long long totalFileSizeCalculation = metaHeaderSize + d3dmeshFile.metaHeader.mDefaultSectionChunkSize + d3dmeshFile.metaHeader.mAsyncSectionChunkSize;
-		unsigned long long currentSeekPosition = currentD3DMESH_inputFileStream.tellg();
-		std::cout << "[READER INFO] Left Off At Offset: " << currentSeekPosition << std::endl;
-		//std::cout << "[READER INFO] Bytes Left To Traverse In D3DMESH Header: " << (mDefaultSectionChunkSize - (currentSeekPosition - MetaHeaderSize)) << std::endl;
-		std::cout << "[READER INFO] Bytes Left To Traverse In File: " << (long)(totalFileSizeCalculation - currentSeekPosition) << std::endl;
-
-		//close the stream, we are done with reading the file
-		currentD3DMESH_inputFileStream.close();
-
-		//assign the now completed header object
-		d3dmeshFile.d3dmeshHeader = d3dmeshHeader;
-
-		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT ||||||||||||||||||||||||||||||||||||||||
-
-		int primitiveTest = 0;
+		testOutputTextFile.close();
 
 		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLODs.size(); i++)
 		{
 			T3MeshLOD* mLOD = &d3dmeshFile.d3dmeshHeader.mLODs[i];
-			ExtractedLOD* extractedLOD = &d3dmeshFile.extractedLODs[i];
-			
-			//This is to be ignored for using the submeshes
-			ExtractedMesh* extractedMesh = &extractedLOD->submeshes[0];
+			ExtractedLOD* extractedLOD = &extractedLODs[i];
 
-			//||||||||||||||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||||||||||||||
-			//||||||||||||||||||||||||||||||||||||||||||||||||
-			//NOTE: This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
-			//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes.
-			//extractedMesh->triangleIndicies0 = extractedMeshBufferData.triangleIndicies0;
-			//extractedMesh->vertexPositions = extractedMeshBufferData.vertexPositions;
-			//extractedMesh->vertexNormals0 = extractedMeshBufferData.vertexNormals0;
-			//std::string newPath = "LOD_" + std::to_string(i) + "_" + currentD3DMESH_FileName;
-			//ExportAssimpMesh(*extractedMesh, newPath);
-
-			///*
 			for (int j = 0; j < extractedLOD->submeshes.size(); j++)
 			{
 				T3MeshBatch* mBatch = &mLOD->mBatches0[j];
 				ExtractedMesh* extractedMesh = &extractedLOD->submeshes[j];
 
-				for (int x = 0; x < mBatch->mNumPrimitives; x++)
-					extractedMesh->triangleIndicies0.push_back(extractedMeshBufferData.triangleIndicies0[x + mBatch->mBaseIndex]);
+				//for (int x = 0; x < mBatch->mNumPrimitives; x++)
+					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mBaseIndex]);
 
-				for (int x = mLOD->mVertexStart; x < mLOD->mVertexCount; x++)
+				//for (int x = 0; x < mBatch->mNumPrimitives; x++)
+					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex] + mBatch->mBaseIndex);
+
+				//for (int x = 0; x < mBatch->mNumPrimitives * 3; x++)
+					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex] + mBatch->mBaseIndex);
+
+				//for (int x = 0; x < mBatch->mNumPrimitives; x++)
+				//{
+					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex + mBatch->mBaseIndex]);
+					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex] + mBatch->mBaseIndex);
+				//}
+
+				//for (int x = mLOD->mVertexStart + mBatch->mMinVertIndex; x < mLOD->mVertexCount; x++)
+				//for (int x = mLOD->mVertexStart; x < mLOD->mVertexCount; x++)
+				//{
+					//extractedMesh->vertexPositions.push_back(d3dmeshFile.bufferData.vertexPositions[x]);
+					//extractedMesh->vertexNormals0.push_back(d3dmeshFile.bufferData.vertexNormals0[x]);
+				//}
+
+				std::ofstream testOutputTextFile2;
+				std::string newPath2 = "Output/LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j) + "_" + currentD3DMESH_FileName + ".txt";
+				testOutputTextFile2.open(newPath2);
+
+				std::string line2a1 = "mNumPrimitives: " + std::to_string(mBatch->mNumPrimitives) + " \n";
+				std::string line2a2 = "mBaseIndex: " + std::to_string(mBatch->mBaseIndex) + " \n";
+				std::string line2a3 = "mMaxVertIndex: " + std::to_string(mBatch->mMaxVertIndex) + " \n";
+				std::string line2a4 = "mMinVertIndex: " + std::to_string(mBatch->mMinVertIndex) + " \n";
+				std::string line2a5 = "mStartIndex: " + std::to_string(mBatch->mStartIndex) + " \n";
+				std::string line2a6 = "mNumIndices: " + std::to_string(mBatch->mNumIndices) + " \n";
+				std::string line2a7 = "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| \n";
+				testOutputTextFile2.write(line2a1.c_str(), line2a1.length());
+				testOutputTextFile2.write(line2a2.c_str(), line2a2.length());
+				testOutputTextFile2.write(line2a3.c_str(), line2a3.length());
+				testOutputTextFile2.write(line2a4.c_str(), line2a4.length());
+				testOutputTextFile2.write(line2a5.c_str(), line2a5.length());
+				testOutputTextFile2.write(line2a6.c_str(), line2a6.length());
+				testOutputTextFile2.write(line2a7.c_str(), line2a7.length());
+
+				for (int x = 0; x < mBatch->mNumPrimitives; x++)
 				{
-					extractedMesh->vertexPositions.push_back(extractedMeshBufferData.vertexPositions[x]);
-					extractedMesh->vertexNormals0.push_back(extractedMeshBufferData.vertexNormals0[x]);
+					int loopCalculatedIndex = x + mBatch->mStartIndex;
+					int pickedTriangleIndex = d3dmeshFile.bufferData.indexBuffer0[loopCalculatedIndex];
+					unsigned int adjustedTriangleIndex = pickedTriangleIndex + mBatch->mBaseIndex;
+					std::string line2b = "Loop Index: " + std::to_string(x) + " | Calculated Triangle Index Picker: " + std::to_string(loopCalculatedIndex) + " | Picked Triangle Index Original Value: " + std::to_string(pickedTriangleIndex) + " | Triangle Index with added Base Index to value: " + std::to_string(adjustedTriangleIndex) + " \n";
+					testOutputTextFile2.write(line2b.c_str(), line2b.length());
 				}
 
-				std::string newPath = "LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j) + "_" + currentD3DMESH_FileName;
-				ExportAssimpMesh(*extractedMesh, newPath);
+				testOutputTextFile2.close();
+
+
+
+
+				//std::string newPath = "LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j) + "_" + currentD3DMESH_FileName;
+				//ExportAssimpMesh(*extractedMesh, newPath);
 			}
-			//*/
 		}
+		//*/
 
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||

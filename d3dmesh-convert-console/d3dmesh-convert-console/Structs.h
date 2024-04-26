@@ -592,17 +592,20 @@ struct T3MeshBatch
 
 	/// <summary>
 	/// [4 bytes] 
-	/// <para> NOTE: This seems to be related with the index buffer. </para>
+	/// <para> NOTE 1: This seems to be related with the index buffer. </para>
+	/// <para> NOTE 2: error.mdl noted that this aligns with (mNumPrimitives / 3). </para>
 	/// </summary>
 	unsigned int mStartIndex;
 
 	/// <summary>
 	/// [4 bytes] The number of triangles in the batch mesh.
+	/// <para> NOTE 2: this seems to be (mStartIndex * 3). </para>
 	/// </summary>
 	unsigned int mNumPrimitives;
 
 	/// <summary>
 	/// [4 bytes] (Seems to always be 8?)
+	/// <para> NOTE 1: error.mdl noted that this might actually be a flag field. Where 8 is 1<<3, triangles = 3 triangles </para>
 	/// </summary>
 	unsigned int mNumIndices;
 
@@ -725,6 +728,8 @@ struct T3MeshLOD
 
 	/// <summary>
 	/// [4 bytes] 
+	/// <para> NOTE: If we iterate through all T3MeshBatch's (either in mBatches0 or mBatches1), and for each T3MeshBatch, if we add up mStartIndex, then multiply the total by 2, we get the primitive count that matches this LOD level. </para>
+	/// <para> NOTE: We can also take this inital value, and multiply it by 1.5 to get the total triangle count for this LOD level. </para>
 	/// </summary>
 	unsigned int mNumPrimitives;
 
@@ -964,7 +969,9 @@ struct ExtractedMesh
 	int vertexUVsCount = 0;
 	int vertexColorsCount = 0;
 
-	std::vector<unsigned short> triangleIndicies0;
+	std::vector<unsigned short> triangleIndicies;
+	std::vector<unsigned short> boneWeight;
+	std::vector<unsigned short> boneIndex;
 
 	std::vector<Vector3> vertexPositions;
 
@@ -1002,13 +1009,21 @@ struct ExtractedMesh
 	std::vector<Vector3> vertexBlendWeight0;
 };
 
-struct ExtractedBufferData
+struct D3DMeshBufferData
 {
+	int indexBufferCount = 0;
 	int vertexNormalsCount = 0;
 	int vertexUVsCount = 0;
 	int vertexColorsCount = 0;
 
-	std::vector<unsigned short> triangleIndicies0;
+	std::vector<unsigned short> indexBuffer0;
+	std::vector<unsigned short> indexBuffer1;
+	std::vector<unsigned short> indexBuffer2;
+	std::vector<unsigned short> indexBuffer3;
+	std::vector<unsigned short> indexBuffer4;
+	std::vector<unsigned short> indexBuffer5;
+	std::vector<unsigned short> indexBuffer6;
+	std::vector<unsigned short> indexBuffer7;
 
 	std::vector<Vector3> vertexPositions;
 
@@ -1274,7 +1289,7 @@ struct FileD3DMesh
 {
 	TelltaleMetaHeaderVersion6 metaHeader;
 	TelltaleD3DMeshV55 d3dmeshHeader;
-	std::vector<ExtractedLOD> extractedLODs;
+	D3DMeshBufferData bufferData;
 };
 
 #endif

@@ -266,6 +266,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - SYMBOL [8 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - SYMBOL [8 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[8 BYTES]
 	static Symbol ReadSymbolFromBinary(std::ifstream* inputFileStream)
 	{
 		Symbol symbol{};
@@ -281,6 +282,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE CLASS NAME [12 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE CLASS NAME [12 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[12 BYTES]
 	static TelltaleClassName ReadTelltaleClassNameFromBinary(std::ifstream* inputFileStream)
 	{
 		TelltaleClassName telltaleClassName{};
@@ -293,6 +295,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE META HEADER VERSION 6 [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE META HEADER VERSION 6 [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[x BYTES]
 	static TelltaleMetaHeaderVersion6 ReadTelltaleMetaHeaderVersion6FromBinary(std::ifstream* inputFileStream)
 	{
 		TelltaleMetaHeaderVersion6 metaHeader{};
@@ -314,6 +317,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE INTERNAL RESOURCE [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE INTERNAL RESOURCE [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[x BYTES]
 	static TelltaleInternalResource ReadTelltaleInternalResourceFromBinary(std::ifstream* inputFileStream)
 	{
 		TelltaleInternalResource mInternalResource{};
@@ -328,6 +332,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - VECTOR 3 [12 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - VECTOR 3 [12 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[12 BYTES]
 	static Vector3 ReadVector3FromBinary(std::ifstream* inputFileStream)
 	{
 		Vector3 vector3{};
@@ -341,6 +346,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - QUATERNION [16 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - QUATERNION [16 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[16 BYTES]
 	static Quaternion ReadQuaternionFromBinary(std::ifstream* inputFileStream)
 	{
 		Quaternion quaternion{};
@@ -355,6 +361,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TRANSFORM [32 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TRANSFORM [32 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[32 BYTES]
 	static Transform ReadTransformFromBinary(std::ifstream* inputFileStream)
 	{
 		Transform transform{};
@@ -368,6 +375,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - BOUNDING BOX [24 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - BOUNDING BOX [24 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[24 BYTES]
 	static BoundingBox ReadBoundingBoxFromBinary(std::ifstream* inputFileStream)
 	{
 		BoundingBox boundingBox{};
@@ -380,6 +388,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - BOUNDING SPHERE [20 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - BOUNDING SPHERE [20 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[20 BYTES]
 	static BoundingSphere ReadBoundingSphereFromBinary(std::ifstream* inputFileStream)
 	{
 		BoundingSphere mBoundingSphere{};
@@ -393,6 +402,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE MESH BONE ENTRY [56 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE MESH BONE ENTRY [56 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[56 BYTES]
 	static T3MeshBoneEntry ReadTelltaleMeshBoneEntryFromBinary(std::ifstream* inputFileStream)
 	{
 		T3MeshBoneEntry mBone{};
@@ -407,6 +417,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE MESH LOCAL TRANSFORM ENTRY [36 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE MESH LOCAL TRANSFORM ENTRY [36 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[36 BYTES]
 	static T3MeshLocalTransformEntry ReadTelltaleMeshLocalTransformEntryFromBinary(std::ifstream* inputFileStream)
 	{
 		T3MeshLocalTransformEntry mLocalTransform{};
@@ -419,6 +430,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE MATERIAL REQUIREMENTS [40 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE MATERIAL REQUIREMENTS [40 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[40 BYTES]
 	static T3MaterialRequirements ReadTelltaleMaterialRequirementsFromBinary(std::ifstream* inputFileStream)
 	{
 		T3MaterialRequirements mMaterialRequirements{};
@@ -439,6 +451,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE GRAPHICS PLATFORM ATTRIBUTE PARAMETERS [20 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE GRAPHICS PLATFORM ATTRIBUTE PARAMETERS [20 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[20 BYTES]
 	static GFXPlatformAttributeParams ReadTelltaleGraphicsPlatformAttributeParametersFromBinary(std::ifstream* inputFileStream)
 	{
 		GFXPlatformAttributeParams mGFXPlatformAttributeParams{};
@@ -454,6 +467,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE GRAPHICS BUFFER [20 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - TELLTALE GRAPHICS BUFFER [20 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[20 BYTES]
 	static T3GFXBuffer ReadTelltaleGFXBufferFromBinary(std::ifstream* inputFileStream)
 	{
 		T3GFXBuffer mBuffer{};
@@ -469,6 +483,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3 MESH BATCH [88 BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3 MESH BATCH [88 BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[88 BYTES]
 	static T3MeshBatch ReadTelltaleMeshBatchFromBinary(std::ifstream* inputFileStream)
 	{
 		T3MeshBatch mMeshBatch{};
@@ -492,6 +507,7 @@ public:
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3 MESH LOD [x BYTES] ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3 MESH LOD [x BYTES] ||||||||||||||||||||||||||||||||||||||||
 
+	//[x BYTES]
 	static T3MeshLOD ReadTelltaleMeshLODFromBinary(std::ifstream* inputFileStream)
 	{
 		T3MeshLOD mLOD{};
@@ -915,84 +931,51 @@ public:
 		unsigned int thirdValue = 0;
 		unsigned int fourthValue = 0;
 
+		//---------------------BIT EXTRACTION---------------------
+		//first 10 bits
+		firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
+
+		//second 10 bits
+		secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
+
+		//third 10 bits
+		thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
+
+		//fourth 2 bits
+		fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
+
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		if (mPositionWScale.x != 0.0f)
 		{
-			//---------------------BIT EXTRACTION---------------------
-			//first 10 bits
-			firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
-
-			//second 10 bits
-			secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
-
-			//third 10 bits
-			thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
-
-			//fourth 2 bits
-			fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
-
+			//---------------------BIT COMBINE---------------------
 			//combine last bits for x axis
 			firstValue = fourthValue << 10 | firstValue;
-
-			//---------------------NORMALIZATION---------------------
-			vector3.x = firstValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-			vector3.y = secondValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-			vector3.z = thirdValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
 		}
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		else if (mPositionWScale.y != 0.0f)
 		{
-			//---------------------BIT EXTRACTION---------------------
-			//first 10 bits
-			firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
-
-			//second 10 bits
-			secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
-
-			//third 10 bits
-			thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
-
-			//fourth 2 bits
-			fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
-
+			//---------------------BIT COMBINE---------------------
 			//combine last bits for y axis
 			secondValue = fourthValue << 10 | secondValue;
-
-			//---------------------NORMALIZATION---------------------
-			vector3.x = firstValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-			vector3.y = secondValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-			vector3.z = thirdValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
 		}
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		else if (mPositionWScale.z != 0.0f)
 		{
-			//---------------------BIT EXTRACTION---------------------
-			//first 10 bits
-			firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
-
-			//second 10 bits
-			secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
-
-			//third 10 bits
-			thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
-
-			//last 2 bits
-			fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 12); //2 bits [0, 3]
-
+			//---------------------BIT COMBINE---------------------
 			//combine last bits for z axis
 			thirdValue = fourthValue << 10 | thirdValue;
-
-			//---------------------NORMALIZATION---------------------
-			vector3.x = firstValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-			vector3.y = secondValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-			vector3.z = thirdValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
 		}
+
+		//---------------------NORMALIZATION---------------------
+		vector3.x = firstValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
+		vector3.y = secondValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
+		vector3.z = thirdValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
 
 		return vector3;
 	}
@@ -1015,84 +998,51 @@ public:
 		unsigned int thirdValue = 0;
 		unsigned int fourthValue = 0;
 
+		//---------------------BIT EXTRACTION---------------------
+		//first 10 bits
+		firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+
+		//second 10 bits
+		secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+
+		//third 10 bits
+		thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+
+		//fourth 2 bits
+		fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
+
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		if (mPositionWScale.x != 0.0f)
 		{
-			//---------------------BIT EXTRACTION---------------------
-			//first 10 bits
-			firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//second 10 bits
-			secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//third 10 bits
-			thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//fourth 2 bits
-			fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
-
+			//---------------------BIT COMBINE---------------------
 			//combine last bits for x axis
 			firstValue = fourthValue << 10 | firstValue;
-
-			//---------------------NORMALIZATION---------------------
-			vector3.x = firstValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-			vector3.y = secondValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-			vector3.z = thirdValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
 		}
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		else if (mPositionWScale.y != 0.0f)
 		{
-			//---------------------BIT EXTRACTION---------------------
-			//first 10 bits
-			firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//second 10 bits
-			secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//third 10 bits
-			thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//fourth 2 bits
-			fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
-
+			//---------------------BIT COMBINE---------------------
 			//combine last bits for y axis
 			secondValue = fourthValue << 10 | secondValue;
-
-			//---------------------NORMALIZATION---------------------
-			vector3.x = firstValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-			vector3.y = secondValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-			vector3.z = thirdValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
 		}
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 		else if (mPositionWScale.z != 0.0f)
 		{
-			//---------------------BIT EXTRACTION---------------------
-			//first 10 bits
-			firstValue = BinaryHelper::BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//second 10 bits
-			secondValue = BinaryHelper::BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//third 10 bits
-			thirdValue = BinaryHelper::BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
-
-			//last 2 bits
-			fourthValue = BinaryHelper::BitFieldExtract(uint, 30, 12) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
-
+			//---------------------BIT COMBINE---------------------
 			//combine last bits for z axis
 			thirdValue = fourthValue << 10 | thirdValue;
-
-			//---------------------NORMALIZATION---------------------
-			vector3.x = firstValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-			vector3.y = secondValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-			vector3.z = thirdValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
 		}
+
+		//---------------------NORMALIZATION---------------------
+		vector3.x = firstValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
+		vector3.y = secondValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
+		vector3.z = thirdValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
 
 		return vector3;
 	}
