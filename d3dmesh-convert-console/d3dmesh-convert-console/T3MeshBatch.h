@@ -37,11 +37,6 @@ public:
 	BoundingSphere mBoundingSphere;
 
 	/// <summary>
-	/// [4 bytes] 
-	/// </summary>
-	unsigned int mBatchUsage_BlockSize;
-
-	/// <summary>
 	/// [4 bytes] mFlags
 	/// </summary>
 	unsigned int mBatchUsage;
@@ -83,9 +78,14 @@ public:
 	unsigned int mNumIndices;
 
 	/// <summary>
-	/// [4 bytes] Unsure what this is for... but it's value seems to always be 4294967295
+	/// [4 bytes] 
 	/// </summary>
-	unsigned int mTextureIndices;
+	unsigned int mTextureIndices_BlockSize;
+
+	/// <summary>
+	/// [x bytes]
+	/// </summary>
+	std::vector<unsigned int> mTextureIndices;
 
 	/// <summary>
 	/// [4 bytes] 
@@ -99,61 +99,83 @@ public:
 
 	T3MeshBatch()
 	{
-		this->mBoundingBox = {};
-		this->mBoundingSphere = {};
-		this->mBatchUsage_BlockSize = 0;
-		this->mBatchUsage = 0;
-		this->mBatchUsage = 0;
-		this->mMinVertIndex = 0;
-		this->mMaxVertIndex = 0;
-		this->mBaseIndex = 0;
-		this->mStartIndex = 0;
-		this->mNumPrimitives = 0;
-		this->mNumIndices = 0;
-		this->mTextureIndices = 0;
-		this->mMaterialIndex = 0;
-		this->mAdjacencyStartIndex = 0;
+		mBoundingBox = {};
+		mBoundingSphere = {};
+		mBatchUsage = 0;
+		mMinVertIndex = 0;
+		mMaxVertIndex = 0;
+		mBaseIndex = 0;
+		mStartIndex = 0;
+		mNumPrimitives = 0;
+		mNumIndices = 0;
+		mTextureIndices_BlockSize = 0;
+		mTextureIndices = {};
+		mMaterialIndex = 0;
+		mAdjacencyStartIndex = 0;
 	};
 
 	T3MeshBatch(std::ifstream* inputFileStream)
 	{
-		this->mBoundingBox = BoundingBox(inputFileStream); //[24 BYTES]
-		this->mBoundingSphere = BoundingSphere(inputFileStream); //[20 BYTES]
-		this->mBatchUsage_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mBatchUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mMinVertIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mMaxVertIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mBaseIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mStartIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mNumPrimitives = ReadUInt32FromBinary(inputFileStream); //[4 BYTES] (mNumIndices / 3)
-		this->mNumIndices = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mTextureIndices = ReadUInt32FromBinary(inputFileStream); //[4 BYTES] (4294967295)
-		this->mMaterialIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mAdjacencyStartIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBoundingBox = BoundingBox(inputFileStream); //[24 BYTES]
+		mBoundingSphere = BoundingSphere(inputFileStream); //[20 BYTES]
+		mBatchUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mMinVertIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mMaxVertIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBaseIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mStartIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mNumPrimitives = ReadUInt32FromBinary(inputFileStream); //[4 BYTES] (mNumIndices / 3)
+		mNumIndices = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mTextureIndices_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+
+		//According to lucas, there is a maximum of two ints that can be read for texture indicies...
+		for (int i = 0; i < 2; i++)
+		{
+			int parsedInt32 = ReadInt32FromBinary(inputFileStream); //[4 BYTES] 
+
+			//If the parsed value is -1 then we stop
+			if (parsedInt32 == -1)
+				break;
+
+			//otherwise keep going, these values are the actual texture index values
+			mTextureIndices.push_back(parsedInt32);
+		}
+
+		mMaterialIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mAdjacencyStartIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
-		//mBatchUsage_BlockSize = 4; //block size uint32 itself
-		//mBatchUsage_BlockSize += sizeof(mBatchUsage); //FOR SOME REASON THIS SEEMS TO BE 1 IN THE ORIGINAL FILE?
-		//mNumPrimitives = this->mNumIndices / 3;
-		//NOTE: COMMENTED out because these are not caclulated correctly...
+		//mTextureIndices_BlockSize = 4; //block size uint32 itself
+		//mTextureIndices_BlockSize += sizeof(mTextureIndices.size() * 4); //each texture index value (if there aren't any then this will just be 0)
+		//mTextureIndices_BlockSize += 4; //the last -1 at the end
+		// 
+		//mNumPrimitives = mNumIndices / 3;
+		//NOTE: COMMENTED out because these are not caclulated correctly at the moment...
 
 		//begin serialization
-		this->mBoundingBox.BinarySerialize(outputFileStream);
-		this->mBoundingSphere.BinarySerialize(outputFileStream);
-		WriteUInt32ToBinary(outputFileStream, this->mBatchUsage_BlockSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mBatchUsage); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mMinVertIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mMaxVertIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mBaseIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mStartIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mNumPrimitives); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mNumIndices); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mTextureIndices); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mMaterialIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mAdjacencyStartIndex); //[4 BYTES]
+		mBoundingBox.BinarySerialize(outputFileStream);
+		mBoundingSphere.BinarySerialize(outputFileStream);
+		WriteUInt32ToBinary(outputFileStream, mBatchUsage); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mMinVertIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mMaxVertIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBaseIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mStartIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mNumPrimitives); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mNumIndices); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mTextureIndices_BlockSize); //[4 BYTES]
+
+		//According to lucas, there is a maximum of two ints that can be read for texture indicies...
+		for (int i = 0; i < mTextureIndices.size(); i++)
+		{
+			WriteUInt32ToBinary(outputFileStream, mTextureIndices[i]); //[4 BYTES] 
+		}
+
+		WriteInt32ToBinary(outputFileStream, -1); //[4 BYTES] NOTE: This is the stop value for texture indicies
+
+		WriteUInt32ToBinary(outputFileStream, mMaterialIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mAdjacencyStartIndex); //[4 BYTES]
 	};
 };
 

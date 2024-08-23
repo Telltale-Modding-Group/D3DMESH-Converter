@@ -32,27 +32,27 @@ public:
 
 	TelltaleInternalResource()
 	{
-		this->mInternalResourceSymbol = {};
-		this->mInternalResourceType = {};
-		this->mInternalResourceBlockSize = 0;
-		this->mInternalResourceData = 0;
+		mInternalResourceSymbol = {};
+		mInternalResourceType = {};
+		mInternalResourceBlockSize = 0;
+		mInternalResourceData = 0;
 	};
 
 	TelltaleInternalResource(std::ifstream* inputFileStream)
 	{
-		this->mInternalResourceSymbol = Symbol(inputFileStream);
-		this->mInternalResourceType = Symbol(inputFileStream);
-		this->mInternalResourceBlockSize = ReadUInt32FromBinary(inputFileStream);
-		this->mInternalResourceData = ReadByteBufferFromBinary(inputFileStream, this->mInternalResourceBlockSize - 4); //skip this data block
+		mInternalResourceSymbol = Symbol(inputFileStream);
+		mInternalResourceType = Symbol(inputFileStream);
+		mInternalResourceBlockSize = ReadUInt32FromBinary(inputFileStream);
+		mInternalResourceData = ReadByteBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//begin serialization
-		this->mInternalResourceSymbol.BinarySerialize(outputFileStream);
-		this->mInternalResourceType.BinarySerialize(outputFileStream);
-		WriteUInt32ToBinary(outputFileStream, this->mInternalResourceBlockSize);
-		WriteByteBufferToBinary(outputFileStream, this->mInternalResourceBlockSize - 4, this->mInternalResourceData);
+		mInternalResourceSymbol.BinarySerialize(outputFileStream);
+		mInternalResourceType.BinarySerialize(outputFileStream);
+		WriteUInt32ToBinary(outputFileStream, mInternalResourceBlockSize);
+		WriteByteBufferToBinary(outputFileStream, mInternalResourceBlockSize - 4, mInternalResourceData);
 	};
 };
 

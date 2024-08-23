@@ -29,18 +29,36 @@ struct Symbol
 
 	Symbol()
 	{
-		this->mCrc64 = 0;
+		mCrc64 = 0;
 	};
 
 	Symbol(std::ifstream* inputFileStream)
 	{
-		this->mCrc64 = ReadUInt64FromBinary(inputFileStream); //[8 BYTES]
+		mCrc64 = ReadUInt64FromBinary(inputFileStream); //[8 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteUInt64ToBinary(outputFileStream, this->mCrc64); //[8 BYTES]
+		WriteUInt64ToBinary(outputFileStream, mCrc64); //[8 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const Symbol& value)
+	{
+		json = nlohmann::json
+		{
+			{ "mCrc64", value.mCrc64 },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, Symbol& value)
+	{
+		json.at("mCrc64").get_to(value.mCrc64);
+	}
 };
 
 #endif

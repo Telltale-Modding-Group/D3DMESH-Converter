@@ -34,39 +34,41 @@ struct Vector2
 
 	Vector2()
 	{
-		this->x = 0.0f;
-		this->y = 0.0f;
+		x = 0.0f;
+		y = 0.0f;
 	};
 
 	Vector2(std::ifstream* inputFileStream)
 	{
-		this->x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-		this->y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	};
-
-	/*
-	Vector2(nlohmann::json& json)
-	{
-		this->x = json.at("x").get_to(this->x);
-		this->y = json.at("y").get_to(this->y);
-	};
-
-	void ToJson(nlohmann::json& json)
-	{
-		json.push_back(
-			{
-				{ "x", this->x },
-				{ "y", this->y },
-			}
-			);
-	};
-	*/
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteFloat32ToBinary(outputFileStream, this->x); //[4 BYTES]
-		WriteFloat32ToBinary(outputFileStream, this->y); //[4 BYTES]
+		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
+		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const Vector2& value)
+	{
+		json = nlohmann::json
+		{ 
+			{ "x", value.x },
+			{ "y", value.y },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, Vector2& value)
+	{
+		json.at("x").get_to(value.x);
+		json.at("y").get_to(value.y);
+	}
 };
 
 #endif

@@ -46,27 +46,51 @@ struct UnsignedIntegerVector4
 
 	UnsignedIntegerVector4()
 	{
-		this->x = 0;
-		this->y = 0;
-		this->z = 0;
-		this->w = 0;
+		x = 0;
+		y = 0;
+		z = 0;
+		w = 0;
 	};
 
 	UnsignedIntegerVector4(std::ifstream* inputFileStream)
 	{
-		this->x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->z = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->w = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		z = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		w = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteUInt32ToBinary(outputFileStream, this->x); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->y); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->z); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->w); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, x); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, y); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, z); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, w); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const UnsignedIntegerVector4& value)
+	{
+		json = nlohmann::json
+		{
+			{ "x", value.x },
+			{ "y", value.y },
+			{ "z", value.z },
+			{ "w", value.w },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, UnsignedIntegerVector4& value)
+	{
+		json.at("x").get_to(value.x);
+		json.at("y").get_to(value.y);
+		json.at("z").get_to(value.z);
+		json.at("w").get_to(value.w);
+	}
 };
 
 #endif

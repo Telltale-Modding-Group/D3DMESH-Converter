@@ -57,43 +57,43 @@ public:
 
 	TelltaleMetaHeaderVersion6()
 	{
-		this->mMetaStreamVersion = "";
-		this->mDefaultSectionChunkSize = 0;
-		this->mDebugSectionChunkSize = 0;
-		this->mAsyncSectionChunkSize = 0;
-		this->mClassNamesLength = 0;
-		this->mClassNames = {};
+		mMetaStreamVersion = "";
+		mDefaultSectionChunkSize = 0;
+		mDebugSectionChunkSize = 0;
+		mAsyncSectionChunkSize = 0;
+		mClassNamesLength = 0;
+		mClassNames = {};
 	};
 
 	TelltaleMetaHeaderVersion6(std::ifstream* inputFileStream)
 	{
-		this->mMetaStreamVersion = ReadFixedStringFromBinary(inputFileStream, 4); //[4 BYTES]
-		this->mDefaultSectionChunkSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mDebugSectionChunkSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mAsyncSectionChunkSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mClassNamesLength = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mMetaStreamVersion = ReadFixedStringFromBinary(inputFileStream, 4); //[4 BYTES]
+		mDefaultSectionChunkSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mDebugSectionChunkSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mAsyncSectionChunkSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mClassNamesLength = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 
-		for (int i = 0; i < this->mClassNamesLength; i++)
+		for (int i = 0; i < mClassNamesLength; i++)
 		{
-			this->mClassNames.push_back(TelltaleClassName(inputFileStream)); //[12 BYTES]
+			mClassNames.push_back(TelltaleClassName(inputFileStream)); //[12 BYTES]
 		}
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
-		this->mClassNamesLength = mClassNames.size();
+		mClassNamesLength = mClassNames.size();
 
 		//begin serialization
-		WriteFixedStringToBinary(outputFileStream, this->mMetaStreamVersion); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mDefaultSectionChunkSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mDebugSectionChunkSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mAsyncSectionChunkSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mClassNamesLength); //[4 BYTES]
+		WriteFixedStringToBinary(outputFileStream, mMetaStreamVersion); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mDefaultSectionChunkSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mDebugSectionChunkSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mAsyncSectionChunkSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mClassNamesLength); //[4 BYTES]
 
-		for (int i = 0; i < this->mClassNamesLength; i++)
+		for (int i = 0; i < mClassNamesLength; i++)
 		{
-			this->mClassNames[i].BinarySerialize(outputFileStream); //[12 BYTES]
+			mClassNames[i].BinarySerialize(outputFileStream); //[12 BYTES]
 		}
 	};
 };

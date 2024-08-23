@@ -36,21 +36,41 @@ struct UnsignedIntegerVector2
 
 	UnsignedIntegerVector2()
 	{
-		this->x = 0;
-		this->y = 0;
+		x = 0;
+		y = 0;
 	};
 
 	UnsignedIntegerVector2(std::ifstream* inputFileStream)
 	{
-		this->x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteUInt32ToBinary(outputFileStream, this->x); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->y); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, x); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, y); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const UnsignedIntegerVector2& value)
+	{
+		json = nlohmann::json
+		{
+			{ "x", value.x },
+			{ "y", value.y },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, UnsignedIntegerVector2& value)
+	{
+		json.at("x").get_to(value.x);
+		json.at("y").get_to(value.y);
+	}
 };
 
 #endif

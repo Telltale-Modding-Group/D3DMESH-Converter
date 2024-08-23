@@ -31,20 +31,20 @@ public:
 
 	T3MeshLocalTransformEntry()
 	{
-		this->mTransform = {};
-		this->mCameraFacingType = 0;
+		mTransform = {};
+		mCameraFacingType = 0;
 	};
 
 	T3MeshLocalTransformEntry(std::ifstream* inputFileStream)
 	{
-		this->mTransform = Transform(inputFileStream); //[32 BYTES]
-		this->mCameraFacingType = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mTransform = Transform(inputFileStream); //[32 BYTES]
+		mCameraFacingType = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		this->mTransform.BinarySerialize(outputFileStream); //[32 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mCameraFacingType); //[4 BYTES]
+		mTransform.BinarySerialize(outputFileStream); //[32 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mCameraFacingType); //[4 BYTES]
 	};
 };
 

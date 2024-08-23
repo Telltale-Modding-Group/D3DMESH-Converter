@@ -52,33 +52,33 @@ public:
 
 	T3GFXBuffer()
 	{
-		this->mResourceUsage = 0;
-		this->mBufferFormat = eGFXPlatformFormat_None;
-		this->mBufferUsage = 0;
-		this->mCount = 0;
-		this->mStride = 0;
+		mResourceUsage = 0;
+		mBufferFormat = eGFXPlatformFormat_None;
+		mBufferUsage = 0;
+		mCount = 0;
+		mStride = 0;
 	};
 
 	T3GFXBuffer(std::ifstream* inputFileStream)
 	{
-		this->mResourceUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mBufferFormat = (GFXPlatformFormat)ReadInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mBufferUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mCount = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mStride = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mResourceUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBufferFormat = (GFXPlatformFormat)ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBufferUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mCount = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mStride = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
-		mStride = GetGFXPlatformFormatStrideLength(this->mBufferFormat);
+		mStride = GetGFXPlatformFormatStrideLength(mBufferFormat);
 
 		//begin serialization
-		WriteUInt32ToBinary(outputFileStream, this->mResourceUsage); //[4 BYTES]
-		WriteInt32ToBinary(outputFileStream, this->mBufferFormat); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mBufferUsage); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mCount); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mStride); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mResourceUsage); //[4 BYTES]
+		WriteInt32ToBinary(outputFileStream, mBufferFormat); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBufferUsage); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mCount); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mStride); //[4 BYTES]
 	};
 };
 

@@ -76,30 +76,30 @@ public:
 
 	T3MaterialRequirements()
 	{
-		this->mMaterialRequirements_BlockSize = 0;
-		this->mPasses_BlockSize = 0;
-		this->mPasses = 0;
-		this->mChannels_BlockSize = 0;
-		this->mChannels1 = 0;
-		this->mChannels2 = 0;
-		this->mInputs_BlockSize = 0;
-		this->mInputs1 = 0;
-		this->mInputs2 = 0;
-		this->mInputs3 = 0;
+		mMaterialRequirements_BlockSize = 0;
+		mPasses_BlockSize = 0;
+		mPasses = 0;
+		mChannels_BlockSize = 0;
+		mChannels1 = 0;
+		mChannels2 = 0;
+		mInputs_BlockSize = 0;
+		mInputs1 = 0;
+		mInputs2 = 0;
+		mInputs3 = 0;
 	};
 
 	T3MaterialRequirements(std::ifstream* inputFileStream)
 	{
-		this->mMaterialRequirements_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mPasses_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mPasses = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mChannels_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mChannels1 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mChannels2 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mInputs_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mInputs1 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mInputs2 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mInputs3 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mMaterialRequirements_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mPasses_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mPasses = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mChannels_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mChannels1 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mChannels2 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mInputs_BlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mInputs1 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mInputs2 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mInputs3 = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
@@ -120,16 +120,16 @@ public:
 		mInputs_BlockSize += sizeof(mInputs3);
 
 		//begin serialization
-		WriteUInt32ToBinary(outputFileStream, this->mMaterialRequirements_BlockSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mPasses_BlockSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mPasses); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mChannels_BlockSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mChannels1); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mChannels2); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mInputs_BlockSize); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mInputs1); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mInputs2); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mInputs3); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mMaterialRequirements_BlockSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mPasses_BlockSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mPasses); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mChannels_BlockSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mChannels1); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mChannels2); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mInputs_BlockSize); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mInputs1); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mInputs2); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mInputs3); //[4 BYTES]
 	};
 };
 

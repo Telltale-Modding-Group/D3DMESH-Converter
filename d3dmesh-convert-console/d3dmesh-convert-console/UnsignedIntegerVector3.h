@@ -41,24 +41,46 @@ struct UnsignedIntegerVector3
 
 	UnsignedIntegerVector3()
 	{
-		this->x = 0;
-		this->y = 0;
-		this->z = 0;
+		x = 0;
+		y = 0;
+		z = 0;
 	};
 
 	UnsignedIntegerVector3(std::ifstream* inputFileStream)
 	{
-		this->x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->z = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		z = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteUInt32ToBinary(outputFileStream, this->x); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->y); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->z); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, x); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, y); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, z); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const UnsignedIntegerVector3& value)
+	{
+		json = nlohmann::json
+		{
+			{ "x", value.x },
+			{ "y", value.y },
+			{ "z", value.z },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, UnsignedIntegerVector3& value)
+	{
+		json.at("x").get_to(value.x);
+		json.at("y").get_to(value.y);
+		json.at("z").get_to(value.z);
+	}
 };
 
 #endif

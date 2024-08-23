@@ -118,7 +118,14 @@ static void WriteD3DMeshToText(std::string filename, TelltaleD3DMeshFileV55 d3dm
 			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mStartIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mStartIndex) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mNumPrimitives: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mNumPrimitives) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mNumIndices: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mNumIndices) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mTextureIndices: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mTextureIndices) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mTextureIndices_BlockSize: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mTextureIndices_BlockSize) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				mTextureIndices \n");
+
+			for (int mTextureIndiciesIndex = 0; mTextureIndiciesIndex < d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mTextureIndices.size(); mTextureIndiciesIndex++)
+			{
+				WriteStringToOutputTextFile(&testOutputTextFile, "					[UINT32] mTextureIndices " + std::to_string(mTextureIndiciesIndex) + ": " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mTextureIndices[mTextureIndiciesIndex]) + "\n");
+			}
+			
 			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMaterialIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mMaterialIndex) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mAdjacencyStartIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches0Index].mAdjacencyStartIndex) + "\n");
 		}
@@ -131,30 +138,37 @@ static void WriteD3DMeshToText(std::string filename, TelltaleD3DMeshFileV55 d3dm
 			WriteStringToOutputTextFile(&testOutputTextFile, "			T3MeshBatch " + std::to_string(mBatches1Index) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "				mBoundingBox \n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "					mMin \n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] x: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingBox.mMin.x) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] y: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingBox.mMin.y) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] z: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingBox.mMin.z) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] x: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingBox.mMin.x) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] y: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingBox.mMin.y) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] z: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingBox.mMin.z) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "					mMax \n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] x: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingBox.mMax.x) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] y: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingBox.mMax.y) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] z: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingBox.mMax.z) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] x: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingBox.mMax.x) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] y: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingBox.mMax.y) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] z: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingBox.mMax.z) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "				mBoundingSphere \n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "					[UINT32] mBlockSize: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingSphere.mBlockSize) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "					[UINT32] mBlockSize: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingSphere.mBlockSize) + "\n");
 			WriteStringToOutputTextFile(&testOutputTextFile, "					mCenter \n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] x: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingSphere.mCenter.x) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] y: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingSphere.mCenter.y) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] z: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingSphere.mCenter.z) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "					[FLOAT] mRadius: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBoundingSphere.mRadius) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mBatchUsage: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBatchUsage) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMinVertIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mMinVertIndex) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMaxVertIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mMaxVertIndex) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mBaseIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mBaseIndex) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mStartIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mStartIndex) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mNumPrimitives: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mNumPrimitives) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mNumIndices: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mNumIndices) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mTextureIndices: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mTextureIndices) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMaterialIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mMaterialIndex) + "\n");
-			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mAdjacencyStartIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches0[mBatches1Index].mAdjacencyStartIndex) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] x: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingSphere.mCenter.x) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] y: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingSphere.mCenter.y) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "						[FLOAT] z: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingSphere.mCenter.z) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "					[FLOAT] mRadius: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBoundingSphere.mRadius) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mBatchUsage: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBatchUsage) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMinVertIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mMinVertIndex) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMaxVertIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mMaxVertIndex) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mBaseIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mBaseIndex) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mStartIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mStartIndex) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mNumPrimitives: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mNumPrimitives) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mNumIndices: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mNumIndices) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mTextureIndices_BlockSize: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mTextureIndices_BlockSize) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				mTextureIndices \n");
+
+			for (int mTextureIndiciesIndex = 0; mTextureIndiciesIndex < d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mTextureIndices.size(); mTextureIndiciesIndex++)
+			{
+				WriteStringToOutputTextFile(&testOutputTextFile, "					[UINT32] mTextureIndices " + std::to_string(mTextureIndiciesIndex) + ": " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mTextureIndices[mTextureIndiciesIndex]) + "\n");
+			}
+
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mMaterialIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mMaterialIndex) + "\n");
+			WriteStringToOutputTextFile(&testOutputTextFile, "				[UINT32] mAdjacencyStartIndex: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mBatches1[mBatches1Index].mAdjacencyStartIndex) + "\n");
 		}
 
 		WriteStringToOutputTextFile(&testOutputTextFile, "		[UINT32] mVertexStreams_BlockSize: " + std::to_string(d3dmeshFile.d3dmeshHeader.mLODs[mLODIndex].mVertexStreams_BlockSize) + "\n");

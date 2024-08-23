@@ -155,78 +155,78 @@ public:
 
 	T3MeshLOD() 
 	{
-		this->mBatches0_ArrayCapacity = 0;
-		this->mBatches0_ArrayLength = 0;
-		this->mBatches0 = {};
-		unsigned int mBatches1_ArrayCapacity = 0;
-		unsigned int mBatches1_ArrayLength = 0;
-		this->mBatches1 = {};
-		unsigned int mVertexStreams_BlockSize = 0;
-		unsigned int mVertexStreams = 0;
-		this->mBoundingBox = {};
-		this->mBoundingSphere = {};
-		unsigned int mFlags = 0;
-		unsigned int mVertexStateIndex = 0;
-		unsigned int mNumPrimitives = 0;
-		unsigned int mNumBatches = 0;
-		unsigned int mVertexStart = 0;
-		unsigned int mVertexCount = 0;
-		unsigned int mTextureAtlasWidth = 0;
-		unsigned int mTextureAtlasHeight = 0;
-		float mPixelSize = 0.0f;
-		float mDistance = 0.0f;
-		unsigned int mBones_ArrayCapacity = 0;
-		unsigned int mBones_ArrayLength = 0;
-		this->mBones = {};
+		mBatches0_ArrayCapacity = 0;
+		mBatches0_ArrayLength = 0;
+		mBatches0 = {};
+		mBatches1_ArrayCapacity = 0;
+		mBatches1_ArrayLength = 0;
+		mBatches1 = {};
+		mVertexStreams_BlockSize = 0;
+		mVertexStreams = 0;
+		mBoundingBox = {};
+		mBoundingSphere = {};
+		mFlags = 0;
+		mVertexStateIndex = 0;
+		mNumPrimitives = 0;
+		mNumBatches = 0;
+		mVertexStart = 0;
+		mVertexCount = 0;
+		mTextureAtlasWidth = 0;
+		mTextureAtlasHeight = 0;
+		mPixelSize = 0.0f;
+		mDistance = 0.0f;
+		mBones_ArrayCapacity = 0;
+		mBones_ArrayLength = 0;
+		mBones = {};
 	};
 
 	T3MeshLOD(std::ifstream* inputFileStream)
 	{
-		this->mBatches0_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
-		this->mBatches0_ArrayLength = ReadUInt32FromBinary(inputFileStream);
+		mBatches0_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
+		mBatches0_ArrayLength = ReadUInt32FromBinary(inputFileStream);
 
-		for (int mBatches0Index = 0; mBatches0Index < this->mBatches0_ArrayLength; mBatches0Index++)
+		for (int mBatches0Index = 0; mBatches0Index < mBatches0_ArrayLength; mBatches0Index++)
 		{
-			this->mBatches0.push_back(T3MeshBatch(inputFileStream));
+			mBatches0.push_back(T3MeshBatch(inputFileStream));
 		}
 
-		this->mBatches1_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
-		this->mBatches1_ArrayLength = ReadUInt32FromBinary(inputFileStream);
+		mBatches1_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
+		mBatches1_ArrayLength = ReadUInt32FromBinary(inputFileStream);
 
-		for (int mBatches1Index = 0; mBatches1Index < this->mBatches1_ArrayLength; mBatches1Index++)
+		for (int mBatches1Index = 0; mBatches1Index < mBatches1_ArrayLength; mBatches1Index++)
 		{
-			this->mBatches1.push_back(T3MeshBatch(inputFileStream));
+			mBatches1.push_back(T3MeshBatch(inputFileStream));
 		}
 
-		this->mVertexStreams_BlockSize = ReadUInt32FromBinary(inputFileStream);
-		this->mVertexStreams = ReadUInt32FromBinary(inputFileStream);
-		this->mBoundingBox = BoundingBox(inputFileStream);
-		this->mBoundingSphere = BoundingSphere(inputFileStream);
-		this->mFlags = ReadUInt32FromBinary(inputFileStream);
-		this->mVertexStateIndex = ReadUInt32FromBinary(inputFileStream);
-		this->mNumPrimitives = ReadUInt32FromBinary(inputFileStream);
-		this->mNumBatches = ReadUInt32FromBinary(inputFileStream);
-		this->mVertexStart = ReadUInt32FromBinary(inputFileStream);
-		this->mVertexCount = ReadUInt32FromBinary(inputFileStream);
-		this->mTextureAtlasWidth = ReadUInt32FromBinary(inputFileStream);
-		this->mTextureAtlasHeight = ReadUInt32FromBinary(inputFileStream);
-		this->mPixelSize = ReadFloat32FromBinary(inputFileStream);
-		this->mDistance = ReadFloat32FromBinary(inputFileStream);
-		this->mBones_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
-		this->mBones_ArrayLength = ReadUInt32FromBinary(inputFileStream);
+		mVertexStreams_BlockSize = ReadUInt32FromBinary(inputFileStream);
+		mVertexStreams = ReadUInt32FromBinary(inputFileStream);
+		mBoundingBox = BoundingBox(inputFileStream);
+		mBoundingSphere = BoundingSphere(inputFileStream);
+		mFlags = ReadUInt32FromBinary(inputFileStream);
+		mVertexStateIndex = ReadUInt32FromBinary(inputFileStream);
+		mNumPrimitives = ReadUInt32FromBinary(inputFileStream);
+		mNumBatches = ReadUInt32FromBinary(inputFileStream);
+		mVertexStart = ReadUInt32FromBinary(inputFileStream);
+		mVertexCount = ReadUInt32FromBinary(inputFileStream);
+		mTextureAtlasWidth = ReadUInt32FromBinary(inputFileStream);
+		mTextureAtlasHeight = ReadUInt32FromBinary(inputFileStream);
+		mPixelSize = ReadFloat32FromBinary(inputFileStream);
+		mDistance = ReadFloat32FromBinary(inputFileStream);
+		mBones_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
+		mBones_ArrayLength = ReadUInt32FromBinary(inputFileStream);
 
-		for (int mBoneIndex = 0; mBoneIndex < this->mBones_ArrayLength; mBoneIndex++)
+		for (int mBoneIndex = 0; mBoneIndex < mBones_ArrayLength; mBoneIndex++)
 		{
-			this->mBones.push_back(Symbol(inputFileStream));
+			mBones.push_back(Symbol(inputFileStream));
 		}
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
-		mBatches0_ArrayLength = this->mBatches0.size();
-		mBatches1_ArrayLength = this->mBatches1.size();
-		mBones_ArrayLength = this->mBones.size();
+		mBatches0_ArrayLength = mBatches0.size();
+		mBatches1_ArrayLength = mBatches1.size();
+		mBones_ArrayLength = mBones.size();
 
 		mBatches0_ArrayCapacity = 4; //block size uint32 itself
 		mBatches0_ArrayCapacity += sizeof(mBatches0_ArrayLength);
@@ -246,44 +246,44 @@ public:
 		mNumBatches = mBatches0_ArrayLength + mBatches1_ArrayLength;
 
 		//begin serialization
-		WriteUInt32ToBinary(outputFileStream, this->mBatches0_ArrayCapacity);
-		WriteUInt32ToBinary(outputFileStream, this->mBatches0_ArrayLength);
+		WriteUInt32ToBinary(outputFileStream, mBatches0_ArrayCapacity);
+		WriteUInt32ToBinary(outputFileStream, mBatches0_ArrayLength);
 
-		for (int i = 0; i < this->mBatches0_ArrayLength; i++)
+		for (int i = 0; i < mBatches0_ArrayLength; i++)
 		{
-			this->mBatches0[i].BinarySerialize(outputFileStream);
+			mBatches0[i].BinarySerialize(outputFileStream);
 		}
 
-		WriteUInt32ToBinary(outputFileStream, this->mBatches1_ArrayCapacity);
-		WriteUInt32ToBinary(outputFileStream, this->mBatches1_ArrayLength);
+		WriteUInt32ToBinary(outputFileStream, mBatches1_ArrayCapacity);
+		WriteUInt32ToBinary(outputFileStream, mBatches1_ArrayLength);
 
-		for (int i = 0; i < this->mBatches1_ArrayLength; i++)
+		for (int i = 0; i < mBatches1_ArrayLength; i++)
 		{
-			this->mBatches1[i].BinarySerialize(outputFileStream);
+			mBatches1[i].BinarySerialize(outputFileStream);
 		}
 
-		WriteUInt32ToBinary(outputFileStream, this->mVertexStreams_BlockSize);
-		WriteUInt32ToBinary(outputFileStream, this->mVertexStreams);
+		WriteUInt32ToBinary(outputFileStream, mVertexStreams_BlockSize);
+		WriteUInt32ToBinary(outputFileStream, mVertexStreams);
 
-		this->mBoundingBox.BinarySerialize(outputFileStream);
-		this->mBoundingSphere.BinarySerialize(outputFileStream);
+		mBoundingBox.BinarySerialize(outputFileStream);
+		mBoundingSphere.BinarySerialize(outputFileStream);
 
-		WriteUInt32ToBinary(outputFileStream, this->mFlags);
-		WriteUInt32ToBinary(outputFileStream, this->mVertexStateIndex);
-		WriteUInt32ToBinary(outputFileStream, this->mNumPrimitives);
-		WriteUInt32ToBinary(outputFileStream, this->mNumBatches);
-		WriteUInt32ToBinary(outputFileStream, this->mVertexStart);
-		WriteUInt32ToBinary(outputFileStream, this->mVertexCount);
-		WriteUInt32ToBinary(outputFileStream, this->mTextureAtlasWidth);
-		WriteUInt32ToBinary(outputFileStream, this->mTextureAtlasHeight);
-		WriteUInt32ToBinary(outputFileStream, this->mPixelSize);
-		WriteUInt32ToBinary(outputFileStream, this->mDistance);
-		WriteUInt32ToBinary(outputFileStream, this->mBones_ArrayCapacity);
-		WriteUInt32ToBinary(outputFileStream, this->mBones_ArrayLength);
+		WriteUInt32ToBinary(outputFileStream, mFlags);
+		WriteUInt32ToBinary(outputFileStream, mVertexStateIndex);
+		WriteUInt32ToBinary(outputFileStream, mNumPrimitives);
+		WriteUInt32ToBinary(outputFileStream, mNumBatches);
+		WriteUInt32ToBinary(outputFileStream, mVertexStart);
+		WriteUInt32ToBinary(outputFileStream, mVertexCount);
+		WriteUInt32ToBinary(outputFileStream, mTextureAtlasWidth);
+		WriteUInt32ToBinary(outputFileStream, mTextureAtlasHeight);
+		WriteUInt32ToBinary(outputFileStream, mPixelSize);
+		WriteUInt32ToBinary(outputFileStream, mDistance);
+		WriteUInt32ToBinary(outputFileStream, mBones_ArrayCapacity);
+		WriteUInt32ToBinary(outputFileStream, mBones_ArrayLength);
 
-		for (int i = 0; i < this->mBones_ArrayLength; i++)
+		for (int i = 0; i < mBones_ArrayLength; i++)
 		{
-			this->mBones[i].BinarySerialize(outputFileStream);
+			mBones[i].BinarySerialize(outputFileStream);
 		}
 	};
 };

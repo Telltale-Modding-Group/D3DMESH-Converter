@@ -55,29 +55,29 @@ public:
 
 	GFXPlatformAttributeParams()
 	{
-		this->mAttribute = eGFXPlatformAttribute_None;
-		this->mFormat = eGFXPlatformFormat_None;
-		this->mAttributeIndex = 0;
-		this->mBufferIndex = 0;
-		this->mBufferOffset = 0;
+		mAttribute = eGFXPlatformAttribute_None;
+		mFormat = eGFXPlatformFormat_None;
+		mAttributeIndex = 0;
+		mBufferIndex = 0;
+		mBufferOffset = 0;
 	};
 
 	GFXPlatformAttributeParams(std::ifstream* inputFileStream)
 	{
-		this->mAttribute = (GFXPlatformVertexAttribute)ReadInt32FromBinary(inputFileStream); //GFXPlatformVertexAttribute [4 BYTES]
-		this->mFormat = (GFXPlatformFormat)ReadInt32FromBinary(inputFileStream); //GFXPlatformFormat [4 BYTES]
-		this->mAttributeIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mBufferIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mBufferOffset = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mAttribute = (GFXPlatformVertexAttribute)ReadInt32FromBinary(inputFileStream); //GFXPlatformVertexAttribute [4 BYTES]
+		mFormat = (GFXPlatformFormat)ReadInt32FromBinary(inputFileStream); //GFXPlatformFormat [4 BYTES]
+		mAttributeIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBufferIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBufferOffset = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteInt32ToBinary(outputFileStream, this->mAttribute); //[4 BYTES]
-		WriteInt32ToBinary(outputFileStream, this->mFormat); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mAttributeIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mBufferIndex); //[4 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mBufferOffset); //[4 BYTES]
+		WriteInt32ToBinary(outputFileStream, mAttribute); //[4 BYTES]
+		WriteInt32ToBinary(outputFileStream, mFormat); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mAttributeIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBufferIndex); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBufferOffset); //[4 BYTES]
 	};
 };
 

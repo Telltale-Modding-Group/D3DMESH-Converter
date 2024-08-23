@@ -92,7 +92,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//This outputs all of the contents of the D3DMESH file into a generic text file (no json used)
 
-		//WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
+		WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
 
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||

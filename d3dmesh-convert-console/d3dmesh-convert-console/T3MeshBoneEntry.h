@@ -37,26 +37,26 @@ public:
 
 	T3MeshBoneEntry() 
 	{
-		this->mBoneName = {};
-		this->mBoundingBox = {};
-		this->mBoundingSphere = {};
-		this->mNumVerts = 0;
+		mBoneName = {};
+		mBoundingBox = {};
+		mBoundingSphere = {};
+		mNumVerts = 0;
 	};
 
 	T3MeshBoneEntry(std::ifstream* inputFileStream) 
 	{
-		this->mBoneName = Symbol(inputFileStream); //[8 BYTES]
-		this->mBoundingBox = BoundingBox(inputFileStream); //[24 BYTES]
-		this->mBoundingSphere = BoundingSphere(inputFileStream); //[20 BYTES]
-		this->mNumVerts = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBoneName = Symbol(inputFileStream); //[8 BYTES]
+		mBoundingBox = BoundingBox(inputFileStream); //[24 BYTES]
+		mBoundingSphere = BoundingSphere(inputFileStream); //[20 BYTES]
+		mNumVerts = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		this->mBoneName.BinarySerialize(outputFileStream); //[8 BYTES]
-		this->mBoundingBox.BinarySerialize(outputFileStream); //[24 BYTES]
-		this->mBoundingSphere.BinarySerialize(outputFileStream); //[20 BYTES]
-		WriteUInt32ToBinary(outputFileStream, this->mNumVerts); //[4 BYTES]
+		mBoneName.BinarySerialize(outputFileStream); //[8 BYTES]
+		mBoundingBox.BinarySerialize(outputFileStream); //[24 BYTES]
+		mBoundingSphere.BinarySerialize(outputFileStream); //[20 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mNumVerts); //[4 BYTES]
 	};
 };
 

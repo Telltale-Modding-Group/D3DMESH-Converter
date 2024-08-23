@@ -123,27 +123,27 @@ public:
 				{
 					unsigned short triangleIndex = ReadUInt16FromBinary(inputFileStream);
 
-					if (this->indexBufferCount == 0)
-						this->indexBuffer0.push_back(triangleIndex);
-					else if (this->indexBufferCount == 1)
-						this->indexBuffer1.push_back(triangleIndex);
-					else if (this->indexBufferCount == 2)
-						this->indexBuffer2.push_back(triangleIndex);
-					else if (this->indexBufferCount == 3)
-						this->indexBuffer3.push_back(triangleIndex);
-					else if (this->indexBufferCount == 4)
-						this->indexBuffer4.push_back(triangleIndex);
-					else if (this->indexBufferCount == 5)
-						this->indexBuffer5.push_back(triangleIndex);
-					else if (this->indexBufferCount == 6)
-						this->indexBuffer6.push_back(triangleIndex);
-					else if (this->indexBufferCount == 7)
-						this->indexBuffer7.push_back(triangleIndex);
+					if (indexBufferCount == 0)
+						indexBuffer0.push_back(triangleIndex);
+					else if (indexBufferCount == 1)
+						indexBuffer1.push_back(triangleIndex);
+					else if (indexBufferCount == 2)
+						indexBuffer2.push_back(triangleIndex);
+					else if (indexBufferCount == 3)
+						indexBuffer3.push_back(triangleIndex);
+					else if (indexBufferCount == 4)
+						indexBuffer4.push_back(triangleIndex);
+					else if (indexBufferCount == 5)
+						indexBuffer5.push_back(triangleIndex);
+					else if (indexBufferCount == 6)
+						indexBuffer6.push_back(triangleIndex);
+					else if (indexBufferCount == 7)
+						indexBuffer7.push_back(triangleIndex);
 				}
 
-				std::cout << "Index Buffer: " << this->indexBufferCount << " | mIndexBuffer->mBufferUsage: " << mIndexBuffer->mBufferUsage << std::endl;
+				std::cout << "Index Buffer: " << indexBufferCount << " | mIndexBuffer->mBufferUsage: " << mIndexBuffer->mBufferUsage << std::endl;
 
-				this->indexBufferCount++;
+				indexBufferCount++;
 
 				break;
 			default:
@@ -192,7 +192,7 @@ public:
 						convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshHeader->mPositionScale.y + d3dmeshHeader->mPositionOffset.y;
 						convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshHeader->mPositionScale.z + d3dmeshHeader->mPositionOffset.z;
 
-						this->vertexPositions.push_back(convertedVertexPosition);
+						vertexPositions.push_back(convertedVertexPosition);
 					}
 				}
 				//else if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
@@ -207,7 +207,7 @@ public:
 						convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshHeader->mPositionScale.y + d3dmeshHeader->mPositionOffset.y;
 						convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshHeader->mPositionScale.z + d3dmeshHeader->mPositionOffset.z;
 
-						this->vertexPositions.push_back(convertedVertexPosition);
+						vertexPositions.push_back(convertedVertexPosition);
 					}
 				}
 				//else if (mVertexBuffer->mBufferFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x3)
@@ -222,7 +222,7 @@ public:
 						convertedVertexPosition.y = parsedVertexPosition.y * d3dmeshHeader->mPositionScale.y + d3dmeshHeader->mPositionOffset.y;
 						convertedVertexPosition.z = parsedVertexPosition.z * d3dmeshHeader->mPositionScale.z + d3dmeshHeader->mPositionOffset.z;
 
-						this->vertexPositions.push_back(convertedVertexPosition);
+						vertexPositions.push_back(convertedVertexPosition);
 					}
 				}
 				else
@@ -236,7 +236,7 @@ public:
 			//||||||||||||||||||||||||||||||||||||| VERTEX NORMAL |||||||||||||||||||||||||||||||||||||
 			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal)
 			{
-				this->vertexNormalsCount++;
+				vertexNormalsCount++;
 
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4)
 				{
@@ -250,14 +250,14 @@ public:
 						convertedVertexNormal.y = parsedVertexNormal.y;
 						convertedVertexNormal.z = parsedVertexNormal.z;
 
-						if (this->vertexNormalsCount == 1)
-							this->vertexNormals0.push_back(convertedVertexNormal);
-						if (this->vertexNormalsCount == 2)
-							this->vertexNormals1.push_back(convertedVertexNormal);
-						if (this->vertexNormalsCount == 3)
-							this->vertexNormals2.push_back(convertedVertexNormal);
-						if (this->vertexNormalsCount == 4)
-							this->vertexNormals3.push_back(convertedVertexNormal);
+						if (vertexNormalsCount == 1)
+							vertexNormals0.push_back(convertedVertexNormal);
+						if (vertexNormalsCount == 2)
+							vertexNormals1.push_back(convertedVertexNormal);
+						if (vertexNormalsCount == 3)
+							vertexNormals2.push_back(convertedVertexNormal);
+						if (vertexNormalsCount == 4)
+							vertexNormals3.push_back(convertedVertexNormal);
 					}
 				}
 				else
@@ -271,7 +271,7 @@ public:
 			//||||||||||||||||||||||||||||||||||||| VERTEX TANGENT |||||||||||||||||||||||||||||||||||||
 			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent)
 			{
-				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4 && this->vertexTangents.size() <= 0)
+				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4 && vertexTangents.size() <= 0)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
 					{
@@ -283,7 +283,7 @@ public:
 						convertedVertexTangent.y = parsedVertexTangent.y;
 						convertedVertexTangent.z = parsedVertexTangent.z;
 
-						this->vertexTangents.push_back(convertedVertexTangent);
+						vertexTangents.push_back(convertedVertexTangent);
 					}
 				}
 				else
@@ -297,7 +297,7 @@ public:
 			//||||||||||||||||||||||||||||||||||||| VERTEX UV |||||||||||||||||||||||||||||||||||||
 			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord)
 			{
-				this->vertexUVsCount++;
+				vertexUVsCount++;
 
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x2)
 				{
@@ -305,22 +305,22 @@ public:
 					{
 						Vector2 parsedVertexUV = ReadT3GFXBuffer_2x32BitFloat(inputFileStream);
 
-						if (this->vertexUVsCount == 1)
-							this->vertexUVs0.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 2)
-							this->vertexUVs1.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 3)
-							this->vertexUVs2.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 4)
-							this->vertexUVs3.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 5)
-							this->vertexUVs4.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 6)
-							this->vertexUVs5.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 7)
-							this->vertexUVs6.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 8)
-							this->vertexUVs7.push_back(parsedVertexUV);
+						if (vertexUVsCount == 1)
+							vertexUVs0.push_back(parsedVertexUV);
+						if (vertexUVsCount == 2)
+							vertexUVs1.push_back(parsedVertexUV);
+						if (vertexUVsCount == 3)
+							vertexUVs2.push_back(parsedVertexUV);
+						if (vertexUVsCount == 4)
+							vertexUVs3.push_back(parsedVertexUV);
+						if (vertexUVsCount == 5)
+							vertexUVs4.push_back(parsedVertexUV);
+						if (vertexUVsCount == 6)
+							vertexUVs5.push_back(parsedVertexUV);
+						if (vertexUVsCount == 7)
+							vertexUVs6.push_back(parsedVertexUV);
+						if (vertexUVsCount == 8)
+							vertexUVs7.push_back(parsedVertexUV);
 					}
 				}
 				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN16x2)
@@ -329,22 +329,22 @@ public:
 					{
 						Vector2 parsedVertexUV = ReadT3GFXBuffer_Normalized_2x16BitInteger(inputFileStream);
 
-						if (this->vertexUVsCount == 1)
-							this->vertexUVs0.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 2)
-							this->vertexUVs1.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 3)
-							this->vertexUVs2.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 4)
-							this->vertexUVs3.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 5)
-							this->vertexUVs4.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 6)
-							this->vertexUVs5.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 7)
-							this->vertexUVs6.push_back(parsedVertexUV);
-						if (this->vertexUVsCount == 8)
-							this->vertexUVs7.push_back(parsedVertexUV);
+						if (vertexUVsCount == 1)
+							vertexUVs0.push_back(parsedVertexUV);
+						if (vertexUVsCount == 2)
+							vertexUVs1.push_back(parsedVertexUV);
+						if (vertexUVsCount == 3)
+							vertexUVs2.push_back(parsedVertexUV);
+						if (vertexUVsCount == 4)
+							vertexUVs3.push_back(parsedVertexUV);
+						if (vertexUVsCount == 5)
+							vertexUVs4.push_back(parsedVertexUV);
+						if (vertexUVsCount == 6)
+							vertexUVs5.push_back(parsedVertexUV);
+						if (vertexUVsCount == 7)
+							vertexUVs6.push_back(parsedVertexUV);
+						if (vertexUVsCount == 8)
+							vertexUVs7.push_back(parsedVertexUV);
 					}
 				}
 				else
@@ -358,7 +358,7 @@ public:
 			//||||||||||||||||||||||||||||||||||||| VERTEX COLOR |||||||||||||||||||||||||||||||||||||
 			else if (attributeParams->mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color)
 			{
-				this->vertexColorsCount++;
+				vertexColorsCount++;
 
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN8x4)
 				{
@@ -366,22 +366,22 @@ public:
 					{
 						Vector4 parsedVertexColor = ReadT3GFXBuffer_UnsignedNormalized_4x8BitInteger(inputFileStream);
 
-						if (this->vertexColorsCount == 1)
-							this->vertexColors0.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 2)
-							this->vertexColors1.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 3)
-							this->vertexColors2.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 4)
-							this->vertexColors3.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 5)
-							this->vertexColors4.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 6)
-							this->vertexColors5.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 7)
-							this->vertexColors6.push_back(parsedVertexColor);
-						if (this->vertexColorsCount == 8)
-							this->vertexColors7.push_back(parsedVertexColor);
+						if (vertexColorsCount == 1)
+							vertexColors0.push_back(parsedVertexColor);
+						if (vertexColorsCount == 2)
+							vertexColors1.push_back(parsedVertexColor);
+						if (vertexColorsCount == 3)
+							vertexColors2.push_back(parsedVertexColor);
+						if (vertexColorsCount == 4)
+							vertexColors3.push_back(parsedVertexColor);
+						if (vertexColorsCount == 5)
+							vertexColors4.push_back(parsedVertexColor);
+						if (vertexColorsCount == 6)
+							vertexColors5.push_back(parsedVertexColor);
+						if (vertexColorsCount == 7)
+							vertexColors6.push_back(parsedVertexColor);
+						if (vertexColorsCount == 8)
+							vertexColors7.push_back(parsedVertexColor);
 					}
 				}
 				else
@@ -401,7 +401,7 @@ public:
 					{
 						UnsignedIntegerVector4 parsedVertexBlendIndex = ReadT3GFXBuffer_Unsigned_4x8BitInteger(inputFileStream);
 
-						this->vertexBlendIndex0.push_back(parsedVertexBlendIndex);
+						vertexBlendIndex0.push_back(parsedVertexBlendIndex);
 					}
 				}
 				else
@@ -421,7 +421,7 @@ public:
 					{
 						Vector3 parsedVertexBlendWeight = ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(inputFileStream, d3dmeshHeader->mPositionWScale);
 
-						this->vertexBlendWeight0.push_back(parsedVertexBlendWeight);
+						vertexBlendWeight0.push_back(parsedVertexBlendWeight);
 					}
 				}
 				else

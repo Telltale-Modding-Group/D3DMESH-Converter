@@ -39,24 +39,46 @@ struct Vector3
 
 	Vector3()
 	{
-		this->x = 0.0f;
-		this->y = 0.0f;
-		this->z = 0.0f;
+		x = 0.0f;
+		y = 0.0f;
+		z = 0.0f;
 	};
 
 	Vector3(std::ifstream* inputFileStream)
 	{
-		this->x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-		this->y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-		this->z = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		z = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteFloat32ToBinary(outputFileStream, this->x); //[4 BYTES]
-		WriteFloat32ToBinary(outputFileStream, this->y); //[4 BYTES]
-		WriteFloat32ToBinary(outputFileStream, this->z); //[4 BYTES]
+		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
+		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
+		WriteFloat32ToBinary(outputFileStream, z); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const Vector3& value)
+	{
+		json = nlohmann::json
+		{
+			{ "x", value.x },
+			{ "y", value.y },
+			{ "z", value.z },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, Vector3& value)
+	{
+		json.at("x").get_to(value.x);
+		json.at("y").get_to(value.y);
+		json.at("z").get_to(value.z);
+	}
 };
 
 #endif

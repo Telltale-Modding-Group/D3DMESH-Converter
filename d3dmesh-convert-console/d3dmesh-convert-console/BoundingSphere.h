@@ -43,16 +43,16 @@ struct BoundingSphere
 
 	BoundingSphere()
 	{
-		this->mBlockSize = 20;
-		this->mCenter = {};
-		this->mRadius = 0.0f;
+		mBlockSize = 20;
+		mCenter = {};
+		mRadius = 0.0f;
 	};
 
 	BoundingSphere(std::ifstream* inputFileStream)
 	{
-		this->mBlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->mCenter = Vector3(inputFileStream); //[12 BYTES]
-		this->mRadius = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		mBlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mCenter = Vector3(inputFileStream); //[12 BYTES]
+		mRadius = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
@@ -63,9 +63,9 @@ struct BoundingSphere
 		mBlockSize += sizeof(mRadius);
 
 		//begin serialization
-		WriteUInt32ToBinary(outputFileStream, this->mBlockSize); //[4 BYTES]
-		this->mCenter.BinarySerialize(outputFileStream); //[12 BYTES]
-		WriteFloat32ToBinary(outputFileStream, this->mRadius); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBlockSize); //[4 BYTES]
+		mCenter.BinarySerialize(outputFileStream); //[12 BYTES]
+		WriteFloat32ToBinary(outputFileStream, mRadius); //[4 BYTES]
 	};
 };
 

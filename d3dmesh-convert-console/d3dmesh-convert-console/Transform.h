@@ -45,16 +45,16 @@ struct Transform
 
 	Transform()
 	{
-		this->mBlockSize = 12;
-		this->mRot = {};
-		this->mTrans = {};
+		mBlockSize = 12;
+		mRot = {};
+		mTrans = {};
 	};
 
 	Transform(std::ifstream* inputFileStream)
 	{
-		this->mBlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES] (value should always be 32)
-		this->mRot = Quaternion(inputFileStream); //[16 BYTES]
-		this->mTrans = Vector3(inputFileStream); //[12 BYTES]
+		mBlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES] (value should always be 32)
+		mRot = Quaternion(inputFileStream); //[16 BYTES]
+		mTrans = Vector3(inputFileStream); //[12 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
@@ -65,9 +65,9 @@ struct Transform
 		mBlockSize += sizeof(mTrans);
 
 		//begin serialization
-		WriteUInt32ToBinary(outputFileStream, this->mBlockSize); //[4 BYTES]
-		this->mRot.BinarySerialize(outputFileStream); //[16 BYTES]
-		this->mTrans.BinarySerialize(outputFileStream); //[12 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBlockSize); //[4 BYTES]
+		mRot.BinarySerialize(outputFileStream); //[16 BYTES]
+		mTrans.BinarySerialize(outputFileStream); //[12 BYTES]
 	};
 };
 

@@ -34,20 +34,20 @@ struct BoundingBox
 
 	BoundingBox()
 	{
-		this->mMin = {};
-		this->mMax = {};
+		mMin = {};
+		mMax = {};
 	};
 
 	BoundingBox(std::ifstream* inputFileStream)
 	{
-		this->mMin = Vector3(inputFileStream); //[12 BYTES]
-		this->mMax = Vector3(inputFileStream); //[12 BYTES]
+		mMin = Vector3(inputFileStream); //[12 BYTES]
+		mMax = Vector3(inputFileStream); //[12 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		this->mMin.BinarySerialize(outputFileStream); //[12 BYTES]
-		this->mMax.BinarySerialize(outputFileStream); //[12 BYTES]
+		mMin.BinarySerialize(outputFileStream); //[12 BYTES]
+		mMax.BinarySerialize(outputFileStream); //[12 BYTES]
 	};
 };
 

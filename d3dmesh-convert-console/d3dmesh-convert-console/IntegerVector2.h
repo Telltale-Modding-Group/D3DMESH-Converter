@@ -1,4 +1,4 @@
-#pragma once
+	#pragma once
 #ifndef INTEGER_VECTOR_2_H
 #define INTEGER_VECTOR_2_H
 
@@ -36,21 +36,41 @@ struct IntegerVector2
 
 	IntegerVector2()
 	{
-		this->x = 0;
-		this->y = 0;
+		x = 0;
+		y = 0;
 	};
 
 	IntegerVector2(std::ifstream* inputFileStream)
 	{
-		this->x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
-		this->y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+		y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteInt32ToBinary(outputFileStream, this->x); //[4 BYTES]
-		WriteInt32ToBinary(outputFileStream, this->y); //[4 BYTES]
+		WriteInt32ToBinary(outputFileStream, x); //[4 BYTES]
+		WriteInt32ToBinary(outputFileStream, y); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+
+	void to_json(nlohmann::json& json, const IntegerVector2& value)
+	{
+		json = nlohmann::json
+		{
+			{ "x", value.x },
+			{ "y", value.y },
+		};
+	}
+
+	void from_json(const nlohmann::json& json, IntegerVector2& value)
+	{
+		json.at("x").get_to(value.x);
+		json.at("y").get_to(value.y);
+	}
 };
 
 #endif
