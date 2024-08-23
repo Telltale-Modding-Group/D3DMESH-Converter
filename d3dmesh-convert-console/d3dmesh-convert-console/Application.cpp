@@ -92,7 +92,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//This outputs all of the contents of the D3DMESH file into a generic text file (no json used)
 
-		WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
+		//WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
 
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
@@ -101,190 +101,60 @@ int main()
 		//NOTE: This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
 		//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes/etc... it's a basic single mesh
 
-		NewMesh extractedMesh = {};
-		extractedMesh.triangleIndicies = d3dmeshFile.d3dmeshData.indexBuffer0;
-		extractedMesh.vertexPositions = d3dmeshFile.d3dmeshData.vertexPositions;
-		extractedMesh.vertexNormals0 = d3dmeshFile.d3dmeshData.vertexNormals0;
-		ExportAssimpMesh(extractedMesh, currentD3DMESH_FileName);
+		//NewMesh extractedMesh = {};
+		//extractedMesh.triangleIndicies = d3dmeshFile.d3dmeshData.indexBuffer0;
+		//extractedMesh.vertexPositions = d3dmeshFile.d3dmeshData.vertexPositions;
+		//extractedMesh.vertexNormals0 = d3dmeshFile.d3dmeshData.vertexNormals0;
+		//ExportAssimpMesh(extractedMesh, currentD3DMESH_FileName);
 
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
-		//Attempt #1 At creating LODs/Submeshes from the D3DMESH (does not work)
 
-		/*
-		std::vector<ExtractedLOD> extractedLODs;
-
+		///*
 		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLODs.size(); i++)
 		{
 			T3MeshLOD* mLOD = &d3dmeshFile.d3dmeshHeader.mLODs[i];
-			ExtractedLOD extractedLOD{};
-
-			for (int j = 0; j < mLOD->mBatches0_ArrayLength; j++)
-			{
-				ExtractedMesh extractedMesh{};
-				extractedLOD.submeshes.push_back(extractedMesh);
-			}
-
-			extractedLODs.push_back(extractedLOD);
-		}
-
-
-		std::ofstream testOutputTextFile;
-		std::string testOutputTextFilePath = "Output/" + currentD3DMESH_FileName + "_EXTRACTED_MESH_DATA.txt";
-		testOutputTextFile.open(testOutputTextFilePath);
-
-		for (int x = 0; x < d3dmeshFile.bufferData.indexBuffer0.size(); x++)
-		{
-			std::string line = "Item: " + std::to_string(x) + " | Triangle Index: " + std::to_string(d3dmeshFile.bufferData.indexBuffer0[x]) + " \n";
-			testOutputTextFile.write(line.c_str(), line.length());
-		}
-
-		testOutputTextFile.close();
-
-		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLODs.size(); i++)
-		{
-			T3MeshLOD* mLOD = &d3dmeshFile.d3dmeshHeader.mLODs[i];
-			ExtractedLOD* extractedLOD = &extractedLODs[i];
-
-			for (int j = 0; j < extractedLOD->submeshes.size(); j++)
-			{
-				T3MeshBatch* mBatch = &mLOD->mBatches0[j];
-				ExtractedMesh* extractedMesh = &extractedLOD->submeshes[j];
-
-				//for (int x = 0; x < mBatch->mNumPrimitives; x++)
-					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mBaseIndex]);
-
-				//for (int x = 0; x < mBatch->mNumPrimitives; x++)
-					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex] + mBatch->mBaseIndex);
-
-				//for (int x = 0; x < mBatch->mNumPrimitives * 3; x++)
-					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex] + mBatch->mBaseIndex);
-
-				//for (int x = 0; x < mBatch->mNumPrimitives; x++)
-				//{
-					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex + mBatch->mBaseIndex]);
-					//extractedMesh->triangleIndicies0.push_back(d3dmeshFile.bufferData.triangleIndicies0[x + mBatch->mStartIndex] + mBatch->mBaseIndex);
-				//}
-
-				//for (int x = mLOD->mVertexStart + mBatch->mMinVertIndex; x < mLOD->mVertexCount; x++)
-				//for (int x = mLOD->mVertexStart; x < mLOD->mVertexCount; x++)
-				//{
-					//extractedMesh->vertexPositions.push_back(d3dmeshFile.bufferData.vertexPositions[x]);
-					//extractedMesh->vertexNormals0.push_back(d3dmeshFile.bufferData.vertexNormals0[x]);
-				//}
-
-				std::ofstream testOutputTextFile2;
-				std::string newPath2 = "Output/LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j) + "_" + currentD3DMESH_FileName + ".txt";
-				testOutputTextFile2.open(newPath2);
-
-				std::string line2a1 = "mNumPrimitives: " + std::to_string(mBatch->mNumPrimitives) + " \n";
-				std::string line2a2 = "mBaseIndex: " + std::to_string(mBatch->mBaseIndex) + " \n";
-				std::string line2a3 = "mMaxVertIndex: " + std::to_string(mBatch->mMaxVertIndex) + " \n";
-				std::string line2a4 = "mMinVertIndex: " + std::to_string(mBatch->mMinVertIndex) + " \n";
-				std::string line2a5 = "mStartIndex: " + std::to_string(mBatch->mStartIndex) + " \n";
-				std::string line2a6 = "mNumIndices: " + std::to_string(mBatch->mNumIndices) + " \n";
-				std::string line2a7 = "||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||| \n";
-				testOutputTextFile2.write(line2a1.c_str(), line2a1.length());
-				testOutputTextFile2.write(line2a2.c_str(), line2a2.length());
-				testOutputTextFile2.write(line2a3.c_str(), line2a3.length());
-				testOutputTextFile2.write(line2a4.c_str(), line2a4.length());
-				testOutputTextFile2.write(line2a5.c_str(), line2a5.length());
-				testOutputTextFile2.write(line2a6.c_str(), line2a6.length());
-				testOutputTextFile2.write(line2a7.c_str(), line2a7.length());
-
-				for (int x = 0; x < mBatch->mNumPrimitives; x++)
-				{
-					int loopCalculatedIndex = x + mBatch->mStartIndex;
-					int pickedTriangleIndex = d3dmeshFile.bufferData.indexBuffer0[loopCalculatedIndex];
-					unsigned int adjustedTriangleIndex = pickedTriangleIndex + mBatch->mBaseIndex;
-					std::string line2b = "Loop Index: " + std::to_string(x) + " | Calculated Triangle Index Picker: " + std::to_string(loopCalculatedIndex) + " | Picked Triangle Index Original Value: " + std::to_string(pickedTriangleIndex) + " | Triangle Index with added Base Index to value: " + std::to_string(adjustedTriangleIndex) + " \n";
-					testOutputTextFile2.write(line2b.c_str(), line2b.length());
-				}
-
-				testOutputTextFile2.close();
-
-
-
-
-				//std::string newPath = "LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j) + "_" + currentD3DMESH_FileName;
-				//ExportAssimpMesh(*extractedMesh, newPath);
-			}
-		}
-		*/
-
-		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
-		//Attempt #2 At creating LODs/Submeshes from the D3DMESH (does not work)
-
-		/*
-		std::vector<ExtractedLOD> extractedLODs;
-
-		for (int i = 0; i < d3dmeshFile.d3dmeshHeader.mLODs.size(); i++)
-		{
-			T3MeshLOD* mLOD = &d3dmeshFile.d3dmeshHeader.mLODs[i];
-			ExtractedLOD extractedLOD{};
 
 			for (int j = 0; j < mLOD->mBatches0_ArrayLength; j++)
 			{
 				T3MeshBatch mBatch = mLOD->mBatches0[j];
-				ExtractedMesh extractedMesh{};
+				NewMesh extractedMesh{};
 
 				//|||||||||||||||||||||||||||||||||||||||| GET TRIANGLE SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET TRIANGLE SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET TRIANGLE SET ||||||||||||||||||||||||||||||||||||||||
-				//NOTE: for each batch set, if we do [mBatch.mNumPrimitives - mBatch.mStartIndex] that is the total amount of actual primitives in the batch
-				//Conversely, if we add up the results of [mBatch.mNumPrimitives - mBatch.mStartIndex] from each batch we will match mLOD->mNumPrimitives (atleast for the default mesh, or mBatches0)
 
-				//for (int x = 0; x < mBatch.mNumPrimitives; x++)
-				for (int x = mBatch.mStartIndex; x < mBatch.mNumPrimitives; x++)
+				for (int x = 0; x < mBatch.mNumIndices; x++)
 				{
-					//int finalIndex = x + mBatch.mBaseIndex + mBatch.mStartIndex;
-					//extractedMesh.triangleIndicies.push_back(d3dmeshFile.bufferData.indexBuffer0[finalIndex]);
-
-					//int finalIndex = x + mBatch.mStartIndex;
-					//extractedMesh.triangleIndicies.push_back(d3dmeshFile.bufferData.indexBuffer0[finalIndex] + mBatch.mBaseIndex);
-
-					//int finalIndex = x + mBatch.mBaseIndex;
-
-					int selectedTriangleIndex = d3dmeshFile.bufferData.indexBuffer0[x];
+					int selectedTriangleIndex = d3dmeshFile.d3dmeshData.indexBuffer0[x + mBatch.mStartIndex] + mBatch.mBaseIndex;
 					extractedMesh.triangleIndicies.push_back(selectedTriangleIndex);
-
-					//mBatch.mNumPrimitives - mBatch.mStartIndex = triangle count for this batch set
-
-					if (selectedTriangleIndex > d3dmeshFile.d3dmeshHeader.mVertexCount)
-						std::cout << "PASSED THE VERTEX COUNT" << std::endl;
 				}
 
 				//|||||||||||||||||||||||||||||||||||||||| GET VERTEX SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET VERTEX SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET VERTEX SET ||||||||||||||||||||||||||||||||||||||||
-				int vertexSize = mBatch.mMaxVertIndex - mBatch.mMinVertIndex;
 
-				//for (int x = mLOD->mVertexStart + mBatch.mBaseIndex; x < mLOD->mVertexCount; x++)
-				//for (int x = 0; x < vertexSize; x++)
+				//Does work, but the problem with this is that we literally slap all of the vertex data of the model onto here rather than pulling what we need.
+				extractedMesh.vertexPositions = d3dmeshFile.d3dmeshData.vertexPositions;
+				extractedMesh.vertexNormals0 = d3dmeshFile.d3dmeshData.vertexNormals0;
+
+				//for (int x = mLOD->mVertexStart + mBatch.mMinVertIndex; x < mLOD->mVertexStart + mBatch.mMaxVertIndex; x++) //DOES NOT WORK
+				//for (int x = mLOD->mVertexStart + mBatch.mMinVertIndex; x < mBatch.mNumPrimitives; x++) //DOES NOT WORK
 				//{
-					//extractedMesh.vertexPositions.push_back(d3dmeshFile.bufferData.vertexPositions[x]);
-					//extractedMesh.vertexNormals0.push_back(d3dmeshFile.bufferData.vertexNormals0[x]);
+					//extractedMesh.vertexPositions.push_back(d3dmeshFile.d3dmeshData.vertexPositions[x]);
+					//extractedMesh.vertexNormals0.push_back(d3dmeshFile.d3dmeshData.vertexNormals0[x]);
 				//}
 
-				extractedMesh.vertexPositions = d3dmeshFile.bufferData.vertexPositions;
-				extractedMesh.vertexNormals0 = d3dmeshFile.bufferData.vertexNormals0;
-
 				//|||||||||||||||||||||||||||||||||||||||| ASSIMP EXPORT TEST ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| ASSIMP EXPORT TEST ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| ASSIMP EXPORT TEST ||||||||||||||||||||||||||||||||||||||||
 
-				std::string newPath = "LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j) + "_" + currentD3DMESH_FileName;
+				std::string newPath = currentD3DMESH_FileName + "_LOD_" + std::to_string(i) + "_SUBMESH_" + std::to_string(j);
 				ExportAssimpMesh(extractedMesh, newPath);
-
-				//extractedLOD.submeshes.push_back(extractedMesh);
 			}
-
-			extractedLODs.push_back(extractedLOD);
 		}
-		*/
+		//*/
 
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||

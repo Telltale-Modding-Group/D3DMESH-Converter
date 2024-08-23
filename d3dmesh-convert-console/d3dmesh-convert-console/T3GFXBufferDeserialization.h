@@ -7,7 +7,6 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "BinarySerialization.h"
 #include "BinaryDeserialization.h"
 #include "BinaryHelper.h"
 #include "Vector2.h"
@@ -20,16 +19,16 @@
 #include "UnsignedIntegerVector3.h"
 #include "UnsignedIntegerVector4.h"
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER F32 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER F32 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER F32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER F32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER F32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER F32 ||||||||||||||||||||||||||||||||||||||||
 
 //[8 BYTES] eGFXPlatformFormat_F32x2
 static Vector2 ReadT3GFXBuffer_2x32BitFloat(std::ifstream* inputFileStream)
 {
 	Vector2 vector2{};
-	vector2.x = ReadFloat32FromBinary(inputFileStream);
-	vector2.y = ReadFloat32FromBinary(inputFileStream);
+	vector2.x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	vector2.y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	return vector2;
 }
 
@@ -37,9 +36,9 @@ static Vector2 ReadT3GFXBuffer_2x32BitFloat(std::ifstream* inputFileStream)
 static Vector3 ReadT3GFXBuffer_3x32BitFloat(std::ifstream* inputFileStream)
 {
 	Vector3 vector3{};
-	vector3.x = ReadFloat32FromBinary(inputFileStream);
-	vector3.y = ReadFloat32FromBinary(inputFileStream);
-	vector3.z = ReadFloat32FromBinary(inputFileStream);
+	vector3.x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	vector3.y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	vector3.z = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	return vector3;
 }
 
@@ -47,24 +46,23 @@ static Vector3 ReadT3GFXBuffer_3x32BitFloat(std::ifstream* inputFileStream)
 static Vector4 ReadT3GFXBuffer_4x32BitFloat(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
-	vector4.x = ReadFloat32FromBinary(inputFileStream);
-	vector4.y = ReadFloat32FromBinary(inputFileStream);
-	vector4.z = ReadFloat32FromBinary(inputFileStream);
-	vector4.w = ReadFloat32FromBinary(inputFileStream);
-
+	vector4.x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	vector4.y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	vector4.z = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	vector4.w = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	return vector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U32 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U32 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U32 ||||||||||||||||||||||||||||||||||||||||
 
 //[8 BYTES] eGFXPlatformFormat_U32x2
 static UnsignedIntegerVector2 ReadT3GFXBuffer_Unsigned_2x32BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector2 uivector2{};
-	uivector2.x = ReadUInt32FromBinary(inputFileStream);
-	uivector2.y = ReadUInt32FromBinary(inputFileStream);
+	uivector2.x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+	uivector2.y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	return uivector2;
 }
 
@@ -72,9 +70,9 @@ static UnsignedIntegerVector2 ReadT3GFXBuffer_Unsigned_2x32BitInteger(std::ifstr
 static UnsignedIntegerVector3 ReadT3GFXBuffer_Unsigned_3x32BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector3 uivector3{};
-	uivector3.x = ReadUInt32FromBinary(inputFileStream);
-	uivector3.y = ReadUInt32FromBinary(inputFileStream);
-	uivector3.z = ReadUInt32FromBinary(inputFileStream);
+	uivector3.x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+	uivector3.y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+	uivector3.z = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	return uivector3;
 }
 
@@ -82,23 +80,23 @@ static UnsignedIntegerVector3 ReadT3GFXBuffer_Unsigned_3x32BitInteger(std::ifstr
 static UnsignedIntegerVector4 ReadT3GFXBuffer_Unsigned_4x32BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector4 uivector4{};
-	uivector4.x = ReadUInt32FromBinary(inputFileStream);
-	uivector4.y = ReadUInt32FromBinary(inputFileStream);
-	uivector4.z = ReadUInt32FromBinary(inputFileStream);
-	uivector4.w = ReadUInt32FromBinary(inputFileStream);
+	uivector4.x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+	uivector4.y = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+	uivector4.z = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+	uivector4.w = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	return uivector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S32 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S32 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S32 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S32 ||||||||||||||||||||||||||||||||||||||||
 
 //[8 BYTES] eGFXPlatformFormat_S32x2
 static IntegerVector2 ReadT3GFXBuffer_Signed_2x32BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector2 ivector2{};
-	ivector2.x = ReadInt32FromBinary(inputFileStream);
-	ivector2.y = ReadInt32FromBinary(inputFileStream);
+	ivector2.x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	ivector2.y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	return ivector2;
 }
 
@@ -106,9 +104,9 @@ static IntegerVector2 ReadT3GFXBuffer_Signed_2x32BitInteger(std::ifstream* input
 static IntegerVector3 ReadT3GFXBuffer_Signed_3x32BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector3 ivector3{};
-	ivector3.x = ReadInt32FromBinary(inputFileStream);
-	ivector3.y = ReadInt32FromBinary(inputFileStream);
-	ivector3.z = ReadInt32FromBinary(inputFileStream);
+	ivector3.x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	ivector3.y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	ivector3.z = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	return ivector3;
 }
 
@@ -116,23 +114,23 @@ static IntegerVector3 ReadT3GFXBuffer_Signed_3x32BitInteger(std::ifstream* input
 static IntegerVector4 ReadT3GFXBuffer_Signed_4x32BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector4 ivector4{};
-	ivector4.x = ReadInt32FromBinary(inputFileStream);
-	ivector4.y = ReadInt32FromBinary(inputFileStream);
-	ivector4.z = ReadInt32FromBinary(inputFileStream);
-	ivector4.w = ReadInt32FromBinary(inputFileStream);
+	ivector4.x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	ivector4.y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	ivector4.z = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	ivector4.w = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	return ivector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U16 ||||||||||||||||||||||||||||||||||||||||
 
 //[4 BYTES] eGFXPlatformFormat_U16x2
 static UnsignedIntegerVector2 ReadT3GFXBuffer_Unsigned_2x16BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector2 uivector2{};
-	uivector2.x = ReadUInt16FromBinary(inputFileStream);
-	uivector2.y = ReadUInt16FromBinary(inputFileStream);
+	uivector2.x = ReadUInt16FromBinary(inputFileStream); //[2 BYTES]
+	uivector2.y = ReadUInt16FromBinary(inputFileStream); //[2 BYTES]
 	return uivector2;
 }
 
@@ -140,23 +138,23 @@ static UnsignedIntegerVector2 ReadT3GFXBuffer_Unsigned_2x16BitInteger(std::ifstr
 static UnsignedIntegerVector4 ReadT3GFXBuffer_Unsigned_4x16BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector4 uivector4{};
-	uivector4.x = ReadUInt16FromBinary(inputFileStream);
-	uivector4.y = ReadUInt16FromBinary(inputFileStream);
-	uivector4.z = ReadUInt16FromBinary(inputFileStream);
-	uivector4.z = ReadUInt16FromBinary(inputFileStream);
+	uivector4.x = ReadUInt16FromBinary(inputFileStream); //[2 BYTES]
+	uivector4.y = ReadUInt16FromBinary(inputFileStream); //[2 BYTES]
+	uivector4.z = ReadUInt16FromBinary(inputFileStream); //[2 BYTES]
+	uivector4.w = ReadUInt16FromBinary(inputFileStream); //[2 BYTES]
 	return uivector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S16 ||||||||||||||||||||||||||||||||||||||||
 
 //[4 BYTES] eGFXPlatformFormat_S16x2
 static IntegerVector2 ReadT3GFXBuffer_Signed_2x16BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector2 ivector2{};
-	ivector2.x = ReadInt16FromBinary(inputFileStream);
-	ivector2.y = ReadInt16FromBinary(inputFileStream);
+	ivector2.x = ReadInt16FromBinary(inputFileStream); //[2 BYTES]
+	ivector2.y = ReadInt16FromBinary(inputFileStream); //[2 BYTES]
 	return ivector2;
 }
 
@@ -164,16 +162,16 @@ static IntegerVector2 ReadT3GFXBuffer_Signed_2x16BitInteger(std::ifstream* input
 static IntegerVector4 ReadT3GFXBuffer_Signed_4x16BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector4 ivector4{};
-	ivector4.x = ReadInt16FromBinary(inputFileStream);
-	ivector4.y = ReadInt16FromBinary(inputFileStream);
-	ivector4.z = ReadInt16FromBinary(inputFileStream);
-	ivector4.w = ReadInt16FromBinary(inputFileStream);
+	ivector4.x = ReadInt16FromBinary(inputFileStream); //[2 BYTES]
+	ivector4.y = ReadInt16FromBinary(inputFileStream); //[2 BYTES]
+	ivector4.z = ReadInt16FromBinary(inputFileStream); //[2 BYTES]
+	ivector4.w = ReadInt16FromBinary(inputFileStream); //[2 BYTES]
 	return ivector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN16 ||||||||||||||||||||||||||||||||||||||||
 //REFERENCES - https://gamedev.net/forums/topic/696946-normalized-unsigned-integers-vs-floats-as-vertex-data/5379766/
 
 //[2 BYTES] eGFXPlatformFormat_UN16
@@ -188,8 +186,8 @@ static float ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(std::ifstream* inpu
 static Vector2 ReadT3GFXBuffer_UnsignedNormalized_2x16BitInteger(std::ifstream* inputFileStream)
 {
 	Vector2 vector2{};
-	vector2.x = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream);
-	vector2.y = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream);
+	vector2.x = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector2.y = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream); //[2 BYTES]
 	return vector2;
 }
 
@@ -197,16 +195,16 @@ static Vector2 ReadT3GFXBuffer_UnsignedNormalized_2x16BitInteger(std::ifstream* 
 static Vector4 ReadT3GFXBuffer_UnsignedNormalized_4x16BitInteger(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
-	vector4.x = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream);
-	vector4.y = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream);
-	vector4.z = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream);
-	vector4.w = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream);
+	vector4.x = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector4.y = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector4.z = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector4.w = ReadT3GFXBuffer_UnsignedNormalized_16BitInteger(inputFileStream); //[2 BYTES]
 	return vector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
 
 //[2 BYTES] eGFXPlatformFormat_SN16
 static float ReadT3GFXBuffer_Normalized_16BitInteger(std::ifstream* inputFileStream)
@@ -220,8 +218,8 @@ static float ReadT3GFXBuffer_Normalized_16BitInteger(std::ifstream* inputFileStr
 static Vector2 ReadT3GFXBuffer_Normalized_2x16BitInteger(std::ifstream* inputFileStream)
 {
 	Vector2 vector2{};
-	vector2.x = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream);
-	vector2.y = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream);
+	vector2.x = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector2.y = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream); //[2 BYTES]
 	return vector2;
 }
 
@@ -229,23 +227,23 @@ static Vector2 ReadT3GFXBuffer_Normalized_2x16BitInteger(std::ifstream* inputFil
 static Vector4 ReadT3GFXBuffer_Normalized_4x16BitInteger(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
-	vector4.x = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream);
-	vector4.y = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream);
-	vector4.z = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream);
-	vector4.w = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream);
+	vector4.x = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector4.y = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector4.z = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream); //[2 BYTES]
+	vector4.w = ReadT3GFXBuffer_Normalized_16BitInteger(inputFileStream); //[2 BYTES]
 	return vector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
 
 //[2 BYTES] eGFXPlatformFormat_U8x2
 static UnsignedIntegerVector2 ReadT3GFXBuffer_Unsigned_2x8BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector2 uivector2{};
-	uivector2.x = ReadUInt8FromBinary(inputFileStream);
-	uivector2.y = ReadUInt8FromBinary(inputFileStream);
+	uivector2.x = ReadUInt8FromBinary(inputFileStream); //[1 BYTE]
+	uivector2.y = ReadUInt8FromBinary(inputFileStream); //[1 BYTE]
 	return uivector2;
 }
 
@@ -253,23 +251,23 @@ static UnsignedIntegerVector2 ReadT3GFXBuffer_Unsigned_2x8BitInteger(std::ifstre
 static UnsignedIntegerVector4 ReadT3GFXBuffer_Unsigned_4x8BitInteger(std::ifstream* inputFileStream)
 {
 	UnsignedIntegerVector4 uivector4{};
-	uivector4.x = ReadUInt8FromBinary(inputFileStream);
-	uivector4.y = ReadUInt8FromBinary(inputFileStream);
-	uivector4.z = ReadUInt8FromBinary(inputFileStream);
-	uivector4.w = ReadUInt8FromBinary(inputFileStream);
+	uivector4.x = ReadUInt8FromBinary(inputFileStream); //[1 BYTE]
+	uivector4.y = ReadUInt8FromBinary(inputFileStream); //[1 BYTE]
+	uivector4.z = ReadUInt8FromBinary(inputFileStream); //[1 BYTE]
+	uivector4.w = ReadUInt8FromBinary(inputFileStream); //[1 BYTE]
 	return uivector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
 
 //[2 BYTES] eGFXPlatformFormat_S8x2
 static IntegerVector2 ReadT3GFXBuffer_Signed_2x8BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector2 ivector2{};
-	ivector2.x = ReadInt8FromBinary(inputFileStream);
-	ivector2.y = ReadInt8FromBinary(inputFileStream);
+	ivector2.x = ReadInt8FromBinary(inputFileStream); //[1 BYTE]
+	ivector2.y = ReadInt8FromBinary(inputFileStream); //[1 BYTE]
 	return ivector2;
 }
 
@@ -277,16 +275,16 @@ static IntegerVector2 ReadT3GFXBuffer_Signed_2x8BitInteger(std::ifstream* inputF
 static IntegerVector4 ReadT3GFXBuffer_Signed_4x8BitInteger(std::ifstream* inputFileStream)
 {
 	IntegerVector4 ivector4{};
-	ivector4.x = ReadInt8FromBinary(inputFileStream);
-	ivector4.y = ReadInt8FromBinary(inputFileStream);
-	ivector4.z = ReadInt8FromBinary(inputFileStream);
-	ivector4.w = ReadInt8FromBinary(inputFileStream);
+	ivector4.x = ReadInt8FromBinary(inputFileStream); //[1 BYTE]
+	ivector4.y = ReadInt8FromBinary(inputFileStream); //[1 BYTE]
+	ivector4.z = ReadInt8FromBinary(inputFileStream); //[1 BYTE]
+	ivector4.w = ReadInt8FromBinary(inputFileStream); //[1 BYTE]
 	return ivector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
 
 //[1 BYTE] eGFXPlatformFormat_UN8
 static float ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(std::ifstream* inputFileStream)
@@ -300,8 +298,8 @@ static float ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(std::ifstream* input
 static Vector2 ReadT3GFXBuffer_UnsignedNormalized_2x8BitInteger(std::ifstream* inputFileStream)
 {
 	Vector2 vector2{};
-	vector2.x = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream);
-	vector2.y = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream);
+	vector2.x = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector2.y = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream); //[1 BYTE]
 	return vector2;
 }
 
@@ -309,16 +307,16 @@ static Vector2 ReadT3GFXBuffer_UnsignedNormalized_2x8BitInteger(std::ifstream* i
 static Vector4 ReadT3GFXBuffer_UnsignedNormalized_4x8BitInteger(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
-	vector4.x = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream);
-	vector4.y = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream);
-	vector4.z = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream);
-	vector4.w = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream);
+	vector4.x = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector4.y = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector4.z = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector4.w = ReadT3GFXBuffer_UnsignedNormalized_8BitInteger(inputFileStream); //[1 BYTE]
 	return vector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
 
 //[1 BYTE] eGFXPlatformFormat_SN8
 static float ReadT3GFXBuffer_Normalized_8BitInteger(std::ifstream* inputFileStream)
@@ -332,8 +330,8 @@ static float ReadT3GFXBuffer_Normalized_8BitInteger(std::ifstream* inputFileStre
 static Vector2 ReadT3GFXBuffer_Normalized_2x8BitInteger(std::ifstream* inputFileStream)
 {
 	Vector2 vector2{};
-	vector2.x = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream);
-	vector2.y = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream);
+	vector2.x = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector2.y = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream); //[1 BYTE]
 	return vector2;
 }
 
@@ -341,23 +339,23 @@ static Vector2 ReadT3GFXBuffer_Normalized_2x8BitInteger(std::ifstream* inputFile
 static Vector4 ReadT3GFXBuffer_Normalized_4x8BitInteger(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
-	vector4.x = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream);
-	vector4.y = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream);
-	vector4.z = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream);
-	vector4.w = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream);
+	vector4.x = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector4.y = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector4.z = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream); //[1 BYTE]
+	vector4.w = ReadT3GFXBuffer_Normalized_8BitInteger(inputFileStream); //[1 BYTE]
 	return vector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
 
 static Vector4 ReadT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
 
 	//read the whole 4 bytes as a uint
-	unsigned int uint = ReadUInt32FromBinary(inputFileStream);
+	unsigned int uint = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 
 	//---------------------BIT EXTRACTION---------------------
 	//first 10 bits
@@ -380,9 +378,9 @@ static Vector4 ReadT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ifstr
 	return vector4;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
 
 //[4 BYTES] eGFXPlatformFormat_UN10x3_UN2
 static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::ifstream* inputFileStream, Vector3& mPositionWScale)
@@ -390,26 +388,20 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	Vector3 vector3{};
 
 	//read the whole 4 bytes as a uint
-	unsigned int uint = ReadUInt32FromBinary(inputFileStream);
-
-	//temp variables
-	unsigned int firstValue = 0;
-	unsigned int secondValue = 0;
-	unsigned int thirdValue = 0;
-	unsigned int fourthValue = 0;
+	unsigned int uint = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 
 	//---------------------BIT EXTRACTION---------------------
 	//first 10 bits
-	firstValue = BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
+	unsigned int firstValue = BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
 
 	//second 10 bits
-	secondValue = BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
+	unsigned int secondValue = BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
 
 	//third 10 bits
-	thirdValue = BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
+	unsigned int thirdValue = BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
 
 	//fourth 2 bits
-	fourthValue = BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
+	unsigned int fourthValue = BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
 
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -447,9 +439,9 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	return vector3;
 }
 
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
-//|||||||||||||||||||||||||||||||||||||||| BINARY READER - T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
 
 //[4 BYTES] eGFXPlatformFormat_SN10x3_SN2
 static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstream* inputFileStream, Vector3& mPositionWScale)
@@ -457,26 +449,20 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	Vector3 vector3{};
 
 	//read the whole 4 bytes as a uint
-	unsigned int uint = ReadUInt32FromBinary(inputFileStream);
-
-	//temp variables
-	unsigned int firstValue = 0;
-	unsigned int secondValue = 0;
-	unsigned int thirdValue = 0;
-	unsigned int fourthValue = 0;
+	unsigned int uint = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 
 	//---------------------BIT EXTRACTION---------------------
 	//first 10 bits
-	firstValue = BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+	unsigned int firstValue = BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
 
 	//second 10 bits
-	secondValue = BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+	unsigned int secondValue = BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
 
 	//third 10 bits
-	thirdValue = BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+	unsigned int thirdValue = BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
 
 	//fourth 2 bits
-	fourthValue = BitFieldExtract(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
+	unsigned int fourthValue = BitFieldExtract(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
 
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
