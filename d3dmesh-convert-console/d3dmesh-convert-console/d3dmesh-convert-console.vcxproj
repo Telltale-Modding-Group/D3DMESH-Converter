@@ -134,14 +134,45 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="BinarySerialization.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="NewMeshToAssimp.h" />
     <ClInclude Include="BinaryDeserialization.h" />
     <ClInclude Include="BinaryHelper.h" />
     <ClInclude Include="BinarySerialization.h" />
-    <ClInclude Include="Structs.h" />
-    <ClInclude Include="TelltaleEnums.h" />
+    <ClInclude Include="BoundingBox.h" />
+    <ClInclude Include="BoundingSphere.h" />
+    <ClInclude Include="GFXPlatformAttributeParams.h" />
+    <ClInclude Include="GFXPlatformFormat.h" />
+    <ClInclude Include="IntegerVector2.h" />
+    <ClInclude Include="IntegerVector3.h" />
+    <ClInclude Include="IntegerVector4.h" />
+    <ClInclude Include="NewMesh.h" />
+    <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="Symbol.h" />
+    <ClInclude Include="T3GFXBuffer.h" />
+    <ClInclude Include="T3MaterialRequirements.h" />
+    <ClInclude Include="T3MeshBatch.h" />
+    <ClInclude Include="T3MeshBoneEntry.h" />
+    <ClInclude Include="T3MeshLocalTransformEntry.h" />
+    <ClInclude Include="T3MeshLOD.h" />
+    <ClInclude Include="TelltaleClassName.h" />
+    <ClInclude Include="TelltaleD3DMeshDataV55.h" />
+    <ClInclude Include="TelltaleD3DMeshFileV55.h" />
+    <ClInclude Include="TelltaleD3DMeshHeaderV55.h" />
+    <ClInclude Include="T3GFXBufferDeserialization.h" />
+    <ClInclude Include="GFXPlatformVertexAttribute.h" />
+    <ClInclude Include="TelltaleInternalResource.h" />
+    <ClInclude Include="TelltaleMetaHeaderVersion6.h" />
+    <ClInclude Include="T3GFXBufferSerialization.h" />
+    <ClInclude Include="D3DMeshToText.h" />
+    <ClInclude Include="Transform.h" />
+    <ClInclude Include="UnsignedIntegerVector2.h" />
+    <ClInclude Include="UnsignedIntegerVector3.h" />
+    <ClInclude Include="UnsignedIntegerVector4.h" />
+    <ClInclude Include="Vector2.h" />
+    <ClInclude Include="Vector3.h" />
+    <ClInclude Include="Vector4.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

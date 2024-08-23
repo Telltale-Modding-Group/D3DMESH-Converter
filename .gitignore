@@ -1,4 +1,9 @@
-
+#MY STUFF
+d3dmesh-convert-console/d3dmesh-convert-console/Archive/
+d3dmesh-convert-console/d3dmesh-convert-console/Data/
+d3dmesh-convert-console/d3dmesh-convert-console/Output/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputD3DMESH/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputJSON/
 
 # Prerequisites
 *.d
@@ -16,7 +21,7 @@
 # Compiled Dynamic libraries
 *.so
 *.dylib
-*.dll
+# *.dll
 
 # Fortran module files
 *.mod
@@ -26,7 +31,7 @@
 *.lai
 *.la
 *.a
-*.lib
+# *.lib
 
 # Executables
 *.exe
@@ -52,23 +57,25 @@
 mono_crash.*
 
 # Build results
-[Dd]ebug/
-[Dd]ebugPublic/
-[Rr]elease/
-[Rr]eleases/
-x64/
-x86/
-[Ww][Ii][Nn]32/
-[Aa][Rr][Mm]/
-[Aa][Rr][Mm]64/
-bld/
-[Bb]in/
-[Oo]bj/
-[Ll]og/
-[Ll]ogs/
+d3dmesh-convert-console/d3dmesh-convert-console/[Dd]ebug/
+d3dmesh-convert-console/d3dmesh-convert-console/[Dd]ebugPublic/
+d3dmesh-convert-console/d3dmesh-convert-console/[Rr]elease/
+d3dmesh-convert-console/d3dmesh-convert-console/[Rr]eleases/
+d3dmesh-convert-console/d3dmesh-convert-console/x64/
+d3dmesh-convert-console/d3dmesh-convert-console/x86/
+d3dmesh-convert-console/d3dmesh-convert-console/[Ww][Ii][Nn]32/
+d3dmesh-convert-console/d3dmesh-convert-console/[Aa][Rr][Mm]/
+d3dmesh-convert-console/d3dmesh-convert-console/[Aa][Rr][Mm]64/
+d3dmesh-convert-console/d3dmesh-convert-console/bld/
+d3dmesh-convert-console/d3dmesh-convert-console/[Bb]in/
+d3dmesh-convert-console/d3dmesh-convert-console/[Oo]bj/
+d3dmesh-convert-console/d3dmesh-convert-console/[Ll]og/
+d3dmesh-convert-console/d3dmesh-convert-console/[Ll]ogs/
 
 # Visual Studio 2015/2017 cache/options directory
-.vs/
+d3dmesh-convert-console/.vs/
+d3dmesh-convert-console/d3dmesh-convert-console/.vs/
+
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
@@ -85,8 +92,8 @@ TestResult.xml
 nunit-*.xml
 
 # Build Results of an ATL Project
-[Dd]ebugPS/
-[Rr]eleasePS/
+d3dmesh-convert-console/d3dmesh-convert-console/[Dd]ebugPS/
+d3dmesh-convert-console/d3dmesh-convert-console/[Rr]eleasePS/
 dlldata.c
 
 # Benchmark Results

@@ -13,12 +13,21 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Header Files\Telltale">
+      <UniqueIdentifier>{df6da426-791a-4e69-8f2f-ebc60c274ba4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\CustomTypes">
+      <UniqueIdentifier>{ee708ea3-17bb-4ac7-832c-2e4b7d5d9f03}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Telltale\DataTypes">
+      <UniqueIdentifier>{ee259593-110d-484a-84e9-fc1c7a2f9f55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Telltale\Enums">
+      <UniqueIdentifier>{247d4498-e591-4986-9fc7-10cec587ed7d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="BinarySerialization.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -32,11 +41,107 @@
     <ClInclude Include="BinaryHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TelltaleEnums.h">
+    <ClInclude Include="D3DMeshToText.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="Structs.h">
+    <ClInclude Include="NewMeshToAssimp.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="T3GFXBufferDeserialization.h">
+      <Filter>Header Files\Telltale</Filter>
+    </ClInclude>
+    <ClInclude Include="T3GFXBufferSerialization.h">
+      <Filter>Header Files\Telltale</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector2.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector3.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Vector4.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Quaternion.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Symbol.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Transform.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingBox.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BoundingSphere.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TelltaleClassName.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXPlatformAttributeParams.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="T3GFXBuffer.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TelltaleMetaHeaderVersion6.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="T3MaterialRequirements.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TelltaleInternalResource.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="T3MeshBoneEntry.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="T3MeshLocalTransformEntry.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="T3MeshBatch.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="T3MeshLOD.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TelltaleD3DMeshHeaderV55.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TelltaleD3DMeshDataV55.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TelltaleD3DMeshFileV55.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegerVector2.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegerVector3.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="IntegerVector4.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="UnsignedIntegerVector2.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="UnsignedIntegerVector3.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="UnsignedIntegerVector4.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXPlatformVertexAttribute.h">
+      <Filter>Header Files\Telltale\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="GFXPlatformFormat.h">
+      <Filter>Header Files\Telltale\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="NewMesh.h">
+      <Filter>Header Files\CustomTypes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
