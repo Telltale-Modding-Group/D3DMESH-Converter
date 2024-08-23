@@ -149,8 +149,12 @@ static void WriteT3GFXBuffer_Signed_4x16BitInteger(std::ofstream* outputFileStre
 //REFERENCES - https://gamedev.net/forums/topic/696946-normalized-unsigned-integers-vs-floats-as-vertex-data/5379766/
 
 //[2 BYTES] eGFXPlatformFormat_UN16
-static void WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(std::ofstream* outputFileStream, float value)
+static void WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(std::ofstream* outputFileStream, float normalizedFloat)
 {
+	unsigned short ushort = normalizedFloat * 65535; //float [0, 1] to unsigned short [0,65535]
+	WriteUInt16ToBinary(outputFileStream, ushort); //[2 BYTES]
+
+	//UN16 Reading Reference
 	//unsigned short ushort = ReadUInt16FromBinary(outputFileStream); //[0,65535]
 	//float resultFloat = ushort / (float)65535; //normalize 16 bit ushort [0,65535] to float [0, 1]
 }
@@ -158,17 +162,17 @@ static void WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(std::ofstream* outp
 //[4 BYTES] eGFXPlatformFormat_UN16x2
 static void WriteT3GFXBuffer_UnsignedNormalized_2x16BitInteger(std::ofstream* outputFileStream, Vector2 vector2)
 {
-	//vector2.x = WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream);
-	//vector2.y = WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream);
+	WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream, vector2.x);
+	WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream, vector2.y);
 }
 
 //[8 BYTES] eGFXPlatformFormat_UN16x4
 static void WriteT3GFXBuffer_UnsignedNormalized_4x16BitInteger(std::ofstream* outputFileStream, Vector4 vector4)
 {
-	//vector4.x = WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream);
-	//vector4.y = WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream);
-	//vector4.z = WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream);
-	//vector4.w = WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream);
+	WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream, vector4.x);
+	WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream, vector4.y);
+	WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream, vector4.z);
+	WriteT3GFXBuffer_UnsignedNormalized_16BitInteger(outputFileStream, vector4.w);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
@@ -176,8 +180,12 @@ static void WriteT3GFXBuffer_UnsignedNormalized_4x16BitInteger(std::ofstream* ou
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN16 ||||||||||||||||||||||||||||||||||||||||
 
 //[2 BYTES] eGFXPlatformFormat_SN16
-static void WriteT3GFXBuffer_Normalized_16BitInteger(std::ofstream* outputFileStream, float value)
+static void WriteT3GFXBuffer_Normalized_16BitInteger(std::ofstream* outputFileStream, float normalizedFloat)
 {
+	short shortSigned = normalizedFloat * 32767; //float [-1, 1] to signed short [-32768, 32767]
+	WriteInt16ToBinary(outputFileStream, shortSigned); //[2 BYTES]
+
+	//SN16 Reading Reference
 	//short shortSigned = ReadInt16FromBinary(outputFileStream);
 	//float resultFloat = shortSigned / (float)32767; //normalize 16 bit short [-32768, 32767] to float [-1, 1]
 }
@@ -185,17 +193,17 @@ static void WriteT3GFXBuffer_Normalized_16BitInteger(std::ofstream* outputFileSt
 //[4 BYTES] eGFXPlatformFormat_SN16x2
 static void WriteT3GFXBuffer_Normalized_2x16BitInteger(std::ofstream* outputFileStream, Vector2 vector2)
 {
-	//vector2.x = WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream);
-	//vector2.y = WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream);
+	WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream, vector2.x);
+	WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream, vector2.y);
 }
 
 //[8 BYTES] eGFXPlatformFormat_SN16x4
 static void WriteT3GFXBuffer_Normalized_4x16BitInteger(std::ofstream* outputFileStream, Vector4 vector4)
 {
-	//vector4.x = WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream);
-	//vector4.y = WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream);
-	//vector4.z = WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream);
-	//vector4.w = WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream);
+	WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream, vector4.x);
+	WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream, vector4.y);
+	WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream, vector4.z);
+	WriteT3GFXBuffer_Normalized_16BitInteger(outputFileStream, vector4.w);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER U8 ||||||||||||||||||||||||||||||||||||||||
@@ -205,17 +213,17 @@ static void WriteT3GFXBuffer_Normalized_4x16BitInteger(std::ofstream* outputFile
 //[2 BYTES] eGFXPlatformFormat_U8x2
 static void WriteT3GFXBuffer_Unsigned_2x8BitInteger(std::ofstream* outputFileStream, UnsignedIntegerVector2 uivector2)
 {
-	//uivector2.x = ReadUInt8FromBinary(outputFileStream);
-	//uivector2.y = ReadUInt8FromBinary(outputFileStream);
+	WriteUInt8ToBinary(outputFileStream, uivector2.x);
+	WriteUInt8ToBinary(outputFileStream, uivector2.y);
 }
 
 //[4 BYTES] eGFXPlatformFormat_U8x4
 static void WriteT3GFXBuffer_Unsigned_4x8BitInteger(std::ofstream* outputFileStream, UnsignedIntegerVector4 uivector4)
 {
-	//uivector4.x = ReadUInt8FromBinary(outputFileStream);
-	//uivector4.y = ReadUInt8FromBinary(outputFileStream);
-	//uivector4.z = ReadUInt8FromBinary(outputFileStream);
-	//uivector4.w = ReadUInt8FromBinary(outputFileStream);
+	WriteUInt8ToBinary(outputFileStream, uivector4.x);
+	WriteUInt8ToBinary(outputFileStream, uivector4.y);
+	WriteUInt8ToBinary(outputFileStream, uivector4.z);
+	WriteUInt8ToBinary(outputFileStream, uivector4.w);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER S8 ||||||||||||||||||||||||||||||||||||||||
@@ -225,17 +233,17 @@ static void WriteT3GFXBuffer_Unsigned_4x8BitInteger(std::ofstream* outputFileStr
 //[2 BYTES] eGFXPlatformFormat_S8x2
 static void WriteT3GFXBuffer_Signed_2x8BitInteger(std::ofstream* outputFileStream, IntegerVector2 ivector2)
 {
-	//ivector2.x = ReadInt8FromBinary(outputFileStream);
-	//ivector2.y = ReadInt8FromBinary(outputFileStream);
+	WriteInt8ToBinary(outputFileStream, ivector2.x);
+	WriteInt8ToBinary(outputFileStream, ivector2.y);
 }
 
 //[4 BYTES] eGFXPlatformFormat_S8x4
 static void WriteT3GFXBuffer_Signed_4x8BitInteger(std::ofstream* outputFileStream, IntegerVector4 ivector4)
 {
-	//ivector4.x = ReadInt8FromBinary(outputFileStream);
-	//ivector4.y = ReadInt8FromBinary(outputFileStream);
-	//ivector4.z = ReadInt8FromBinary(outputFileStream);
-	//ivector4.w = ReadInt8FromBinary(outputFileStream);
+	WriteInt8ToBinary(outputFileStream, ivector4.x);
+	WriteInt8ToBinary(outputFileStream, ivector4.y);
+	WriteInt8ToBinary(outputFileStream, ivector4.z);
+	WriteInt8ToBinary(outputFileStream, ivector4.w);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
@@ -243,8 +251,12 @@ static void WriteT3GFXBuffer_Signed_4x8BitInteger(std::ofstream* outputFileStrea
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN8 ||||||||||||||||||||||||||||||||||||||||
 
 //[1 BYTE] eGFXPlatformFormat_UN8
-static void WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(std::ofstream* outputFileStream, float value)
+static void WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(std::ofstream* outputFileStream, float normalizedFloat)
 {
+	unsigned char uchar = normalizedFloat * 255; //float [0, 1] to unsigned char [0, 255]
+	WriteUInt8ToBinary(outputFileStream, uchar); //[1 BYTE]
+
+	//UN8 Reading Reference
 	//unsigned char uchar = ReadUInt8FromBinary(outputFileStream);
 	//float resultFloat = uchar / (float)255; //normalize 8 bit uchar [0,255] to float [0, 1]
 }
@@ -252,17 +264,17 @@ static void WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(std::ofstream* outpu
 //[2 BYTES] eGFXPlatformFormat_UN8x2
 static void WriteT3GFXBuffer_UnsignedNormalized_2x8BitInteger(std::ofstream* outputFileStream, Vector2 vector2)
 {
-	//vector2.x = WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream);
-	//vector2.y = WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream);
+	WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream, vector2.x);
+	WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream, vector2.y);
 }
 
 //[4 BYTES] eGFXPlatformFormat_UN8x4
 static void WriteT3GFXBuffer_UnsignedNormalized_4x8BitInteger(std::ofstream* outputFileStream, Vector4 vector4)
 {
-	//vector4.x = WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream);
-	//vector4.y = WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream);
-	//vector4.z = WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream);
-	//vector4.w = WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream);
+	WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream, vector4.x);
+	WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream, vector4.y);
+	WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream, vector4.z);
+	WriteT3GFXBuffer_UnsignedNormalized_8BitInteger(outputFileStream, vector4.w);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
@@ -270,26 +282,30 @@ static void WriteT3GFXBuffer_UnsignedNormalized_4x8BitInteger(std::ofstream* out
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN8 ||||||||||||||||||||||||||||||||||||||||
 
 //[1 BYTE] eGFXPlatformFormat_SN8
-static void WriteT3GFXBuffer_Normalized_8BitInteger(std::ofstream* outputFileStream, float value)
+static void WriteT3GFXBuffer_Normalized_8BitInteger(std::ofstream* outputFileStream, float normalizedFloat)
 {
+	char signedChar = normalizedFloat * 127; //float [-1, 1] to signed char [-128, 127]
+	WriteInt8ToBinary(outputFileStream, signedChar); //[1 BYTE]
+
+	//SN8 Reading Reference
 	//char signedChar = ReadInt8FromBinary(outputFileStream);
-	//float resultFloat = signedChar / (float)127; //normalize 8 bit uchar [-128, 127] to float [0, 1]
+	//float resultFloat = signedChar / (float)127; //normalize 8 bit uchar [-128, 127] to float [-1, 1]
 }
 
 //[2 BYTES] eGFXPlatformFormat_SN8x2
 static void WriteT3GFXBuffer_Normalized_2x8BitInteger(std::ofstream* outputFileStream, Vector2 vector2)
 {
-	//vector2.x = WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream);
-	//vector2.y = WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream);
+	WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream, vector2.x);
+	WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream, vector2.y);
 }
 
 //[4 BYTES] eGFXPlatformFormat_SN8x4
 static void WriteT3GFXBuffer_Normalized_4x8BitInteger(std::ofstream* outputFileStream, Vector4 vector4)
 {
-	//vector4.x = WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream);
-	//vector4.y = WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream);
-	//vector4.z = WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream);
-	//vector4.w = WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream);
+	WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream, vector4.x);
+	WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream, vector4.y);
+	WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream, vector4.z);
+	WriteT3GFXBuffer_Normalized_8BitInteger(outputFileStream, vector4.w);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||

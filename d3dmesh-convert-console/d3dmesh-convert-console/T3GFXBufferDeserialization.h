@@ -322,7 +322,7 @@ static Vector4 ReadT3GFXBuffer_UnsignedNormalized_4x8BitInteger(std::ifstream* i
 static float ReadT3GFXBuffer_Normalized_8BitInteger(std::ifstream* inputFileStream)
 {
 	char signedChar = ReadInt8FromBinary(inputFileStream);
-	float resultFloat = signedChar / (float)127; //normalize 8 bit uchar [-128, 127] to float [0, 1]
+	float resultFloat = signedChar / (float)127; //normalize 8 bit uchar [-128, 127] to float [-1, 1]
 	return resultFloat;
 }
 
@@ -350,6 +350,7 @@ static Vector4 ReadT3GFXBuffer_Normalized_4x8BitInteger(std::ifstream* inputFile
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
 
+//[4 BYTES] eGFXPlatformFormat_SN10_SN11_SN11
 static Vector4 ReadT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ifstream* inputFileStream)
 {
 	Vector4 vector4{};
