@@ -318,6 +318,10 @@ public:
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
+		//update values
+		this->mNameBlockSize = 8 + this->mName.length();
+
+		//begin serialization
 		WriteUInt32ToBinary(outputFileStream, this->mNameBlockSize);
 		WriteLengthPrefixedStringToBinary(outputFileStream, this->mName);
 		WriteUInt32ToBinary(outputFileStream, this->mVersion);

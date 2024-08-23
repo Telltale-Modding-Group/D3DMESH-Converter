@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VECTOR4_H
-#define VECTOR4_H
+#ifndef VECTOR_4_H
+#define VECTOR_4_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||

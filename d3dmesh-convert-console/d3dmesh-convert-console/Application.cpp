@@ -2,6 +2,8 @@
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 
+//#define FULL_CONSOLE_OUTPUT
+
 //Standard C++ Library
 #include <string>
 #include <iostream>
@@ -88,14 +90,16 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
+		//This outputs all of the contents of the D3DMESH file into a generic text file (no json used)
 
 		//WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
 
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+		//First attempt at doing a conversion of a d3dmesh to a standard model format (THIS DOES WORK... BUT THERE ARE PROBLEMS)
 		//NOTE: This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
-		//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes.
+		//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes/etc... it's a basic single mesh
 
 		NewMesh extractedMesh = {};
 		extractedMesh.triangleIndicies = d3dmeshFile.d3dmeshData.indexBuffer0;
@@ -106,6 +110,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
+		//Attempt #1 At creating LODs/Submeshes from the D3DMESH (does not work)
 
 		/*
 		std::vector<ExtractedLOD> extractedLODs;
@@ -211,6 +216,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
+		//Attempt #2 At creating LODs/Submeshes from the D3DMESH (does not work)
 
 		/*
 		std::vector<ExtractedLOD> extractedLODs;
@@ -283,6 +289,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| CONSOLE OUTPUT ||||||||||||||||||||||||||||||||||||||||
+		//This will be moved later, but it's here at the moment for archival purposes as it will be useful for debugging later.
 
 		//std::cout << "||||||||||||||||||||||||||||||||||||||||||" << std::endl;
 		//std::cout << "||||||||||||||||||||||||||||||||||||||||||" << std::endl;
@@ -442,7 +449,9 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| JSON EXPORT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| JSON EXPORT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| JSON EXPORT ||||||||||||||||||||||||||||||||||||||||
-		
+		//WIP: This will be fully implemented later but the goal here is to parse a D3DMESH and output a human readable .json
+		//This .json will be used in the future for doing conversions to and back to D3DMESH (just like the D3DTX DDS converter)		
+
 		/*
 		nlohmann::json jsonExport;
 
@@ -472,23 +481,17 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||
-		/*
+		//This is a D3DMESH export test, here we just simply take the D3DMESH data that we just parsed...
+		//Then we use that data, recalculate header lengths/sizes/etc. and then write a new d3dmesh file.
+		//If all goes well the D3DMESH file that we exported should be the EXACT same sa the D3DMESH file we just parsed.
+		//At the moment this does do that sucessfully, however the D3DMESH data (i.e. index/vertex buffers) are not serialized yet as that will take a bit more work...
+		//So right now it's just the meta header + d3dmesh header (no d3dmesh data)
 
-		//recalculate values
-		d3dmeshFile.d3dmeshHeader.mNameBlockSize = 8 + d3dmeshFile.d3dmeshHeader.mName.length();
-
-		std::ofstream d3dmeshOutputFileStream;
-		std::string d3dmeshExportPath = "OutputD3DMESH/" + currentD3DMESH_FileName;
-		d3dmeshOutputFileStream.open(d3dmeshExportPath, std::ios::binary);
-
-		//telltale meta header
-		d3dmeshFile.metaHeader.BinarySerialize(&d3dmeshOutputFileStream);
-
-		//d3dmesh header
-
-
-		d3dmeshOutputFileStream.close();
-		*/
+		//std::ofstream d3dmeshOutputFileStream;
+		//std::string d3dmeshExportPath = "OutputD3DMESH/" + currentD3DMESH_FileName;
+		//d3dmeshOutputFileStream.open(d3dmeshExportPath, std::ios::binary);
+		//d3dmeshFile.BinarySerialize(&d3dmeshOutputFileStream);
+		//d3dmeshOutputFileStream.close();
 	}
 
 	return 0;

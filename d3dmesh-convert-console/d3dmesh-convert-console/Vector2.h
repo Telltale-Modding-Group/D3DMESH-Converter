@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VECTOR2_H
-#define VECTOR2_H
+#ifndef VECTOR_2_H
+#define VECTOR_2_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||

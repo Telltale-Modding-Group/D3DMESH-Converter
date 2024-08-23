@@ -158,7 +158,7 @@ static short ReadInt16FromBinary(std::ifstream* inputFileStream)
 /// <returns></returns>
 static float ReadFloat16FromBinary(std::ifstream* inputFileStream)
 {
-	return half_to_float(ReadUInt16FromBinary(inputFileStream));
+	return HalfToFloat(ReadUInt16FromBinary(inputFileStream));
 }
 
 //|||||||||||||||||||||||||||||||||||||||| BINARY READER - UINT8 [1 BYTE] ||||||||||||||||||||||||||||||||||||||||

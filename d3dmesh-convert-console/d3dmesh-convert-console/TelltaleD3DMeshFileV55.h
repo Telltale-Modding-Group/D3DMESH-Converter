@@ -61,7 +61,9 @@ public:
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-
+		this->metaHeader.BinarySerialize(outputFileStream);
+		this->d3dmeshHeader.BinarySerialize(outputFileStream);
+		this->d3dmeshData.BinarySerialize(outputFileStream);
 	};
 };
 
