@@ -6,12 +6,11 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
-//THIRD PARTY: JSON Library
-#include <nlohmann/json.hpp>
-
 //Custom
 #include "BinarySerialization.h"
 #include "BinaryDeserialization.h"
+#include "Json.h"
+
 #include "TelltaleMetaHeaderVersion6.h"
 #include "TelltaleD3DMeshHeaderV55.h"
 #include "TelltaleD3DMeshDataV55.h"
@@ -72,6 +71,17 @@ public:
 		d3dmeshHeader.BinarySerialize(outputFileStream);
 		d3dmeshData.BinarySerialize(outputFileStream, &d3dmeshHeader);
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
+
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(TelltaleD3DMeshFileV55, metaHeader, d3dmeshHeader, d3dmeshData)
 };
 
 #endif

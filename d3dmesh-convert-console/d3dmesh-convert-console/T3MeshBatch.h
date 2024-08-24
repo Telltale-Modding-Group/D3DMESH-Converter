@@ -6,12 +6,10 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
-//THIRD PARTY: JSON Library
-#include <nlohmann/json.hpp>
-
 //Custom
 #include "BinarySerialization.h"
 #include "BinaryDeserialization.h"
+#include "Json.h"
 #include "BoundingBox.h"
 #include "BoundingSphere.h"
 
@@ -206,10 +204,37 @@ public:
 		for (int i = 0; i < mTextureIndices.size(); i++)
 			output += "[T3MeshBatch] mTextureIndices " + std::to_string(i) + ": " + std::to_string(mTextureIndices[i]) + "\n";
 
+		output += "[T3MeshBatch] mTextureIndices_End: " + std::to_string(mTextureIndices_End) + "\n";
 		output += "[T3MeshBatch] mMaterialIndex: " + std::to_string(mMaterialIndex) + "\n";
 		output += "[T3MeshBatch] mAdjacencyStartIndex: " + std::to_string(mAdjacencyStartIndex);
 		return output;
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
+
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(
+		T3MeshBatch, 
+		mBoundingBox,
+		mBoundingSphere,
+		mBatchUsage,
+		mMinVertIndex,
+		mMaxVertIndex,
+		mBaseIndex,
+		mStartIndex,
+		mNumPrimitives,
+		mNumIndices,
+		mTextureIndices_BlockSize,
+		mTextureIndices,
+		mTextureIndices_End,
+		mMaterialIndex,
+		mAdjacencyStartIndex)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||

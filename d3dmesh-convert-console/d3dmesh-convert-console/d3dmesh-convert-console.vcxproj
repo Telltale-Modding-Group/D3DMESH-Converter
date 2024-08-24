@@ -136,6 +136,7 @@
     <ClCompile Include="Application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Json.h" />
     <ClInclude Include="NewMeshToAssimp.h" />
     <ClInclude Include="BinaryDeserialization.h" />
     <ClInclude Include="BinaryHelper.h" />

@@ -6,12 +6,10 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
-//THIRD PARTY: JSON Library
-#include <nlohmann/json.hpp>
-
 //Custom
 #include "BinarySerialization.h"
 #include "BinaryDeserialization.h"
+#include "Json.h"
 
 //||||||||||||||||||||||||||||| INTEGER VECTOR 3 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INTEGER VECTOR 3 |||||||||||||||||||||||||||||
@@ -80,23 +78,12 @@ struct IntegerVector3
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
 
-	void to_json(nlohmann::json& json, const IntegerVector3& value)
-	{
-		json = nlohmann::json
-		{
-			{ "x", value.x },
-			{ "y", value.y },
-			{ "z", value.z },
-		};
-	}
-
-	void from_json(const nlohmann::json& json, IntegerVector3& value)
-	{
-		json.at("x").get_to(value.x);
-		json.at("y").get_to(value.y);
-		json.at("z").get_to(value.z);
-	}
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(IntegerVector3, x, y, z)
 };
 
 #endif

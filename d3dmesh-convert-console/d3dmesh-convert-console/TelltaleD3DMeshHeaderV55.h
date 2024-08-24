@@ -6,12 +6,11 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
-//THIRD PARTY: JSON Library
-#include <nlohmann/json.hpp>
-
 //Custom
 #include "BinarySerialization.h"
 #include "BinaryDeserialization.h"
+#include "Json.h"
+
 #include "Symbol.h"
 #include "Vector3.h"
 #include "TelltaleInternalResource.h"
@@ -543,6 +542,75 @@ struct TelltaleD3DMeshHeaderV55
 
 		return output;
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
+
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(
+		TelltaleD3DMeshHeaderV55,
+		mNameBlockSize,
+		mName,
+		mVersion,
+		mToolProps,
+		mLightmapGlobalScale,
+		mLightmapTexCoordVersion,
+		mLODParamCRC,
+		mInternalResourcesCount,
+		mInternalResources,
+		mToolPropsBlockSize,
+		//mToolPropsData, //char* json problems...
+		mHasOcclusionData,
+		mOcclusionDataBlockSize,
+		//mOcclusionData, //char* json problems...
+		mT3MeshDataBlockSize,
+		mLODs_ArrayCapacity,
+		mLODs_ArrayLength,
+		mLODs,
+		mTextures_ArrayCapacity,
+		mTextures_ArrayLength,
+		//mTexturesData, //char* json problems...
+		mMaterials_ArrayCapacity,
+		mMaterials_ArrayLength,
+		//mMaterialsData, //char* json problems...
+		mMaterialOverrides_ArrayCapacity,
+		mMaterialOverrides_ArrayLength,
+		//mMaterialOverridesData, //char* json problems...
+		mBones_ArrayCapacity,
+		mBones_ArrayLength,
+		mBones,
+		mLocalTransforms_ArrayCapacity,
+		mLocalTransforms_ArrayLength,
+		mLocalTransforms,
+		mMaterialRequirements,
+		mVertexStreams_BlockSize,
+		mVertexStreams,
+		mBoundingBox,
+		mBoundingSphere,
+		mEndianType,
+		mPositionScale,
+		mPositionWScale,
+		mPositionOffset,
+		mLightmapTexelAreaPerSurfaceArea,
+		mPropertyKeyBase,
+		mVertexCount,
+		mFlags,
+		mMeshPreload_BlockSize,
+		//mMeshPreloadData, //char* json problems...
+		UNKNOWN1,
+		UNKNOWN2,
+		mVertexCountPerInstance,
+		mIndexBufferCount,
+		mVertexBufferCount,
+		mAttributeCount,
+		GFXPlatformAttributeParamsArray,
+		mIndexBuffers,
+		mVertexBuffers)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||

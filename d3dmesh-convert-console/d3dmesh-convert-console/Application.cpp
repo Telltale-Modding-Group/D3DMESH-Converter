@@ -159,31 +159,17 @@ int main()
 		//WIP: This will be fully implemented later but the goal here is to parse a D3DMESH and output a human readable .json
 		//This .json will be used in the future for doing conversions to and back to D3DMESH (just like the D3DTX DDS converter)		
 
-		/*
-		nlohmann::json jsonExport;
-
-		nlohmann::json jsonTelltaleMetaHeader = nlohmann::json
-		{
-			{ "mMetaStreamVersion", metaHeader.mMetaStreamVersion },
-			{ "mDefaultSectionChunkSize", metaHeader.mDefaultSectionChunkSize },
-			{ "mDebugSectionChunkSize", metaHeader.mDebugSectionChunkSize },
-			{ "mAsyncSectionChunkSize", metaHeader.mAsyncSectionChunkSize },
-			{ "mClassNamesLength", metaHeader.mClassNamesLength },
-		};
-
-		Vector2 testVector2 = Vector2();
-
-		testVector2.ToJson(jsonExport);
-
 		std::ofstream jsonOutputFileStream;
 		std::string jsonExportPath = "OutputJSON/" + currentD3DMESH_FileName + ".json";
 		jsonOutputFileStream.open(jsonExportPath);
 
-		std::string jsonDump = jsonExport.dump(4);
+		nlohmann::ordered_json json;
+		json = d3dmeshFile;
+
+		std::string jsonDump = json.dump(4); //pretty print with indents
 		jsonOutputFileStream.write(jsonDump.c_str(), jsonDump.length());
 
 		jsonOutputFileStream.close();
-		*/
 
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||

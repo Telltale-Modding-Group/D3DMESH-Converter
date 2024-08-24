@@ -6,15 +6,13 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
-//THIRD PARTY: JSON Library
-#include <nlohmann/json.hpp>
-
 //Custom
 #include "BinarySerialization.h"
 #include "BinaryDeserialization.h"
+#include "Json.h"
+
 #include "T3GFXBufferDeserialization.h"
 #include "T3GFXBufferSerialization.h"
-
 #include "Symbol.h"
 #include "Vector2.h"
 #include "Vector3.h"
@@ -720,6 +718,58 @@ struct TelltaleD3DMeshDataV55
 		}
 		*/
 	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
+
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(
+		TelltaleD3DMeshDataV55, 
+		indexBuffer0,
+		indexBuffer1,
+		indexBuffer2,
+		indexBuffer3,
+		indexBuffer4,
+		indexBuffer5,
+		indexBuffer6,
+		indexBuffer7,
+
+		vertexPositions,
+
+		vertexNormals0,
+		vertexNormals1,
+		vertexNormals2,
+		vertexNormals3,
+
+		vertexTangents,
+
+		vertexUVs0,
+		vertexUVs1,
+		vertexUVs2,
+		vertexUVs3,
+		vertexUVs4,
+		vertexUVs5,
+		vertexUVs6,
+		vertexUVs7,
+
+		vertexColors0,
+		vertexColors1,
+		vertexColors2,
+		vertexColors3,
+		vertexColors4,
+		vertexColors5,
+		vertexColors6,
+		vertexColors7,
+
+		vertexBlendIndex0,
+
+		vertexBlendWeight0
+		)
 };
 
 #endif

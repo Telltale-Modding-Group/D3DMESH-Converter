@@ -143,5 +143,8 @@
     <ClInclude Include="NewMesh.h">
       <Filter>Header Files\CustomTypes</Filter>
     </ClInclude>
+    <ClInclude Include="Json.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
