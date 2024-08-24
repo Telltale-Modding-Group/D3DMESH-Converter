@@ -20,33 +20,32 @@
 //||||||||||||||||||||||||||||| GFX PLATFORM ATTRIBUTE PARAMS |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [20 bytes] 
+/// [20 BYTES] 
 /// </summary>
-class GFXPlatformAttributeParams
+struct GFXPlatformAttributeParams
 {
-public:
 	/// <summary>
-	/// [4 bytes] This is an enum that indicates the mesh attribute type. (vertex position, vertex normal, vertex uv, etc)
+	/// [4 BYTES] This is an enum that indicates the mesh attribute type. (vertex position, vertex normal, vertex uv, etc)
 	/// </summary>
 	GFXPlatformVertexAttribute mAttribute;
 
 	/// <summary>
-	/// [4 bytes] This is an enum that defines the binary layout format of an attribute.
+	/// [4 BYTES] This is an enum that defines the binary layout format of an attribute.
 	/// </summary>
 	GFXPlatformFormat mFormat;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mAttributeIndex;
 
 	/// <summary>
-	/// [4 bytes] This points to an element (by array index) in a T3GFXBuffer object array that this GFXPlatformAttributeParams is referencing.
+	/// [4 BYTES] This points to an element (by array index) in a T3GFXBuffer object array that this GFXPlatformAttributeParams is referencing.
 	/// </summary>
 	unsigned int mBufferIndex;
 
 	/// <summary>
-	/// [4 bytes] This points to the byte position in a T3GFXBuffer which is where the data for the buffer that this GFXPlatformAttributeParams is referencing starts at.
+	/// [4 BYTES] This points to the byte position in a T3GFXBuffer which is where the data for the buffer that this GFXPlatformAttributeParams is referencing starts at.
 	/// </summary>
 	unsigned int mBufferOffset;
 
@@ -79,6 +78,43 @@ public:
 		WriteUInt32ToBinary(outputFileStream, mBufferIndex); //[4 BYTES]
 		WriteUInt32ToBinary(outputFileStream, mBufferOffset); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "";
+		output += "[GFXPlatformAttributeParams] mAttribute: " + std::to_string(mAttribute) + " | " + GetGFXPlatformVertexAttributeName(mAttribute) + "\n";
+		output += "[GFXPlatformAttributeParams] mFormat: " + std::to_string(mFormat) + " | " + GetGFXPlatformFormatName(mFormat) + "\n";
+		output += "[GFXPlatformAttributeParams] mAttributeIndex: " + std::to_string(mAttributeIndex) + "\n";
+		output += "[GFXPlatformAttributeParams] mBufferIndex: " + std::to_string(mBufferIndex) + "\n";
+		output += "[GFXPlatformAttributeParams] mBufferOffset: " + std::to_string(mBufferOffset);
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [20 BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += 4; //[4 BYTES] mAttribute
+		totalByteSize += 4; //[4 BYTES] mFormat
+		totalByteSize += 4; //[4 BYTES] mAttributeIndex
+		totalByteSize += 4; //[4 BYTES] mBufferIndex
+		totalByteSize += 4; //[4 BYTES] mBufferOffset
+		return totalByteSize;
+	}
 };
 
 #endif

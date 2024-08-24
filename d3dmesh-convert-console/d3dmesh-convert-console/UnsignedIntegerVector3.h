@@ -46,6 +46,13 @@ struct UnsignedIntegerVector3
 		z = 0;
 	};
 
+	UnsignedIntegerVector3(unsigned int x, unsigned int y, unsigned int z)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	};
+
 	UnsignedIntegerVector3(std::ifstream* inputFileStream)
 	{
 		x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
@@ -58,6 +65,15 @@ struct UnsignedIntegerVector3
 		WriteUInt32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteUInt32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteUInt32ToBinary(outputFileStream, z); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		return "[UnsignedIntegerVector3] x:" + std::to_string(x) + " y: " + std::to_string(y) + " z: " + std::to_string(z);
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||

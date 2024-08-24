@@ -20,57 +20,55 @@
 /// <summary>
 /// [40 BYTES]
 /// </summary>
-class T3MaterialRequirements
+struct T3MaterialRequirements
 {
-public:
-
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mMaterialRequirements_BlockSize;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mPasses_BlockSize;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mPasses;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mChannels_BlockSize;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mChannels1;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mChannels2;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mInputs_BlockSize;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mInputs1;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mInputs2;
 
 	/// <summary>
-	/// [4 bytes] 
+	/// [4 BYTES] 
 	/// </summary>
 	unsigned int mInputs3;
 
@@ -105,19 +103,16 @@ public:
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
-		mMaterialRequirements_BlockSize = sizeof(T3MaterialRequirements);
-
-		mPasses_BlockSize = 4;
-		mPasses_BlockSize += sizeof(mPasses);
-
-		mChannels_BlockSize = 4;
-		mChannels_BlockSize += sizeof(mChannels1);
-		mChannels_BlockSize += sizeof(mChannels2);
-
-		mInputs_BlockSize = 4;
-		mInputs_BlockSize += sizeof(mInputs1);
-		mInputs_BlockSize += sizeof(mInputs2);
-		mInputs_BlockSize += sizeof(mInputs3);
+		mMaterialRequirements_BlockSize = 40; //[40 BYTES] mMaterialRequirements_BlockSize
+		mPasses_BlockSize = 4; //[4 BYTES] mPasses_BlockSize
+		mPasses_BlockSize += 4; //[4 BYTES] mPasses
+		mChannels_BlockSize = 4; //[4 BYTES] mChannels_BlockSize
+		mChannels_BlockSize += 4; //[4 BYTES] mChannels1
+		mChannels_BlockSize += 4; //[4 BYTES] mChannels2
+		mInputs_BlockSize = 4; //[4 BYTES] mInputs_BlockSize
+		mInputs_BlockSize += 4; //[4 BYTES] mInputs1
+		mInputs_BlockSize += 4; //[4 BYTES] mInputs2
+		mInputs_BlockSize += 4; //[4 BYTES] mInputs3
 
 		//begin serialization
 		WriteUInt32ToBinary(outputFileStream, mMaterialRequirements_BlockSize); //[4 BYTES]
@@ -131,6 +126,53 @@ public:
 		WriteUInt32ToBinary(outputFileStream, mInputs2); //[4 BYTES]
 		WriteUInt32ToBinary(outputFileStream, mInputs3); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "";
+		output += "[T3MaterialRequirements] mMaterialRequirements_BlockSize: " + std::to_string(mMaterialRequirements_BlockSize) + "\n";
+		output += "[T3MaterialRequirements] mPasses_BlockSize: " + std::to_string(mPasses_BlockSize) + "\n";
+		output += "[T3MaterialRequirements] mPasses: " + std::to_string(mPasses) + "\n";
+		output += "[T3MaterialRequirements] mChannels_BlockSize: " + std::to_string(mChannels_BlockSize) + "\n";
+		output += "[T3MaterialRequirements] mChannels1: " + std::to_string(mChannels1) + "\n";
+		output += "[T3MaterialRequirements] mChannels2: " + std::to_string(mChannels2) + "\n";
+		output += "[T3MaterialRequirements] mInputs_BlockSize: " + std::to_string(mInputs_BlockSize) + "\n";
+		output += "[T3MaterialRequirements] mInputs1: " + std::to_string(mInputs1) + "\n";
+		output += "[T3MaterialRequirements] mInputs2: " + std::to_string(mInputs2) + "\n";
+		output += "[T3MaterialRequirements] mInputs3: " + std::to_string(mInputs3);
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [40 BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += 4; //[4 BYTES] mMaterialRequirements_BlockSize
+		totalByteSize += 4; //[4 BYTES] mPasses_BlockSize
+		totalByteSize += 4; //[4 BYTES] mPasses
+		totalByteSize += 4; //[4 BYTES] mChannels_BlockSize
+		totalByteSize += 4; //[4 BYTES] mChannels1
+		totalByteSize += 4; //[4 BYTES] mChannels2
+		totalByteSize += 4; //[4 BYTES] mInputs_BlockSize
+		totalByteSize += 4; //[4 BYTES] mInputs1
+		totalByteSize += 4; //[4 BYTES] mInputs2
+		totalByteSize += 4; //[4 BYTES] mInputs3
+		return totalByteSize;
+	}
 };
 
 #endif

@@ -20,12 +20,12 @@
 //||||||||||||||||||||||||||||| TRANSFORM |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [32 bytes] Defines a geometric rotation and position.
+/// [32 BYTES] Defines a geometric rotation and position.
 /// </summary>
 struct Transform
 {
 	/// <summary>
-	/// [4 bytes] The size of the current data structure (this value should be 32)
+	/// [4 BYTES] The size of the current data structure (this value should be 32)
 	/// <para>(CALCULATION) to calculate block size... </para>
 	/// <para> Add 4, as this is the size of a uint32 that represents the block size variable itself. </para>
 	/// <para> Add 16, as this is the size of a Quaternion that represents the mRot variable. </para>
@@ -34,12 +34,12 @@ struct Transform
 	unsigned int mBlockSize;
 
 	/// <summary>
-	/// [16 bytes] The rotation component of the transform.
+	/// [16 BYTES] The rotation component of the transform.
 	/// </summary>
 	Quaternion mRot;
 
 	/// <summary>
-	/// [12 bytes] The position component of the transform.
+	/// [12 BYTES] The position component of the transform.
 	/// </summary>
 	Vector3 mTrans;
 
@@ -61,14 +61,47 @@ struct Transform
 	{
 		//update values
 		mBlockSize = 4; //block size uint32 itself
-		mBlockSize += sizeof(mRot);
-		mBlockSize += sizeof(mTrans);
+		mBlockSize += 16; //[16 BYTES] mRot
+		mBlockSize += 12; //[12 BYTES] mTrans
 
 		//begin serialization
 		WriteUInt32ToBinary(outputFileStream, mBlockSize); //[4 BYTES]
 		mRot.BinarySerialize(outputFileStream); //[16 BYTES]
 		mTrans.BinarySerialize(outputFileStream); //[12 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "";
+		output += "[Transform] mBlockSize:" + std::to_string(mBlockSize) + "\n";
+		output += "[Transform] mRot: " + mRot.ToString() + "\n";
+		output += "[Transform] mTrans: " + mTrans.ToString();
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [32 BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += 4; //[4 BYTES] mBlockSize
+		totalByteSize += mRot.GetByteSize(); //[16 BYTES] mRot
+		totalByteSize += mTrans.GetByteSize(); //[12 BYTES] mTrans
+		return totalByteSize;
+	}
 };
 
 #endif

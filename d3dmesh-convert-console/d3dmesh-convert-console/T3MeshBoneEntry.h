@@ -23,16 +23,26 @@
 /// <summary>
 /// [56 BYTES]
 /// </summary>
-class T3MeshBoneEntry
+struct T3MeshBoneEntry
 {
-public:
-
+	/// <summary>
+	/// [8 BYTES]
+	/// </summary>
 	Symbol mBoneName;
 
+	/// <summary>
+	/// [24 BYTES] 
+	/// </summary>
 	BoundingBox mBoundingBox;
 
+	/// <summary>
+	/// [20 BYTES] 
+	/// </summary>
 	BoundingSphere mBoundingSphere;
 
+	/// <summary>
+	/// [4 BYTES] 
+	/// </summary>
 	unsigned int mNumVerts;
 
 	T3MeshBoneEntry() 
@@ -58,6 +68,41 @@ public:
 		mBoundingSphere.BinarySerialize(outputFileStream); //[20 BYTES]
 		WriteUInt32ToBinary(outputFileStream, mNumVerts); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "";
+		output += "[T3MeshBoneEntry] mBoneName: " + mBoneName.ToString() + "\n";
+		output += "[T3MeshBoneEntry] mBoundingBox: " + mBoundingBox.ToString() + "\n";
+		output += "[T3MeshBoneEntry] mBoundingSphere: " + mBoundingSphere.ToString() + "\n";
+		output += "[T3MeshBoneEntry] mNumVerts: " + std::to_string(mNumVerts);
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [56 BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += mBoneName.GetByteSize(); //[8 BYTES] mBoneName
+		totalByteSize += mBoundingBox.GetByteSize(); //[24 BYTES] mBoundingBox
+		totalByteSize += mBoundingSphere.GetByteSize(); //[20 BYTES] mBoundingSphere
+		totalByteSize += 4; //[4 BYTES] mNumVerts
+		return totalByteSize;
+	}
 };
 
 #endif

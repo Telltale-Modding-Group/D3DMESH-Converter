@@ -40,6 +40,12 @@ struct IntegerVector2
 		y = 0;
 	};
 
+	IntegerVector2(int x, int y)
+	{
+		this->x = x;
+		this->y = y;
+	};
+
 	IntegerVector2(std::ifstream* inputFileStream)
 	{
 		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
@@ -52,25 +58,34 @@ struct IntegerVector2
 		WriteInt32ToBinary(outputFileStream, y); //[4 BYTES]
 	};
 
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		return "[IntegerVector2] x:" + std::to_string(x) + " y: " + std::to_string(y);
+	};
+
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
 
-	void to_json(nlohmann::json& json, const IntegerVector2& value)
+	void to_json(nlohmann::json& json)
 	{
 		json = nlohmann::json
 		{
-			{ "x", value.x },
-			{ "y", value.y },
+			{ "x", x },
+			{ "y", y },
 		};
-	}
+	};
 
-	void from_json(const nlohmann::json& json, IntegerVector2& value)
+	void from_json(const nlohmann::json& json)
 	{
-		json.at("x").get_to(value.x);
-		json.at("y").get_to(value.y);
-	}
+		json.at("x").get_to(x);
+		json.at("y").get_to(y);
+	};
 };
 
 #endif

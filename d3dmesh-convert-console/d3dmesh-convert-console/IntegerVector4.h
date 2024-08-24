@@ -1,4 +1,4 @@
-#pragma once
+	#pragma once
 #ifndef INTEGER_VECTOR_4_H
 #define INTEGER_VECTOR_4_H
 
@@ -52,6 +52,14 @@ struct IntegerVector4
 		w = 0;
 	};
 
+	IntegerVector4(int x, int y, int z, int w)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = z;
+		this->w = w;
+	};
+
 	IntegerVector4(std::ifstream* inputFileStream)
 	{
 		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
@@ -66,6 +74,15 @@ struct IntegerVector4
 		WriteInt32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, z); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, w); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		return "[IntegerVector4] x:" + std::to_string(x) + " y: " + std::to_string(y) + " z: " + std::to_string(z) + " w: " + std::to_string(w);
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||

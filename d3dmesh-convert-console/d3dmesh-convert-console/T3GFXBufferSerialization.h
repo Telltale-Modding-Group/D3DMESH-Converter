@@ -312,28 +312,14 @@ static void WriteT3GFXBuffer_Normalized_4x8BitInteger(std::ofstream* outputFileS
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
 
-static void WriteT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ofstream* outputFileStream, Vector4 vector4)
+static void WriteT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ofstream* outputFileStream, Vector3 vector3)
 {
-	//read the whole 4 bytes as a uint
-	//unsigned int uint = ReadUInt32FromBinary(outputFileStream);
+	unsigned int firstSigned_10Bit = vector3.x * 511; //float [-1, 1] to 10 bit [-512,511]
+	unsigned int secondSigned_11Bit = vector3.y * 1023; //float [-1, 1] to 10 bit [-1024,1023]
+	unsigned int thirdSigned_11Bit = vector3.z * 1023; //float [-1, 1] to 10 bit [-1024,1023]
+	unsigned int final32Bits = CombineBits(CombineBits(firstSigned_10Bit, 10, secondSigned_11Bit, 11), 21, thirdSigned_11Bit, 11);
 
-	//---------------------BIT EXTRACTION---------------------
-	//first 10 bits
-	//unsigned int first_10bit = BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
-	//int firstSigned_10bit = first_10bit - 512; //convert to signed [-512,511]
-
-	//second 11 bits
-	//unsigned int second_11bit = BitFieldExtract(uint, 10, 11); //11 bits [0,2047]
-	//int secondSigned_11bit = second_11bit - 1024; //convert to signed [-1024,1023]
-
-	//third 11 bits
-	//unsigned int third_11bit = BitFieldExtract(uint, 21, 11); //11 bits [0,2047]
-	//int thirdSigned_11bit = third_11bit - 1024; //convert to signed [-1024,1023]
-
-	//---------------------NORMALIZATION---------------------
-	//vector4.x = firstSigned_10bit / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-	//vector4.y = secondSigned_11bit / (float)1023; //normalize 11 bit ushort [-1024,1023] to float [-1, 1]
-	//vector4.z = thirdSigned_11bit / (float)1023; //normalize 11 bit ushort [-1024,1023] to float [-1, 1]
+	WriteUInt32ToBinary(outputFileStream, final32Bits);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
@@ -343,60 +329,70 @@ static void WriteT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ofstrea
 //[4 BYTES] eGFXPlatformFormat_UN10x3_UN2
 static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::ofstream* outputFileStream, Vector3 vector3, Vector3& mPositionWScale)
 {
-	//read the whole 4 bytes as a uint
-	//unsigned int uint = ReadUInt32FromBinary(outputFileStream);
-
-	//temp variables
-	//unsigned int firstValue = 0;
-	//unsigned int secondValue = 0;
-	//unsigned int thirdValue = 0;
-	//unsigned int fourthValue = 0;
-
-	//---------------------BIT EXTRACTION---------------------
-	//first 10 bits
-	//firstValue = BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
-
-	//second 10 bits
-	//secondValue = BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
-
-	//third 10 bits
-	//thirdValue = BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
-
-	//fourth 2 bits
-	//fourthValue = BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
+	unsigned int final32Bits = 0;
 
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//if (mPositionWScale.x != 0.0f)
-	//{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for x axis
-		//firstValue = fourthValue << 10 | firstValue;
-	//}
-	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//else if (mPositionWScale.y != 0.0f)
-	//{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for y axis
-		//secondValue = fourthValue << 10 | secondValue;
-	//}
-	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
-	//else if (mPositionWScale.z != 0.0f)
-	//{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for z axis
-		//thirdValue = fourthValue << 10 | thirdValue;
-	//}
+	if (mPositionWScale.x != 0.0f)
+	{
+		unsigned int first = vector3.x * 4098; //float [0, 1] to [0, 4098]
+		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
+		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
 
-	//---------------------NORMALIZATION---------------------
-	//vector3.x = firstValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-	//vector3.y = secondValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
-	//vector3.z = thirdValue / (float)1023; //normalize 10 bit ushort [0, 1023] to float [0, 1]
+		first = KeepBitsOfValue(first, 0, 12);
+		second = KeepBitsOfValue(second, 0, 10);
+		third = KeepBitsOfValue(third, 0, 10);
+
+		unsigned int firstA = ExtractBits(first, 0, 10);
+		unsigned int firstB = ExtractBits(first, 9, 2);
+
+		final32Bits = CombineBits(firstA, 10, second, 10);
+		final32Bits = CombineBits(final32Bits, 20, third, 10);
+		final32Bits = CombineBits(final32Bits, 30, firstB, 2);
+	}
+	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	else if (mPositionWScale.y != 0.0f)
+	{
+		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
+		unsigned int second = vector3.y * 4098; //float [0, 1] to [0, 4098]
+		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
+
+		first = KeepBitsOfValue(first, 0, 10);
+		second = KeepBitsOfValue(second, 0, 12);
+		third = KeepBitsOfValue(third, 0, 10);
+
+		unsigned int secondA = ExtractBits(second, 0, 10);
+		unsigned int secondB = ExtractBits(second, 9, 2);
+
+		final32Bits = CombineBits(first, 10, secondA, 10);
+		final32Bits = CombineBits(final32Bits, 20, third, 10);
+		final32Bits = CombineBits(final32Bits, 30, secondB, 2);
+	}
+	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	else if (mPositionWScale.z != 0.0f)
+	{
+		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
+		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
+		unsigned int third = vector3.z * 4098; //float [0, 1] to [0, 4098]
+
+		first = KeepBitsOfValue(first, 0, 10);
+		second = KeepBitsOfValue(second, 0, 10);
+		third = KeepBitsOfValue(third, 0, 12);
+
+		unsigned int thirdA = ExtractBits(third, 0, 10);
+		unsigned int thirdB = ExtractBits(third, 9, 2);
+
+		final32Bits = CombineBits(first, 10, second, 10);
+		final32Bits = CombineBits(final32Bits, 20, thirdA, 10);
+		final32Bits = CombineBits(final32Bits, 30, thirdB, 2);
+	}
+
+	WriteUInt32ToBinary(outputFileStream, final32Bits);
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10x3_SN2 ||||||||||||||||||||||||||||||||||||||||
@@ -406,6 +402,57 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 //[4 BYTES] eGFXPlatformFormat_SN10x3_SN2
 static void WriteT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ofstream* outputFileStream, Vector3 vector3, Vector3& mPositionWScale)
 {
+	unsigned int final32Bits = 0;
+
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	if (mPositionWScale.x != 0.0f)
+	{
+		int first = vector3.x * 2047; //float [-1, 1] to [-2048, 2047]
+		int second = vector3.y * 511; //float [-1, 1] to [-512, 511]
+		int third = vector3.z * 511; //float [-1, 1] to [-512, 511]
+
+		first = KeepBitsOfValue(first, 0, 12);
+		second = KeepBitsOfValue(second, 0, 10);
+		third = KeepBitsOfValue(third, 0, 10);
+
+		unsigned int firstA = ExtractBits(first, 0, 10);
+		unsigned int firstB = ExtractBits(first, 9, 2);
+
+		final32Bits = CombineBits(firstA, 10, second, 10);
+		final32Bits = CombineBits(final32Bits, 20, third, 10);
+		final32Bits = CombineBits(final32Bits, 30, firstB, 2);
+	}
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	else if (mPositionWScale.y != 0.0f)
+	{
+
+	}
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
+	else if (mPositionWScale.z != 0.0f)
+	{
+
+	}
+
+	WriteUInt32ToBinary(outputFileStream, final32Bits);
+
+
+
+
+
+
+
+
+
+
+
+
+
 	//read the whole 4 bytes as a uint
 	//unsigned int uint = ReadUInt32FromBinary(outputFileStream);
 

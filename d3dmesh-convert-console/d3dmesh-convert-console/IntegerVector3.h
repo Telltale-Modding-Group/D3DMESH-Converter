@@ -46,6 +46,13 @@ struct IntegerVector3
 		z = 0;
 	};
 
+	IntegerVector3(int x, int y, int z)
+	{
+		this->x = x;
+		this->y = y;
+		this->z = z;
+	};
+
 	IntegerVector3(std::ifstream* inputFileStream)
 	{
 		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
@@ -58,6 +65,15 @@ struct IntegerVector3
 		WriteInt32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, z); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		return "[IntegerVector3] x:" + std::to_string(x) + " y: " + std::to_string(y) + " z: " + std::to_string(z);
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||

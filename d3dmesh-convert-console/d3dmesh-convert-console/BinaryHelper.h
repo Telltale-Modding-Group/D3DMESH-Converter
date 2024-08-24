@@ -11,36 +11,61 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
-#include <vector>
-#include <filesystem>
 #include <stdlib.h>
-#include <time.h>
+#include <bitset>
+
+//|||||||||||||||||||||||||||||||||||||||| BIT DISPLAY ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| BIT DISPLAY ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| BIT DISPLAY ||||||||||||||||||||||||||||||||||||||||
+
+static void PrintBinaryStringOfUInt32(unsigned int value)
+{
+	std::bitset<32> valueBitSet(value);
+	std::cout << valueBitSet << std::endl;
+}
 
 //|||||||||||||||||||||||||||||||||||||||| BIT OPERATION HELPERS ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| BIT OPERATION HELPERS ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| BIT OPERATION HELPERS ||||||||||||||||||||||||||||||||||||||||
 // REFERENCE - https://github.com/Unity-Technologies/Graphics/blob/master/Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl
 
-// Unsigned integer bit field extraction.
-static unsigned int BitFieldExtract(unsigned int data, unsigned int offset, unsigned int numBits)
+static unsigned int GetMaskOfBitsToKeep(unsigned int bitOffsetStart, unsigned int bitsToKeep)
 {
-	unsigned int mask = (1u << numBits) - 1u;
-	return (data >> offset) & mask;
+	unsigned int mask = (1ULL << bitsToKeep) - 1;
+	return mask << bitOffsetStart;
 }
 
-/*
-// Inserts the bits indicated by 'mask' from 'src' into 'dst'.
-static unsigned int BitFieldInsert(unsigned int mask, unsigned int src, unsigned int dst)
+static unsigned int KeepBitsOfValue(unsigned int sourceData, unsigned int bitsToKeepOffsetStart, unsigned int amountOfBitsToKeep)
 {
-	return (src & mask) | (dst & ~mask);
+	return sourceData & GetMaskOfBitsToKeep(bitsToKeepOffsetStart, amountOfBitsToKeep);
 }
-*/
 
-// Inserts the bits indicated by 'mask' from 'src' into 'dst'.
-static unsigned int BitFieldInsert(unsigned int numBits, unsigned int src, unsigned int dst)
+static unsigned int ExtractBits(unsigned int sourceData, unsigned int bitOffsetStart, unsigned int bitsToExtract)
 {
-	unsigned int mask = (1u << numBits) - 1u;
-	return (src & mask) | (dst & ~mask);
+	unsigned int bitmask = (1u << bitsToExtract) - 1u;
+	return (sourceData >> bitOffsetStart) & bitmask;
+}
+
+static bool IsBitAtOffsetSet(unsigned int sourceData, unsigned int bitOffsetLocation)
+{
+	return ExtractBits(sourceData, bitOffsetLocation, 1u) != 0;
+}
+
+static unsigned int SetBitAtOffset(unsigned int sourceData, unsigned int bitOffsetLocation)
+{
+	return sourceData |= 1u << bitOffsetLocation;
+}
+
+static unsigned int ClearBitAtOffset(unsigned int sourceData, unsigned int bitOffsetLocation)
+{
+	return sourceData &= ~(1u << bitOffsetLocation);
+}
+
+static unsigned int CombineBits(unsigned int sourceData, unsigned int sourceDataBitSize, unsigned int newData, unsigned int newDataBitSize)
+{
+	unsigned int bitsA = KeepBitsOfValue(sourceData, 0, sourceDataBitSize);
+	unsigned int bitsB = KeepBitsOfValue(newData, 0, newDataBitSize);
+	return bitsA | bitsB << sourceDataBitSize;
 }
 
 //|||||||||||||||||||||||||||||||||||||||| HALF FLOATS CONVERSION ||||||||||||||||||||||||||||||||||||||||

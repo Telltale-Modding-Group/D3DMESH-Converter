@@ -18,12 +18,12 @@
 //||||||||||||||||||||||||||||| BOUNDING SPHERE |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [20 bytes] A bounding sphere in three-dimensional space.
+/// [20 BYTES] A bounding sphere in three-dimensional space.
 /// </summary>
 struct BoundingSphere
 {
 	/// <summary>
-	/// [4 bytes] The size of the current data structure (this value should be 20)
+	/// [4 BYTES] The size of the current data structure (this value should be 20)
 	/// <para>(CALCULATION) to calculate block size... </para>
 	/// <para> Add 4, as this is the size of a uint32 that represents the block size variable itself. </para>
 	/// <para> Add 12, as this is the size of a Vector3 that represents the mCenter variable. </para>
@@ -32,12 +32,12 @@ struct BoundingSphere
 	unsigned int mBlockSize;
 
 	/// <summary>
-	/// [12 bytes] Center point of the bounding sphere in three-dimensional space.
+	/// [12 BYTES] Center point of the bounding sphere in three-dimensional space.
 	/// </summary>
 	Vector3 mCenter;
 
 	/// <summary>
-	/// [4 bytes] Radius of the bounding sphere.
+	/// [4 BYTES] Radius of the bounding sphere.
 	/// </summary>
 	float mRadius;
 
@@ -58,15 +58,48 @@ struct BoundingSphere
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
-		mBlockSize = 4; //block size uint32 itself
-		mBlockSize += sizeof(mCenter);
-		mBlockSize += sizeof(mRadius);
+		mBlockSize = 4; //[4 BYTES] block size uint32 itself
+		mBlockSize += 12; //[12 BYTES] mCenter
+		mBlockSize += 4; //[4 BYTES] mRadius;
 
 		//begin serialization
 		WriteUInt32ToBinary(outputFileStream, mBlockSize); //[4 BYTES]
 		mCenter.BinarySerialize(outputFileStream); //[12 BYTES]
 		WriteFloat32ToBinary(outputFileStream, mRadius); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "\n";
+		output += "[BoundingSphere] mBlockSize: " + std::to_string(mBlockSize) + "\n";
+		output += "[BoundingSphere] mCenter: " + mCenter.ToString() + "\n";
+		output += "[BoundingSphere] mRadius: " + std::to_string(mRadius);
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [20 BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += 4; //[4 BYTES] mBlockSize
+		totalByteSize += mCenter.GetByteSize(); //[12 BYTES] mCenter
+		totalByteSize += 4; //[4 BYTES] mRadius
+		return totalByteSize;
+	}
 };
 
 #endif

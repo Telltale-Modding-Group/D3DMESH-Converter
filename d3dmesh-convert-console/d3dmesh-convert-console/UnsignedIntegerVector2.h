@@ -40,6 +40,12 @@ struct UnsignedIntegerVector2
 		y = 0;
 	};
 
+	UnsignedIntegerVector2(unsigned int x, unsigned int y)
+	{
+		this->x = x;
+		this->y = y;
+	};
+
 	UnsignedIntegerVector2(std::ifstream* inputFileStream)
 	{
 		x = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
@@ -50,6 +56,15 @@ struct UnsignedIntegerVector2
 	{
 		WriteUInt32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteUInt32ToBinary(outputFileStream, y); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		return "[UnsignedIntegerVector2] x:" + std::to_string(x) + " y: " + std::to_string(y);
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||

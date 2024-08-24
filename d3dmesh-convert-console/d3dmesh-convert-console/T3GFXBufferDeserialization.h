@@ -351,32 +351,32 @@ static Vector4 ReadT3GFXBuffer_Normalized_4x8BitInteger(std::ifstream* inputFile
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER SN10_SN11_SN11 ||||||||||||||||||||||||||||||||||||||||
 
 //[4 BYTES] eGFXPlatformFormat_SN10_SN11_SN11
-static Vector4 ReadT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ifstream* inputFileStream)
+static Vector3 ReadT3GFXBuffer_Normalized_10BitInteger_2x11BitInteger(std::ifstream* inputFileStream)
 {
-	Vector4 vector4{};
+	Vector3 vector3{};
 
 	//read the whole 4 bytes as a uint
 	unsigned int uint = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 
 	//---------------------BIT EXTRACTION---------------------
 	//first 10 bits
-	unsigned int first_10bit = BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
+	unsigned int first_10bit = ExtractBits(uint, 0, 10); //10 bits [0,1023]
 	int firstSigned_10bit = first_10bit - 512; //convert to signed [-512,511]
 
 	//second 11 bits
-	unsigned int second_11bit = BitFieldExtract(uint, 10, 11); //11 bits [0,2047]
+	unsigned int second_11bit = ExtractBits(uint, 10, 11); //11 bits [0,2047]
 	int secondSigned_11bit = second_11bit - 1024; //convert to signed [-1024,1023]
 
 	//third 11 bits
-	unsigned int third_11bit = BitFieldExtract(uint, 21, 11); //11 bits [0,2047]
+	unsigned int third_11bit = ExtractBits(uint, 21, 11); //11 bits [0,2047]
 	int thirdSigned_11bit = third_11bit - 1024; //convert to signed [-1024,1023]
 
 	//---------------------NORMALIZATION---------------------
-	vector4.x = firstSigned_10bit / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
-	vector4.y = secondSigned_11bit / (float)1023; //normalize 11 bit ushort [-1024,1023] to float [-1, 1]
-	vector4.z = thirdSigned_11bit / (float)1023; //normalize 11 bit ushort [-1024,1023] to float [-1, 1]
+	vector3.x = firstSigned_10bit / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
+	vector3.y = secondSigned_11bit / (float)1023; //normalize 11 bit ushort [-1024,1023] to float [-1, 1]
+	vector3.z = thirdSigned_11bit / (float)1023; //normalize 11 bit ushort [-1024,1023] to float [-1, 1]
 
-	return vector4;
+	return vector3;
 }
 
 //|||||||||||||||||||||||||||||||||||||||| T3GFXBUFFER UN10x3_UN2 ||||||||||||||||||||||||||||||||||||||||
@@ -393,16 +393,16 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 
 	//---------------------BIT EXTRACTION---------------------
 	//first 10 bits
-	unsigned int firstValue = BitFieldExtract(uint, 0, 10); //10 bits [0,1023]
+	unsigned int firstValue = ExtractBits(uint, 0, 10); //10 bits [0,1023]
 
 	//second 10 bits
-	unsigned int secondValue = BitFieldExtract(uint, 10, 10); //10 bits [0,1023]
+	unsigned int secondValue = ExtractBits(uint, 10, 10); //10 bits [0,1023]
 
 	//third 10 bits
-	unsigned int thirdValue = BitFieldExtract(uint, 20, 10); //10 bits [0,1023]
+	unsigned int thirdValue = ExtractBits(uint, 20, 10); //10 bits [0,1023]
 
 	//fourth 2 bits
-	unsigned int fourthValue = BitFieldExtract(uint, 30, 2); //2 bits [0, 3]
+	unsigned int fourthValue = ExtractBits(uint, 30, 2); //2 bits [0, 3]
 
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -411,7 +411,7 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	{
 		//---------------------BIT COMBINE---------------------
 		//combine last bits for x axis
-		firstValue = fourthValue << 10 | firstValue;
+		firstValue = CombineBits(firstValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -420,7 +420,7 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	{
 		//---------------------BIT COMBINE---------------------
 		//combine last bits for y axis
-		secondValue = fourthValue << 10 | secondValue;
+		secondValue = CombineBits(secondValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -429,7 +429,7 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	{
 		//---------------------BIT COMBINE---------------------
 		//combine last bits for z axis
-		thirdValue = fourthValue << 10 | thirdValue;
+		thirdValue = CombineBits(thirdValue, 10, fourthValue, 2);
 	}
 
 	//---------------------NORMALIZATION---------------------
@@ -454,16 +454,16 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 
 	//---------------------BIT EXTRACTION---------------------
 	//first 10 bits
-	unsigned int firstValue = BitFieldExtract(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+	unsigned int firstValue = ExtractBits(uint, 0, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
 
 	//second 10 bits
-	unsigned int secondValue = BitFieldExtract(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+	unsigned int secondValue = ExtractBits(uint, 10, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
 
 	//third 10 bits
-	unsigned int thirdValue = BitFieldExtract(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
+	unsigned int thirdValue = ExtractBits(uint, 20, 10) - 512; //extract 10 bits [0, 1023] then convert to signed integer [-512,511]
 
 	//fourth 2 bits
-	unsigned int fourthValue = BitFieldExtract(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
+	unsigned int fourthValue = ExtractBits(uint, 30, 2) - 1; //extract 2 bits [0, 3] then convert to signed integer [-1,2]
 
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -472,7 +472,7 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	{
 		//---------------------BIT COMBINE---------------------
 		//combine last bits for x axis
-		firstValue = fourthValue << 10 | firstValue;
+		firstValue = CombineBits(firstValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -481,7 +481,7 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	{
 		//---------------------BIT COMBINE---------------------
 		//combine last bits for y axis
-		secondValue = fourthValue << 10 | secondValue;
+		secondValue = CombineBits(secondValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -490,7 +490,7 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	{
 		//---------------------BIT COMBINE---------------------
 		//combine last bits for z axis
-		thirdValue = fourthValue << 10 | thirdValue;
+		thirdValue = CombineBits(thirdValue, 10, fourthValue, 2);
 	}
 
 	//---------------------NORMALIZATION---------------------
