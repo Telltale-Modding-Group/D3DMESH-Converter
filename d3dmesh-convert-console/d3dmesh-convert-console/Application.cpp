@@ -30,23 +30,18 @@ int main()
 	//First we start by reading all of the .d3dmesh files in the Data folder relative to the application.
 	//We read them into multiple array so we can iterate through each one and parse them
 
-	//array of the d3dmesh file paths relative to the application
-	std::vector<std::string> d3dmeshFilePaths;
-
-	//array of the d3dmesh file names (with extension) relative to the application
-	std::vector<std::string> d3dmeshFileNames;
-
-	//array of the d3dmesh file byte sizes (only used for comparison later to check if we've reached the end of the file)
-	std::vector<unsigned long> d3dmeshFileSizes;
+	std::vector<std::string> d3dmeshFilePaths; //array of the d3dmesh file paths relative to the application
+	std::vector<std::string> d3dmeshFileNames; //array of the d3dmesh file names (with extension) relative to the application
+	std::vector<unsigned long> d3dmeshFileSizes; //array of the d3dmesh file byte sizes (only used for comparison later to check if we've reached the end of the file)
 
 	//iterate through every file that we find in the Data/ folder relative to the application
 	for (const auto& entry : std::filesystem::recursive_directory_iterator("Data"))
 	{
-		//extract the following path information
+		//extract path information
 		std::string assetFilePath = entry.path().string();
 		std::string assetFileName = entry.path().filename().string();
 
-		//if the extension matches what we are looking for, then add them to our arrays
+		//if the extension matches what we are looking for, then add them!
 		if (entry.path().extension() == ".d3dmesh")
 		{
 			d3dmeshFilePaths.push_back(assetFilePath);
@@ -86,6 +81,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
 		//This outputs all of the contents of the D3DMESH file into a generic text file (no json used)
+		//Ideally we replace this later when the .json is fully implemented and working properly
 
 		//WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
 
@@ -119,6 +115,7 @@ int main()
 				//|||||||||||||||||||||||||||||||||||||||| GET TRIANGLE SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET TRIANGLE SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET TRIANGLE SET ||||||||||||||||||||||||||||||||||||||||
+				//NOTE TO SELF: This works perfectly, works with LODs and pulls the submeshes correctly
 
 				for (int x = 0; x < mBatch.mNumIndices; x++)
 				{
@@ -129,11 +126,16 @@ int main()
 				//|||||||||||||||||||||||||||||||||||||||| GET VERTEX SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET VERTEX SET ||||||||||||||||||||||||||||||||||||||||
 				//|||||||||||||||||||||||||||||||||||||||| GET VERTEX SET ||||||||||||||||||||||||||||||||||||||||
+				//NOTE TO SELF: This needs additional work/attention...
+				//While we can just slap all of the vertex buffer data into the mesh and have assimp handle it...
+				//Its better and more proper to actually get the correct set of verticies that each coresponding LOD/Submesh has and will use.
+				//This will also come in handy later when we need to convert a new mesh to d3dmesh.
 
 				//Does work, but the problem with this is that we literally slap all of the vertex data of the model onto here rather than pulling what we need.
 				extractedMesh.vertexPositions = d3dmeshFile.d3dmeshData.vertexPositions;
 				extractedMesh.vertexNormals0 = d3dmeshFile.d3dmeshData.vertexNormals0;
 
+				//This needs work...
 				//for (int x = mLOD->mVertexStart + mBatch.mMinVertIndex; x < mLOD->mVertexStart + mBatch.mMaxVertIndex; x++) //DOES NOT WORK
 				//for (int x = mLOD->mVertexStart + mBatch.mMinVertIndex; x < mBatch.mNumPrimitives; x++) //DOES NOT WORK
 				//{
