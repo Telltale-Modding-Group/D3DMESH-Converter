@@ -14,7 +14,6 @@
 
 //Custom
 #include "TelltaleD3DMeshFileV55.h"
-#include "D3DMeshToText.h"
 #include "NewMesh.h"
 #include "NewMeshToAssimp.h"
 
@@ -76,14 +75,6 @@ int main()
 		TelltaleD3DMeshFileV55 d3dmeshFile = TelltaleD3DMeshFileV55(&currentD3DMESH_inputFileStream);
 
 		currentD3DMESH_inputFileStream.close();
-
-		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
-		//|||||||||||||||||||||||||||||||||||||||| TXT OUTPUT ||||||||||||||||||||||||||||||||||||||||
-		//This outputs all of the contents of the D3DMESH file into a generic text file (no json used)
-		//Ideally we replace this later when the .json is fully implemented and working properly
-
-		//WriteD3DMeshToText(currentD3DMESH_FileName, d3dmeshFile);
 
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||

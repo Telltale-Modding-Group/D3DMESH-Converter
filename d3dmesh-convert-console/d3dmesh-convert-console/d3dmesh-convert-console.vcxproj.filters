@@ -41,9 +41,6 @@
     <ClInclude Include="BinaryHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="D3DMeshToText.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="NewMeshToAssimp.h">
       <Filter>Header Files</Filter>
     </ClInclude>

@@ -166,7 +166,6 @@
     <ClInclude Include="TelltaleInternalResource.h" />
     <ClInclude Include="TelltaleMetaHeaderVersion6.h" />
     <ClInclude Include="T3GFXBufferSerialization.h" />
-    <ClInclude Include="D3DMeshToText.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UnsignedIntegerVector2.h" />
     <ClInclude Include="UnsignedIntegerVector3.h" />
