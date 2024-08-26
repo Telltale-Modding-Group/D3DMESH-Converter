@@ -358,8 +358,16 @@ struct TelltaleD3DMeshDataV55
 		//*/
 	};
 
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+
 	void BinarySerialize(std::ofstream* outputFileStream, TelltaleD3DMeshHeaderV55* d3dmeshHeader)
 	{
+		//update values
+
+		//NOTE: all vertex buffer sizes should be consistent
+
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH BUFFER DATA - mIndexBuffers ||||||||||||||||||||||||||||||||||||||||
@@ -438,6 +446,17 @@ struct TelltaleD3DMeshDataV55
 						WriteT3GFXBuffer_3x32BitFloat(outputFileStream, convertedVertexPosition);
 					}
 				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+					{
+						Vector4 convertedVertexPosition = Vector4(currentVertexPositionsBuffer[j].x, currentVertexPositionsBuffer[j].y, currentVertexPositionsBuffer[j].z, currentVertexPositionsBuffer[j].w);
+						convertedVertexPosition.x = (currentVertexPositionsBuffer[j].x - d3dmeshHeader->mPositionOffset.x) / d3dmeshHeader->mPositionScale.x;
+						convertedVertexPosition.y = (currentVertexPositionsBuffer[j].y - d3dmeshHeader->mPositionOffset.y) / d3dmeshHeader->mPositionScale.y;
+						convertedVertexPosition.z = (currentVertexPositionsBuffer[j].z - d3dmeshHeader->mPositionOffset.z) / d3dmeshHeader->mPositionScale.z;
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, convertedVertexPosition);
+					}
+				}
 
 				vertexPositionBufferIndex++;
 			}
@@ -451,14 +470,12 @@ struct TelltaleD3DMeshDataV55
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector4 convertedVertexNormal;
-						convertedVertexNormal.x = currentVertexNormalsBuffer[j].x;
-						convertedVertexNormal.y = currentVertexNormalsBuffer[j].y;
-						convertedVertexNormal.z = currentVertexNormalsBuffer[j].z;
-						convertedVertexNormal.w = currentVertexNormalsBuffer[j].w;
-						WriteT3GFXBuffer_Normalized_4x8BitInteger(outputFileStream, convertedVertexNormal);
-					}
+						WriteT3GFXBuffer_Normalized_4x8BitInteger(outputFileStream, currentVertexNormalsBuffer[j]);
+				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, currentVertexNormalsBuffer[j]);
 				}
 
 				vertexNormalBufferIndex++;
@@ -473,14 +490,12 @@ struct TelltaleD3DMeshDataV55
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN8x4)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
-						Vector4 convertedVertexNormal;
-						convertedVertexNormal.x = currentVertexTangentsBuffer[j].x;
-						convertedVertexNormal.y = currentVertexTangentsBuffer[j].y;
-						convertedVertexNormal.z = currentVertexTangentsBuffer[j].z;
-						convertedVertexNormal.w = currentVertexTangentsBuffer[j].w;
-						WriteT3GFXBuffer_Normalized_4x8BitInteger(outputFileStream, convertedVertexNormal);
-					}
+						WriteT3GFXBuffer_Normalized_4x8BitInteger(outputFileStream, currentVertexTangentsBuffer[j]);
+				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, currentVertexTangentsBuffer[j]);
 				}
 
 				vertexTangentBufferIndex++;
@@ -495,9 +510,12 @@ struct TelltaleD3DMeshDataV55
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
 						WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(outputFileStream, Vector3(currentVertexBlendWeightsBuffer[j].x, currentVertexBlendWeightsBuffer[j].y, currentVertexBlendWeightsBuffer[j].z), d3dmeshHeader->mPositionWScale);
-					}
+				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, currentVertexBlendWeightsBuffer[j]);
 				}
 
 				vertexBlendWeightBufferIndex++;
@@ -512,9 +530,12 @@ struct TelltaleD3DMeshDataV55
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_U8x4)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
 						WriteT3GFXBuffer_Unsigned_4x8BitInteger(outputFileStream, currentVertexBlendIndexBuffer[j]);
-					}
+				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, Vector4(currentVertexBlendIndexBuffer[j].x, currentVertexBlendIndexBuffer[j].y, currentVertexBlendIndexBuffer[j].z, currentVertexBlendIndexBuffer[j].w));
 				}
 
 				vertexBlendIndexBufferIndex++;
@@ -529,9 +550,12 @@ struct TelltaleD3DMeshDataV55
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_UN8x4)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
 						WriteT3GFXBuffer_UnsignedNormalized_4x8BitInteger(outputFileStream, currentVertexColorsBuffer[j]);
-					}
+				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, currentVertexColorsBuffer[j]);
 				}
 
 				vertexColorBufferIndex++;
@@ -546,16 +570,17 @@ struct TelltaleD3DMeshDataV55
 				if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x2)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
 						WriteT3GFXBuffer_2x32BitFloat(outputFileStream, Vector2(currentVertexUVsBuffer[j].x, currentVertexUVsBuffer[j].y));
-					}
 				}
 				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_SN16x2)
 				{
 					for (int j = 0; j < mVertexBuffer->mCount; j++)
-					{
 						WriteT3GFXBuffer_Normalized_2x16BitInteger(outputFileStream, Vector2(currentVertexUVsBuffer[j].x, currentVertexUVsBuffer[j].y));
-					}
+				}
+				else if (attributeParams->mFormat == GFXPlatformFormat::eGFXPlatformFormat_F32x4)
+				{
+					for (int j = 0; j < mVertexBuffer->mCount; j++)
+						WriteT3GFXBuffer_4x32BitFloat(outputFileStream, currentVertexUVsBuffer[j]);
 				}
 
 				vertexUVBufferIndex++;

@@ -63,9 +63,15 @@ public:
 			std::cout << "[READER INFO] |||||||||||||||||||||||||||||||| DID NOT REACH END OF FILE! Bytes Left To Traverse In File: " << bytesLeftInFile << std::endl;
 	};
 
+	void UpdateValues() 
+	{
+		d3dmeshHeader.mIndexBufferCount = d3dmeshData.indexBuffers.size();
+	}
+
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		metaHeader.mDefaultSectionChunkSize = d3dmeshHeader.GetByteSize();
+		metaHeader.mAsyncSectionChunkSize = d3dmeshHeader.GetD3DMeshDataSize();
 
 		metaHeader.BinarySerialize(outputFileStream);
 		d3dmeshHeader.BinarySerialize(outputFileStream);

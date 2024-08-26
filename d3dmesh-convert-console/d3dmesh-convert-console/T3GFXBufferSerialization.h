@@ -336,7 +336,7 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	if (mPositionWScale.x != 0.0f)
 	{
-		unsigned int first = vector3.x * 4098; //float [0, 1] to [0, 4098]
+		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
 		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
 		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
 
@@ -345,7 +345,7 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 		third = KeepBitsOfValue(third, 0, 10);
 
 		unsigned int firstA = ExtractBits(first, 0, 10);
-		unsigned int firstB = ExtractBits(first, 9, 2);
+		unsigned int firstB = ExtractBits(first, 10, 2);
 
 		final32Bits = CombineBits(firstA, 10, second, 10);
 		final32Bits = CombineBits(final32Bits, 20, third, 10);
@@ -357,7 +357,7 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 	else if (mPositionWScale.y != 0.0f)
 	{
 		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
-		unsigned int second = vector3.y * 4098; //float [0, 1] to [0, 4098]
+		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
 		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
 
 		first = KeepBitsOfValue(first, 0, 10);
@@ -365,7 +365,7 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 		third = KeepBitsOfValue(third, 0, 10);
 
 		unsigned int secondA = ExtractBits(second, 0, 10);
-		unsigned int secondB = ExtractBits(second, 9, 2);
+		unsigned int secondB = ExtractBits(second, 10, 2);
 
 		final32Bits = CombineBits(first, 10, secondA, 10);
 		final32Bits = CombineBits(final32Bits, 20, third, 10);
@@ -378,18 +378,14 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 	{
 		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
 		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
-		unsigned int third = vector3.z * 4098; //float [0, 1] to [0, 4098]
+		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
 
 		first = KeepBitsOfValue(first, 0, 10);
 		second = KeepBitsOfValue(second, 0, 10);
 		third = KeepBitsOfValue(third, 0, 12);
 
-		unsigned int thirdA = ExtractBits(third, 0, 10);
-		unsigned int thirdB = ExtractBits(third, 9, 2);
-
 		final32Bits = CombineBits(first, 10, second, 10);
-		final32Bits = CombineBits(final32Bits, 20, thirdA, 10);
-		final32Bits = CombineBits(final32Bits, 30, thirdB, 2);
+		final32Bits = CombineBits(final32Bits, 20, third, 12);
 	}
 
 	WriteUInt32ToBinary(outputFileStream, final32Bits);
@@ -409,6 +405,7 @@ static void WriteT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ofstream
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	if (mPositionWScale.x != 0.0f)
 	{
+		/*
 		int first = vector3.x * 2047; //float [-1, 1] to [-2048, 2047]
 		int second = vector3.y * 511; //float [-1, 1] to [-512, 511]
 		int third = vector3.z * 511; //float [-1, 1] to [-512, 511]
@@ -423,6 +420,7 @@ static void WriteT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ofstream
 		final32Bits = CombineBits(firstA, 10, second, 10);
 		final32Bits = CombineBits(final32Bits, 20, third, 10);
 		final32Bits = CombineBits(final32Bits, 30, firstB, 2);
+		*/
 	}
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||

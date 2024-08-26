@@ -82,13 +82,18 @@ int main()
 		//First attempt at doing a conversion of a d3dmesh to a standard model format (THIS DOES WORK... BUT THERE ARE PROBLEMS)
 		//NOTE: This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
 		//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes/etc... it's a basic single mesh
+		/*
+		NewMesh extractedMesh = {};
+		extractedMesh.triangleIndicies = d3dmeshFile.d3dmeshData.indexBuffers[0];
 
-		//NewMesh extractedMesh = {};
-		//extractedMesh.triangleIndicies = d3dmeshFile.d3dmeshData.indexBuffer0;
-		//extractedMesh.vertexPositions = d3dmeshFile.d3dmeshData.vertexPositions;
-		//extractedMesh.vertexNormals0 = d3dmeshFile.d3dmeshData.vertexNormals0;
-		//ExportAssimpMesh(extractedMesh, currentD3DMESH_FileName);
+		for (int x = 0; x < d3dmeshFile.d3dmeshData.vertexPositions[0].size(); x++)
+			extractedMesh.vertexPositions.push_back(Vector3(d3dmeshFile.d3dmeshData.vertexPositions[0][x].x, d3dmeshFile.d3dmeshData.vertexPositions[0][x].y, d3dmeshFile.d3dmeshData.vertexPositions[0][x].z));
 
+		for (int x = 0; x < d3dmeshFile.d3dmeshData.vertexNormals[0].size(); x++)
+			extractedMesh.vertexNormals0.push_back(Vector3(d3dmeshFile.d3dmeshData.vertexNormals[0][x].x, d3dmeshFile.d3dmeshData.vertexNormals[0][x].y, d3dmeshFile.d3dmeshData.vertexNormals[0][x].z));
+
+		ExportAssimpMesh(extractedMesh, currentD3DMESH_FileName);
+		*/
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
@@ -110,7 +115,7 @@ int main()
 
 				for (int x = 0; x < mBatch.mNumIndices; x++)
 				{
-					int selectedTriangleIndex = d3dmeshFile.d3dmeshData.indexBuffer0[x + mBatch.mStartIndex] + mBatch.mBaseIndex;
+					int selectedTriangleIndex = d3dmeshFile.d3dmeshData.indexBuffers[0][x + mBatch.mStartIndex] + mBatch.mBaseIndex;
 					extractedMesh.triangleIndicies.push_back(selectedTriangleIndex);
 				}
 
@@ -123,8 +128,11 @@ int main()
 				//This will also come in handy later when we need to convert a new mesh to d3dmesh.
 
 				//Does work, but the problem with this is that we literally slap all of the vertex data of the model onto here rather than pulling what we need.
-				extractedMesh.vertexPositions = d3dmeshFile.d3dmeshData.vertexPositions;
-				extractedMesh.vertexNormals0 = d3dmeshFile.d3dmeshData.vertexNormals0;
+				for(int x = 0; x < d3dmeshFile.d3dmeshData.vertexPositions[0].size(); x++)
+					extractedMesh.vertexPositions.push_back(Vector3(d3dmeshFile.d3dmeshData.vertexPositions[0][x].x, d3dmeshFile.d3dmeshData.vertexPositions[0][x].y, d3dmeshFile.d3dmeshData.vertexPositions[0][x].z));
+
+				for (int x = 0; x < d3dmeshFile.d3dmeshData.vertexNormals[0].size(); x++)
+					extractedMesh.vertexNormals0.push_back(Vector3(d3dmeshFile.d3dmeshData.vertexNormals[0][x].x, d3dmeshFile.d3dmeshData.vertexNormals[0][x].y, d3dmeshFile.d3dmeshData.vertexNormals[0][x].z));
 
 				//This needs work...
 				//for (int x = mLOD->mVertexStart + mBatch.mMinVertIndex; x < mLOD->mVertexStart + mBatch.mMaxVertIndex; x++) //DOES NOT WORK
@@ -150,6 +158,7 @@ int main()
 		//WIP: This will be fully implemented later but the goal here is to parse a D3DMESH and output a human readable .json
 		//This .json will be used in the future for doing conversions to and back to D3DMESH (just like the D3DTX DDS converter)		
 
+		/*
 		std::ofstream jsonOutputFileStream;
 		std::string jsonExportPath = "OutputJSON/" + currentD3DMESH_FileName + ".json";
 		jsonOutputFileStream.open(jsonExportPath);
@@ -161,6 +170,7 @@ int main()
 		jsonOutputFileStream.write(jsonDump.c_str(), jsonDump.length());
 
 		jsonOutputFileStream.close();
+		*/
 
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| D3DMESH EXPORT ||||||||||||||||||||||||||||||||||||||||
@@ -170,6 +180,57 @@ int main()
 		//If all goes well the D3DMESH file that we exported should be the EXACT same sa the D3DMESH file we just parsed.
 		//At the moment this does do that sucessfully, however the D3DMESH data (specifically vertex buffers) are not serialized yet due to some missed buffers?
 		//So right now it's just the meta header + d3dmesh header + d3dmesh index buffers (no vertex buffers yet)
+
+		//============================= (EXPERIMENTS) INDEX BUFFER REMOVALS =============================
+		//remove index buffers (will crash the game)
+		//d3dmeshFile.d3dmeshHeader.mIndexBuffers.erase(d3dmeshFile.d3dmeshHeader.mIndexBuffers.begin(), d3dmeshFile.d3dmeshHeader.mIndexBuffers.end());
+		//d3dmeshFile.d3dmeshData.indexBuffers.erase(d3dmeshFile.d3dmeshData.indexBuffers.begin(), d3dmeshFile.d3dmeshData.indexBuffers.end());
+
+		//remove second index buffer (no visible changes... what on earth is this secondary index buffer for?)
+		//d3dmeshFile.d3dmeshHeader.mIndexBuffers.erase(d3dmeshFile.d3dmeshHeader.mIndexBuffers.begin() + 1, d3dmeshFile.d3dmeshHeader.mIndexBuffers.end());
+		//d3dmeshFile.d3dmeshData.indexBuffers.erase(d3dmeshFile.d3dmeshData.indexBuffers.begin() + 1, d3dmeshFile.d3dmeshData.indexBuffers.end());
+
+		//============================= (EXPERIMENTS) VERTEX FORMAT CHANGE =============================
+		//NOTE: These are experiments in changing the vertex formats to a different channel to see how the engine behaves.
+		//We are finding out that it seems like changing the buffer formats will break the model and some of it's properties and how its rendered.
+		//There is a good chance that the materials/shaders used are likely expecting a specific format and are doing unpacking on their end.
+		//d3dmeshFile.d3dmeshHeader.mPositionOffset = Vector3(0.0f, 0.0f, 0.0f);
+		//d3dmeshFile.d3dmeshHeader.mPositionScale = Vector3(1.0f, 1.0f, 1.0f);
+		//d3dmeshFile.d3dmeshHeader.mPositionWScale = Vector3(0.0f, 0.0f, 0.0f);
+
+		//force set vertex buffers to be a specific format
+		//for (int i = 0; i < d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray.size(); i++)
+		//{
+			//if(d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
+				//d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mFormat = GFXPlatformFormat::eGFXPlatformFormat_F32x3;
+
+			//if(d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord)
+				//d3dmeshFile.d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mFormat = GFXPlatformFormat::eGFXPlatformFormat_F32x2;
+		//}
+
+		//============================= (EXPERIMENTS) VERTEX BUFFER VALUE MODIFICATIONS =============================
+		/*
+		//Setting values of all UVs on model to a specific value.
+		for (int i = 0; i < d3dmeshFile.d3dmeshData.vertexUVs.size(); i++)
+		{
+			for (int j = 0; j < d3dmeshFile.d3dmeshData.vertexUVs[i].size(); j++)
+			{
+				d3dmeshFile.d3dmeshData.vertexUVs[i][j] = Vector4(0.5f, 0.5f, 0, 0);
+			}
+		}
+		*/
+		/*
+		//Setting values of all normals on model to a specific value.
+		for (int i = 0; i < d3dmeshFile.d3dmeshData.vertexNormals.size(); i++)
+		{
+			for (int j = 0; j < d3dmeshFile.d3dmeshData.vertexNormals[i].size(); j++)
+			{
+				d3dmeshFile.d3dmeshData.vertexNormals[i][j] = Vector4(0, 1, 0, 0);
+			}
+		}
+		*/
+
+		d3dmeshFile.UpdateValues();
 
 		std::ofstream d3dmeshOutputFileStream;
 		std::string d3dmeshExportPath = "OutputD3DMESH/" + currentD3DMESH_FileName;

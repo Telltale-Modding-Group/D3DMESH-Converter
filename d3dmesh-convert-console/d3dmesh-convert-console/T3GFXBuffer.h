@@ -11,6 +11,7 @@
 #include "BinaryDeserialization.h"
 #include "Json.h"
 #include "GFXPlatformFormat.h"
+#include "GFXPlatformAttributeParams.h"
 
 //||||||||||||||||||||||||||||| T3 GFX BUFFER |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| T3 GFX BUFFER |||||||||||||||||||||||||||||
@@ -64,11 +65,25 @@ struct T3GFXBuffer
 		mStride = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
+	//NOTE: We ran into an issue with some meshes where when we read directly from the mBufferFormat that was serialized originally in the d3dmesh header...
+	//Calculating the stride length based on it actually created an issue since on some of the first elements of the vertex buffer elements, the buffer format was 0 (none) by default.
+	//And when the vertex buffer used a format like F32x3 the stride length that is used by default (4) was wrong and the mesh would show up incorrectly ingame.
+	//So to get past this issue, we found out that the mBufferFormat might be a legacy variable that isn't used.
+	//So we just override the original mBufferFormat with the format defined in the GFXPlatformAttributeParams so that way the stride length calculated is correct.
+	//This won't match the original file but atleast when it comes to conversions and showing up ingame, it all is correct and reliable.
+	void UpdateVertexBuffer(GFXPlatformAttributeParams* attributeParams)
+	{
+		mBufferFormat = attributeParams->mFormat;
+		mStride = GetGFXPlatformFormatStrideLength(mBufferFormat);
+	}
+
+	void UpdateIndexBuffer()
+	{
+		mStride = GetGFXPlatformFormatStrideLength(mBufferFormat);
+	}
+
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		//update values
-		mStride = GetGFXPlatformFormatStrideLength(mBufferFormat);
-
 		//begin serialization
 		WriteUInt32ToBinary(outputFileStream, mResourceUsage); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, mBufferFormat); //[4 BYTES]

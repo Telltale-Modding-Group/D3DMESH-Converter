@@ -299,9 +299,8 @@ struct TelltaleD3DMeshHeaderV55
 			mVertexBuffers.push_back(T3GFXBuffer(inputFileStream));
 	};
 
-	void BinarySerialize(std::ofstream* outputFileStream)
+	void UpdateValues() 
 	{
-		//update values
 		mNameBlockSize = 8 + mName.length();
 		mT3MeshDataBlockSize = GetT3MeshDataByteSize();
 		mInternalResourcesCount = mInternalResources.size();
@@ -326,6 +325,18 @@ struct TelltaleD3DMeshHeaderV55
 		mAttributeCount = GFXPlatformAttributeParamsArray.size();
 		mIndexBufferCount = mIndexBuffers.size();
 		mVertexBufferCount = mVertexBuffers.size();
+
+		for (int i = 0; i < mIndexBufferCount; i++)
+			mIndexBuffers[i].UpdateIndexBuffer();
+
+		for (int i = 0; i < mVertexBufferCount; i++)
+			mVertexBuffers[i].UpdateVertexBuffer(&GFXPlatformAttributeParamsArray[i]);
+	}
+
+	void BinarySerialize(std::ofstream* outputFileStream)
+	{
+		//update values
+		UpdateValues();
 
 		//begin serialization
 		WriteUInt32ToBinary(outputFileStream, mNameBlockSize);
@@ -718,6 +729,19 @@ struct TelltaleD3DMeshHeaderV55
 
 		totalByteSize += 4; //[4 BYTES] mT3MeshDataBlockSize
 		totalByteSize += GetT3MeshDataByteSize();
+		return totalByteSize;
+	}
+
+	unsigned int GetD3DMeshDataSize()
+	{
+		unsigned int totalByteSize = 0;
+
+		for (int i = 0; i < mIndexBuffers.size(); i++)
+			totalByteSize += mIndexBuffers[i].mCount * mIndexBuffers[i].mStride;
+
+		for (int i = 0; i < mVertexBuffers.size(); i++)
+			totalByteSize += mVertexBuffers[i].mCount * mVertexBuffers[i].mStride;
+
 		return totalByteSize;
 	}
 };
