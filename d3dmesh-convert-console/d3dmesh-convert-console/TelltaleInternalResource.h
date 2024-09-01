@@ -39,14 +39,16 @@ struct TelltaleInternalResource
 	/// <summary>
 	/// [x BYTES]
 	/// </summary>
-	char* mInternalResourceData;
+	//char* mInternalResourceData;
+	std::vector<char> mInternalResourceData;
 
 	TelltaleInternalResource()
 	{
 		mInternalResourceSymbol = {};
 		mInternalResourceType = {};
 		mInternalResourceBlockSize = 0;
-		mInternalResourceData = 0;
+		//mInternalResourceData = 0;
+		mInternalResourceData = {};
 	};
 
 	TelltaleInternalResource(std::ifstream* inputFileStream)
@@ -54,7 +56,8 @@ struct TelltaleInternalResource
 		mInternalResourceSymbol = Symbol(inputFileStream);
 		mInternalResourceType = Symbol(inputFileStream);
 		mInternalResourceBlockSize = ReadUInt32FromBinary(inputFileStream);
-		mInternalResourceData = ReadByteBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
+		//mInternalResourceData = ReadByteBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
+		mInternalResourceData = ReadByteVectorBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
 	};
 
 	void BinarySerialize(std::ofstream* outputFileStream)
@@ -63,7 +66,8 @@ struct TelltaleInternalResource
 		mInternalResourceSymbol.BinarySerialize(outputFileStream);
 		mInternalResourceType.BinarySerialize(outputFileStream);
 		WriteUInt32ToBinary(outputFileStream, mInternalResourceBlockSize);
-		WriteByteBufferToBinary(outputFileStream, mInternalResourceBlockSize - 4, mInternalResourceData);
+		//WriteByteBufferToBinary(outputFileStream, mInternalResourceBlockSize - 4, mInternalResourceData);
+		WriteByteVectorBufferToBinary(outputFileStream, mInternalResourceData);
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -93,8 +97,8 @@ struct TelltaleInternalResource
 		TelltaleInternalResource, 
 		mInternalResourceSymbol, 
 		mInternalResourceType, 
-		mInternalResourceBlockSize)
-		//mInternalResourceData) //char* json problems...
+		mInternalResourceBlockSize,
+		mInternalResourceData)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||

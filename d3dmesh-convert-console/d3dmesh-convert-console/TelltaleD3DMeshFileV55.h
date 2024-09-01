@@ -74,7 +74,7 @@ public:
 		metaHeader.mAsyncSectionChunkSize = d3dmeshHeader.GetD3DMeshDataSize();
 
 		metaHeader.BinarySerialize(outputFileStream);
-		d3dmeshHeader.BinarySerialize(outputFileStream);
+ 		d3dmeshHeader.BinarySerialize(outputFileStream);
 		d3dmeshData.BinarySerialize(outputFileStream, &d3dmeshHeader);
 	};
 

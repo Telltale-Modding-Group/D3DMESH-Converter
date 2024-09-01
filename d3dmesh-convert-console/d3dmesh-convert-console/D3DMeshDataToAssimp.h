@@ -39,13 +39,20 @@ static void BuildAssimpMeshFromD3DMesh(aiMesh* assimpMesh, TelltaleD3DMeshFileV5
 
 	assimpMesh->mMaterialIndex = d3dmeshBatch.mMaterialIndex;
 
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX SETUP ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX SETUP ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX SETUP ||||||||||||||||||||||||||||||||||||||||
+
+	int vertexArrayStart = d3dmeshLOD.mVertexStart;
+	int vertexArrayLength = d3dmeshLOD.mVertexStart + assimpMesh->mNumVertices;
+
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
 	assimpMesh->mNumVertices = d3dmeshLOD.mVertexCount; //SELF NOTE: assign amount of verticies first... or all hell breaks loose
 	assimpMesh->mVertices = new aiVector3D[assimpMesh->mNumVertices];
 
-	for (int i = d3dmeshLOD.mVertexStart; i < d3dmeshLOD.mVertexStart + assimpMesh->mNumVertices; i++)
+	for (int i = vertexArrayStart; i < vertexArrayLength; i++)
 		assimpMesh->mVertices[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexPositions[0][i].x, d3dmeshFile->d3dmeshData.vertexPositions[0][i].y, d3dmeshFile->d3dmeshData.vertexPositions[0][i].z);
 
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX NORMALS ||||||||||||||||||||||||||||||||||||||||
@@ -53,9 +60,52 @@ static void BuildAssimpMeshFromD3DMesh(aiMesh* assimpMesh, TelltaleD3DMeshFileV5
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX NORMALS ||||||||||||||||||||||||||||||||||||||||
 	assimpMesh->mNormals = new aiVector3D[assimpMesh->mNumVertices];
 
-	//fill up the vertex normal array
-	for (int i = d3dmeshLOD.mVertexStart; i < d3dmeshLOD.mVertexStart + assimpMesh->mNumVertices; i++)
-		assimpMesh->mNormals[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexNormals[0][i].x, d3dmeshFile->d3dmeshData.vertexNormals[0][i].y, d3dmeshFile->d3dmeshData.vertexNormals[0][i].z);
+	if (d3dmeshFile->d3dmeshData.vertexNormals.size() > 0)
+	{
+		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			assimpMesh->mNormals[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexNormals[0][i].x, d3dmeshFile->d3dmeshData.vertexNormals[0][i].y, d3dmeshFile->d3dmeshData.vertexNormals[0][i].z);
+	}
+
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX TANGENTS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX TANGENTS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX TANGENTS ||||||||||||||||||||||||||||||||||||||||
+	assimpMesh->mTangents = new aiVector3D[assimpMesh->mNumVertices];
+
+	if (d3dmeshFile->d3dmeshData.vertexTangents.size() > 0)
+	{
+		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			assimpMesh->mTangents[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexTangents[0][i].x, d3dmeshFile->d3dmeshData.vertexTangents[0][i].y, d3dmeshFile->d3dmeshData.vertexTangents[0][i].z);
+	}
+
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX COLORS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX COLORS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX COLORS ||||||||||||||||||||||||||||||||||||||||
+
+	for(int j = 0; j < d3dmeshFile->d3dmeshData.vertexColors.size(); j++)
+	{
+		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			assimpMesh->mColors[j][i] = aiColor4D(d3dmeshFile->d3dmeshData.vertexColors[j][i].x, d3dmeshFile->d3dmeshData.vertexColors[j][i].y, d3dmeshFile->d3dmeshData.vertexColors[j][i].z, d3dmeshFile->d3dmeshData.vertexColors[j][i].w);
+	}
+
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX UVS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX UVS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX UVS ||||||||||||||||||||||||||||||||||||||||
+
+	for (int j = 0; j < d3dmeshFile->d3dmeshData.vertexUVs.size(); j++)
+	{
+		assimpMesh->mNumUVComponents[j] = 2;
+
+		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			assimpMesh->mTextureCoords[j][i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexUVs[j][i].x, d3dmeshFile->d3dmeshData.vertexUVs[j][i].y, d3dmeshFile->d3dmeshData.vertexUVs[j][i].z);
+	}
+
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
+
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
 
 	//|||||||||||||||||||||||||||||||||||||||| MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||

@@ -210,6 +210,16 @@ static char* ReadByteBufferFromBinary(std::ifstream* inputFileStream, int blockS
 	return byteBuffer;
 }
 
+static std::vector<char> ReadByteVectorBufferFromBinary(std::ifstream* inputFileStream, int blockSize)
+{
+	std::vector<char> vectorData;
+
+	for (int i = 0; i < blockSize; i++)
+		vectorData.push_back(ReadInt8FromBinary(inputFileStream));
+
+	return vectorData;
+}
+
 //|||||||||||||||||||||||||||||||||||||||| BINARY READER - STRING [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| BINARY READER - STRING [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| BINARY READER - STRING [X BYTES] ||||||||||||||||||||||||||||||||||||||||

@@ -37,10 +37,12 @@ struct TelltaleD3DMeshHeaderV55
 	unsigned int mInternalResourcesCount;
 	std::vector<TelltaleInternalResource> mInternalResources;
 	unsigned int mToolPropsBlockSize;
-	char* mToolPropsData;
+	//char* mToolPropsData;
+	std::vector<char> mToolPropsData;
 	char mHasOcclusionData;
 	unsigned int mOcclusionDataBlockSize;
-	char* mOcclusionData;
+	//char* mOcclusionData;
+	std::vector<char> mOcclusionData;
 	unsigned int mT3MeshDataBlockSize;
 
 	/// <summary>
@@ -63,7 +65,8 @@ struct TelltaleD3DMeshHeaderV55
 	/// </summary>
 	unsigned int mTextures_ArrayCapacity;
 	unsigned int mTextures_ArrayLength;
-	char* mTexturesData;
+	//char* mTexturesData;
+	std::vector<char> mTexturesData;
 
 	/// <summary>
 	/// [4 bytes]
@@ -74,7 +77,8 @@ struct TelltaleD3DMeshHeaderV55
 	/// </summary>
 	unsigned int mMaterials_ArrayCapacity;
 	unsigned int mMaterials_ArrayLength;
-	char* mMaterialsData;
+	//char* mMaterialsData;
+	std::vector<char> mMaterialsData;
 
 	/// <summary>
 	/// [4 bytes]
@@ -85,7 +89,8 @@ struct TelltaleD3DMeshHeaderV55
 	/// </summary>
 	unsigned int mMaterialOverrides_ArrayCapacity;
 	unsigned int mMaterialOverrides_ArrayLength;
-	char* mMaterialOverridesData;
+	//char* mMaterialOverridesData;
+	std::vector<char> mMaterialOverridesData;
 
 	/// <summary>
 	/// [4 bytes]
@@ -122,7 +127,8 @@ struct TelltaleD3DMeshHeaderV55
 	unsigned int mVertexCount;
 	unsigned int mFlags;
 	unsigned int mMeshPreload_BlockSize;
-	char* mMeshPreloadData;
+	//char* mMeshPreloadData;
+	std::vector<char> mMeshPreloadData;
 	unsigned int UNKNOWN1;
 	unsigned int UNKNOWN2;
 	unsigned int mVertexCountPerInstance;
@@ -145,23 +151,23 @@ struct TelltaleD3DMeshHeaderV55
 		mInternalResourcesCount = 0;
 		mInternalResources = {};
 		mToolPropsBlockSize = 0;
-		mToolPropsData = 0;
+		mToolPropsData = {};
 		mHasOcclusionData = 0;
 		mOcclusionDataBlockSize = 0;
-		mOcclusionData = 0;
+		mOcclusionData = {};
 		mT3MeshDataBlockSize = 0;
 		mLODs_ArrayCapacity = 0;
 		mLODs_ArrayLength = 0;
 		mLODs = {};
 		mTextures_ArrayCapacity = 0;
 		mTextures_ArrayLength = 0;
-		mTexturesData = 0;
+		mTexturesData = {};
 		mMaterials_ArrayCapacity = 0;
 		mMaterials_ArrayLength = 0;
-		mMaterialsData = 0;
+		mMaterialsData = {};
 		mMaterialOverrides_ArrayCapacity = 0;
 		mMaterialOverrides_ArrayLength = 0;
-		mMaterialOverridesData = 0;
+		mMaterialOverridesData = {};
 		mBones_ArrayCapacity = 0;
 		mBones_ArrayLength = 0;
 		mBones = {};
@@ -182,7 +188,7 @@ struct TelltaleD3DMeshHeaderV55
 		mVertexCount = 0;
 		mFlags = 0;
 		mMeshPreload_BlockSize = 0;
-		mMeshPreloadData = 0;
+		mMeshPreloadData = {};
 		UNKNOWN1 = 0;
 		UNKNOWN2 = 0;
 		mVertexCountPerInstance = 0;
@@ -212,7 +218,7 @@ struct TelltaleD3DMeshHeaderV55
 
 		//parse the tool property set block, this shouldn't technically have any data since this is the final shipped file.
 		mToolPropsBlockSize = ReadUInt32FromBinary(inputFileStream);
-		mToolPropsData = ReadByteBufferFromBinary(inputFileStream, mToolPropsBlockSize); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+		mToolPropsData = ReadByteVectorBufferFromBinary(inputFileStream, mToolPropsBlockSize); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
 
 		//parse the occlusion data block, this contains occlusion culling information regarding the mesh.
 		mHasOcclusionData = ReadInt8FromBinary(inputFileStream);
@@ -221,7 +227,7 @@ struct TelltaleD3DMeshHeaderV55
 		if (mHasOcclusionData == '1')
 		{
 			mOcclusionDataBlockSize = ReadUInt32FromBinary(inputFileStream);
-			mOcclusionData = ReadByteBufferFromBinary(inputFileStream, mOcclusionDataBlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+			mOcclusionData = ReadByteVectorBufferFromBinary(inputFileStream, mOcclusionDataBlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
 		}
 
 		//this is the start of the main T3MeshData block
@@ -237,17 +243,17 @@ struct TelltaleD3DMeshHeaderV55
 		//parse the textures block (NOTE: This does not contain actual texture data, just references to it)
 		mTextures_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
 		mTextures_ArrayLength = ReadUInt32FromBinary(inputFileStream);
-		mTexturesData = ReadByteBufferFromBinary(inputFileStream, mTextures_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+		mTexturesData = ReadByteVectorBufferFromBinary(inputFileStream, mTextures_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
 
 		//parse the materials block
 		mMaterials_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
 		mMaterials_ArrayLength = ReadUInt32FromBinary(inputFileStream);
-		mMaterialsData = ReadByteBufferFromBinary(inputFileStream, mMaterials_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+		mMaterialsData = ReadByteVectorBufferFromBinary(inputFileStream, mMaterials_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
 
 		//parse the materials overrides block
 		mMaterialOverrides_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
 		mMaterialOverrides_ArrayLength = ReadUInt32FromBinary(inputFileStream);
-		mMaterialOverridesData = ReadByteBufferFromBinary(inputFileStream, mMaterialOverrides_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+		mMaterialOverridesData = ReadByteVectorBufferFromBinary(inputFileStream, mMaterialOverrides_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
 
 		//parse the rigging bones block
 		mBones_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
@@ -278,7 +284,7 @@ struct TelltaleD3DMeshHeaderV55
 		mVertexCount = ReadUInt32FromBinary(inputFileStream);
 		mFlags = ReadUInt32FromBinary(inputFileStream);
 		mMeshPreload_BlockSize = ReadUInt32FromBinary(inputFileStream);
-		mMeshPreloadData = ReadByteBufferFromBinary(inputFileStream, mMeshPreload_BlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+		mMeshPreloadData = ReadByteVectorBufferFromBinary(inputFileStream, mMeshPreload_BlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
 		UNKNOWN1 = ReadUInt32FromBinary(inputFileStream);
 		UNKNOWN2 = ReadUInt32FromBinary(inputFileStream);
 		mVertexCountPerInstance = ReadUInt32FromBinary(inputFileStream);
@@ -352,14 +358,14 @@ struct TelltaleD3DMeshHeaderV55
 			mInternalResources[i].BinarySerialize(outputFileStream);
 
 		WriteUInt32ToBinary(outputFileStream, mToolPropsBlockSize);
-		WriteByteBufferToBinary(outputFileStream, mToolPropsBlockSize - 4, mToolPropsData);
+		WriteByteVectorBufferToBinary(outputFileStream, mToolPropsData);
 		WriteUInt8ToBinary(outputFileStream, mHasOcclusionData);
 
 		//if this is true then we need to skip it (ASCII '1' is true, ASCII '0' is false)
 		if (mHasOcclusionData == '1')
 		{
 			WriteUInt32ToBinary(outputFileStream, mOcclusionDataBlockSize);
-			WriteByteBufferToBinary(outputFileStream, mOcclusionDataBlockSize - 4, mOcclusionData);
+			WriteByteVectorBufferToBinary(outputFileStream, mOcclusionData);
 		}
 
 		WriteUInt32ToBinary(outputFileStream, mT3MeshDataBlockSize);
@@ -371,15 +377,15 @@ struct TelltaleD3DMeshHeaderV55
 
 		WriteUInt32ToBinary(outputFileStream, mTextures_ArrayCapacity);
 		WriteUInt32ToBinary(outputFileStream, mTextures_ArrayLength);
-		WriteByteBufferToBinary(outputFileStream, mTextures_ArrayCapacity - 8, mTexturesData);
+		WriteByteVectorBufferToBinary(outputFileStream, mTexturesData);
 
 		WriteUInt32ToBinary(outputFileStream, mMaterials_ArrayCapacity);
 		WriteUInt32ToBinary(outputFileStream, mMaterials_ArrayLength);
-		WriteByteBufferToBinary(outputFileStream, mMaterials_ArrayCapacity - 8, mMaterialsData);
+		WriteByteVectorBufferToBinary(outputFileStream, mMaterialsData);
 
 		WriteUInt32ToBinary(outputFileStream, mMaterialOverrides_ArrayCapacity);
 		WriteUInt32ToBinary(outputFileStream, mMaterialOverrides_ArrayLength);
-		WriteByteBufferToBinary(outputFileStream, mMaterialOverrides_ArrayCapacity - 8, mMaterialOverridesData);
+		WriteByteVectorBufferToBinary(outputFileStream, mMaterialOverridesData);
 
 		WriteUInt32ToBinary(outputFileStream, mBones_ArrayCapacity);
 		WriteUInt32ToBinary(outputFileStream, mBones_ArrayLength);
@@ -407,7 +413,7 @@ struct TelltaleD3DMeshHeaderV55
 		WriteUInt32ToBinary(outputFileStream, mVertexCount);
 		WriteUInt32ToBinary(outputFileStream, mFlags);
 		WriteUInt32ToBinary(outputFileStream, mMeshPreload_BlockSize);
-		WriteByteBufferToBinary(outputFileStream, mMeshPreload_BlockSize - 4, mMeshPreloadData);
+		WriteByteVectorBufferToBinary(outputFileStream, mMeshPreloadData);
 		WriteUInt32ToBinary(outputFileStream, UNKNOWN1);
 		WriteUInt32ToBinary(outputFileStream, UNKNOWN2);
 		WriteUInt32ToBinary(outputFileStream, mVertexCountPerInstance);
@@ -575,23 +581,23 @@ struct TelltaleD3DMeshHeaderV55
 		mInternalResourcesCount,
 		mInternalResources,
 		mToolPropsBlockSize,
-		//mToolPropsData, //char* json problems...
+		mToolPropsData,
 		mHasOcclusionData,
 		mOcclusionDataBlockSize,
-		//mOcclusionData, //char* json problems...
+		mOcclusionData,
 		mT3MeshDataBlockSize,
 		mLODs_ArrayCapacity,
 		mLODs_ArrayLength,
 		mLODs,
 		mTextures_ArrayCapacity,
 		mTextures_ArrayLength,
-		//mTexturesData, //char* json problems...
+		mTexturesData,
 		mMaterials_ArrayCapacity,
 		mMaterials_ArrayLength,
-		//mMaterialsData, //char* json problems...
+		mMaterialsData,
 		mMaterialOverrides_ArrayCapacity,
 		mMaterialOverrides_ArrayLength,
-		//mMaterialOverridesData, //char* json problems...
+		mMaterialOverridesData,
 		mBones_ArrayCapacity,
 		mBones_ArrayLength,
 		mBones,
@@ -612,7 +618,7 @@ struct TelltaleD3DMeshHeaderV55
 		mVertexCount,
 		mFlags,
 		mMeshPreload_BlockSize,
-		//mMeshPreloadData, //char* json problems...
+		mMeshPreloadData,
 		UNKNOWN1,
 		UNKNOWN2,
 		mVertexCountPerInstance,

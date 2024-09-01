@@ -126,6 +126,12 @@ static void WriteByteBufferToBinary(std::ofstream* outputFileStream, int dataSiz
 	outputFileStream->write(data, dataSize);
 }
 
+static void WriteByteVectorBufferToBinary(std::ofstream* outputFileStream, std::vector<char> data)
+{
+	for (int i = 0; i < data.size(); i++)
+		WriteInt8ToBinary(outputFileStream, data[i]);
+}
+
 //|||||||||||||||||||||||||||||||||||||||| BINARY WRITER - STRING [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| BINARY WRITER - STRING [X BYTES] ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| BINARY WRITER - STRING [X BYTES] ||||||||||||||||||||||||||||||||||||||||

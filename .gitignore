@@ -4,6 +4,8 @@ d3dmesh-convert-console/d3dmesh-convert-console/Data/
 d3dmesh-convert-console/d3dmesh-convert-console/Output/
 d3dmesh-convert-console/d3dmesh-convert-console/OutputD3DMESH/
 d3dmesh-convert-console/d3dmesh-convert-console/OutputJSON/
+d3dmesh-convert-console/d3dmesh-convert-console/InputJSON/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputJSON_TO_D3DMESH/
 
 # Prerequisites
 *.d
