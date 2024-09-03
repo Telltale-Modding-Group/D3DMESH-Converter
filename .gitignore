@@ -1,16 +1,22 @@
 #MY STUFF
 d3dmesh-convert-console/d3dmesh-convert-console/Archive/
 d3dmesh-convert-console/d3dmesh-convert-console/Data/
-
 d3dmesh-convert-console/d3dmesh-convert-console/InputD3DMESH/
 d3dmesh-convert-console/d3dmesh-convert-console/InputJSON/
+d3dmesh-convert-console/d3dmesh-convert-console/InputD3DMESH_JSON/
 d3dmesh-convert-console/d3dmesh-convert-console/InputSKL/
-
+d3dmesh-convert-console/d3dmesh-convert-console/InputSKL_JSON/
 d3dmesh-convert-console/d3dmesh-convert-console/Output/
 d3dmesh-convert-console/d3dmesh-convert-console/OutputASSIMP/
 d3dmesh-convert-console/d3dmesh-convert-console/OutputD3DMESH/
 d3dmesh-convert-console/d3dmesh-convert-console/OutputJSON/
 d3dmesh-convert-console/d3dmesh-convert-console/OutputJSON_TO_D3DMESH/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputD3DMESH_TO_JSON/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputSKL_TO_JSON/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputSKL_TO_SKL/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputD3DMESH_TO_ASSIMP/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputD3DMESH_TO_D3DMESH/
+d3dmesh-convert-console/d3dmesh-convert-console/OutputJSON_TO_SKL/
 
 # Prerequisites
 *.d

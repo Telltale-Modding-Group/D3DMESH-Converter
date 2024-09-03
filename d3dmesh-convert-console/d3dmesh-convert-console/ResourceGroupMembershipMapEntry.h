@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VECTOR_2_H
-#define VECTOR_2_H
+#ifndef RESOURCE_GROUP_MEMBERSHIP_MAP_ENTRY_H
+#define RESOURCE_GROUP_MEMBERSHIP_MAP_ENTRY_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
@@ -11,41 +11,37 @@
 #include "BinaryDeserialization.h"
 #include "Json.h"
 
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
+#include "Symbol.h"
+
+//||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP MAP ENTRY |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP MAP ENTRY |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP MAP ENTRY |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [8 BYTES] Vector with 2 float32 components (x, y)
+/// [12 BYTES]
 /// </summary>
-struct Vector2
+struct ResourceGroupMembershipMapEntry
 {
 	/// <summary>
-	/// [4 BYTES] x (horizontal) component.
+	/// [8 BYTES]
 	/// </summary>
-	float x;
+	Symbol mSymbol;
 
 	/// <summary>
-	/// [4 BYTES] y (vertical) component.
+	/// [4 BYTES]
 	/// </summary>
-	float y;
+	float mFloat;
 
-	Vector2()
+	ResourceGroupMembershipMapEntry()
 	{
-		x = 0.0f;
-		y = 0.0f;
+		mSymbol = {};
+		mFloat = 0.0f;
 	};
 
-	Vector2(float x, float y)
+	ResourceGroupMembershipMapEntry(std::ifstream* inputFileStream)
 	{
-		this->x = x;
-		this->y = y;
-	};
-
-	Vector2(std::ifstream* inputFileStream)
-	{
-		x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		mSymbol = Symbol(inputFileStream);
+		mFloat = ReadFloat32FromBinary(inputFileStream);
 	};
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -54,8 +50,8 @@ struct Vector2
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
-		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
+		mSymbol.BinarySerialize(outputFileStream);
+		WriteFloat32ToBinary(outputFileStream, mFloat);
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -64,7 +60,7 @@ struct Vector2
 
 	std::string ToString() const
 	{
-		return "[Vector2] x:" + std::to_string(x) + " y: " + std::to_string(y);
+		return "[ResourceGroupMembershipMapEntry] mSymbol:" + mSymbol.ToString() + " mFloat: " + std::to_string(mFloat);
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
@@ -75,7 +71,7 @@ struct Vector2
 
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
-	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Vector2, x, y)
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ResourceGroupMembershipMapEntry, mSymbol, mFloat)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -85,14 +81,14 @@ struct Vector2
 	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
 
 	/// <summary>
-	/// [8 BYTES]
+	/// [12 BYTES]
 	/// </summary>
 	/// <returns></returns>
-	unsigned int GetByteSize() 
+	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += 4; //[4 BYTES] x
-		totalByteSize += 4; //[4 BYTES] y
+		totalByteSize += mSymbol.GetByteSize(); //[8 BYTES] mSymbol
+		totalByteSize += 4; //[4 BYTES] mFloat
 		return totalByteSize;
 	}
 };

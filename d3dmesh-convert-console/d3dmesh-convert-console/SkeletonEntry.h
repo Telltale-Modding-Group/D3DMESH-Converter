@@ -11,100 +11,227 @@
 #include "BinaryDeserialization.h"
 #include "Json.h"
 
-#include "BoneType.h"
+#include "ResourceGroupMembership.h"
+#include "BoneConstraints.h"
 
 //||||||||||||||||||||||||||||| SKELETON ENTRY |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| SKELETON ENTRY |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| SKELETON ENTRY |||||||||||||||||||||||||||||
 
-class SkeletonEntry
+struct SkeletonEntry
 {
-public:
+	/// <summary>
+	/// [8 BYTES]
+	/// </summary>
+	Symbol mJointName;
+
+	/// <summary>
+	/// [8 BYTES]
+	/// </summary>
+	Symbol mParentName;
+
+	/// <summary>
+	/// [4 BYTES]
+	/// </summary>
+	int mParentIndex;
+
+	/// <summary>
+	/// [8 BYTES]
+	/// </summary>
+	Symbol mMirrorBoneName;
+
+	/// <summary>
+	/// [4 BYTES]
+	/// </summary>
+	int mMirrorBoneIndex;
+
+	/// <summary>
+	/// [12 BYTES]
+	/// </summary>
+	Vector3 mLocalPos;
+
+	/// <summary>
+	/// [16 BYTES]
+	/// </summary>
+	Quaternion mLocalQuat;
+
+	/// <summary>
+	/// [32 BYTES]
+	/// </summary>
+	Transform mRestXform;
+
+	/// <summary>
+	/// [12 BYTES]
+	/// </summary>
+	Vector3 mGlobalTranslationScale;
+
+	/// <summary>
+	/// [12 BYTES]
+	/// </summary>
+	Vector3 mLocalTranslationScale;
+
+	/// <summary>
+	/// [12 BYTES]
+	/// </summary>
+	Vector3 mAnimTranslationScale;
+
+	/// <summary>
+	/// [x BYTES]
+	/// </summary>
+	ResourceGroupMembership mResourceGroupMembership;
+
+	/// <summary>
+	/// [60 BYTES]
+	/// </summary>
+	BoneConstraints mBoneConstraints;
+
+	/// <summary>
+	/// [4 BYTES]
+	/// </summary>
+	unsigned int mFlags;
 
 	SkeletonEntry()
 	{
-
+		mJointName = {};
+		mParentName = {};
+		mParentIndex = 0;
+		mMirrorBoneName = {};
+		mMirrorBoneIndex = 0;
+		mLocalPos = {};
+		mLocalQuat = {};
+		mRestXform = {};
+		mGlobalTranslationScale = {};
+		mLocalTranslationScale = {};
+		mAnimTranslationScale = {};
+		mResourceGroupMembership = {};
+		mBoneConstraints = {};
+		mFlags = 0;
 	};
 
 	SkeletonEntry(std::ifstream* inputFileStream)
 	{
-		Symbol mJointName = Symbol(inputFileStream);
-		Symbol mParentName = Symbol(inputFileStream);
-		int mParentIndex = ReadInt32FromBinary(inputFileStream);
-		Symbol mMirrorBoneName = Symbol(inputFileStream);
-		int mMirrorBoneIndex = ReadInt32FromBinary(inputFileStream);
-
-		Vector3 mLocalPos = Vector3(inputFileStream);
-		Quaternion mLocalQuat = Quaternion(inputFileStream);
-		Transform mRestXform = Transform(inputFileStream);
-
-		Vector3 mGlobalTranslationScale = Vector3(inputFileStream);
-		Vector3 mLocalTranslationScale = Vector3(inputFileStream);
-		Vector3 mAnimTranslationScale = Vector3(inputFileStream);
-
-		//I get lost around here...
-
-		//mResourceGroupMembership?
-		unsigned int mResourceGroupMembershipBlockSize = ReadUInt32FromBinary(inputFileStream);
-		Symbol mResourceGroupMembershipSymbol = {};
-		float mResourceGroupMembershipFloat = 0.0f;
-
-		//?????????????
-		if (mResourceGroupMembershipBlockSize > 0)
-		{
-			mResourceGroupMembershipSymbol = Symbol(inputFileStream);
-			//mResourceGroupMembershipFloat = ReadFloat32FromBinary(inputFileStream);
-		}
-
-		//BoneContraints
-		unsigned int mBlockSize_BoneContraints = ReadUInt32FromBinary(inputFileStream);
-		BoneType mBoneType = (BoneType)ReadInt32FromBinary(inputFileStream); // 0 = eBoneType_Hinge, 1 = eBoneType_Ball
-		Vector3 mHingeAxis = Vector3(inputFileStream);
-
-		//StaticArray 3 Elements
-		//TRange<float>
-		float mAxisRange0_min = ReadFloat32FromBinary(inputFileStream);
-		float mAxisRange0_max = ReadFloat32FromBinary(inputFileStream);
-
-		//TRange<float>
-		float mAxisRange1_min = ReadFloat32FromBinary(inputFileStream);
-		float mAxisRange1_max = ReadFloat32FromBinary(inputFileStream);
-
-		//TRange<float>
-		float mAxisRange2_min = ReadFloat32FromBinary(inputFileStream);
-		float mAxisRange2_max = ReadFloat32FromBinary(inputFileStream);
-
-		unsigned int flags = ReadUInt32FromBinary(inputFileStream);
-
-		std::cout << "[SkeletonEntry] mJointName: " << mJointName.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mParentName: " << mParentName.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mParentIndex: " << mParentIndex << std::endl;
-		std::cout << "[SkeletonEntry] mMirrorBoneName: " << mMirrorBoneName.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mMirrorBoneIndex: " << mMirrorBoneIndex << std::endl;
-		std::cout << "[SkeletonEntry] mLocalPos: " << mLocalPos.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mLocalQuat: " << mLocalQuat.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mRestXform: " << mRestXform.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mGlobalTranslationScale: " << mGlobalTranslationScale.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mLocalTranslationScale: " << mLocalTranslationScale.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mAnimTranslationScale: " << mAnimTranslationScale.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mResourceGroupMembershipBlockSize: " << mResourceGroupMembershipBlockSize << std::endl;
-		std::cout << "[SkeletonEntry] mResourceGroupMembershipSymbol: " << mResourceGroupMembershipSymbol.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mResourceGroupMembershipFloat: " << mResourceGroupMembershipFloat << std::endl;
-		std::cout << "[SkeletonEntry] mBlockSize_BoneContraints: " << mBlockSize_BoneContraints << std::endl;
-		std::cout << "[SkeletonEntry] mBoneType: " << mBoneType << std::endl;
-		std::cout << "[SkeletonEntry] mHingeAxis: " << mHingeAxis.ToString() << std::endl;
-		std::cout << "[SkeletonEntry] mAxisRange0_min: " << mAxisRange0_min << std::endl;
-		std::cout << "[SkeletonEntry] mAxisRange0_max: " << mAxisRange0_max << std::endl;
-		std::cout << "[SkeletonEntry] mAxisRange1_min: " << mAxisRange1_min << std::endl;
-		std::cout << "[SkeletonEntry] mAxisRange1_max: " << mAxisRange1_max << std::endl;
-		std::cout << "[SkeletonEntry] mAxisRange2_min: " << mAxisRange2_min << std::endl;
-		std::cout << "[SkeletonEntry] mAxisRange2_max: " << mAxisRange2_max << std::endl;
+		mJointName = Symbol(inputFileStream);
+		mParentName = Symbol(inputFileStream);
+		mParentIndex = ReadInt32FromBinary(inputFileStream);
+		mMirrorBoneName = Symbol(inputFileStream);
+		mMirrorBoneIndex = ReadInt32FromBinary(inputFileStream);
+		mLocalPos = Vector3(inputFileStream);
+		mLocalQuat = Quaternion(inputFileStream);
+		mRestXform = Transform(inputFileStream);
+		mGlobalTranslationScale = Vector3(inputFileStream);
+		mLocalTranslationScale = Vector3(inputFileStream);
+		mAnimTranslationScale = Vector3(inputFileStream);
+		mResourceGroupMembership = ResourceGroupMembership(inputFileStream);
+		mBoneConstraints = BoneConstraints(inputFileStream);
+		mFlags = ReadUInt32FromBinary(inputFileStream);
 	};
+
+	void UpdateValues()
+	{
+		mResourceGroupMembership.UpdateValues();
+		mBoneConstraints.UpdateValues();
+	}
+
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-
+		mJointName.BinarySerialize(outputFileStream);
+		mParentName.BinarySerialize(outputFileStream);
+		WriteInt32ToBinary(outputFileStream, mParentIndex);
+		mMirrorBoneName.BinarySerialize(outputFileStream);
+		WriteInt32ToBinary(outputFileStream, mMirrorBoneIndex);
+		mLocalPos.BinarySerialize(outputFileStream);
+		mLocalQuat.BinarySerialize(outputFileStream);
+		mRestXform.BinarySerialize(outputFileStream);
+		mGlobalTranslationScale.BinarySerialize(outputFileStream);
+		mLocalTranslationScale.BinarySerialize(outputFileStream);
+		mAnimTranslationScale.BinarySerialize(outputFileStream);
+		mResourceGroupMembership.BinarySerialize(outputFileStream);
+		mBoneConstraints.BinarySerialize(outputFileStream);
+		WriteUInt32ToBinary(outputFileStream, mFlags);
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "";
+		output += "[SkeletonEntry] mJointName: " + mJointName.ToString() + "\n";
+		output += "[SkeletonEntry] mParentName: " + mParentName.ToString() + "\n";
+		output += "[SkeletonEntry] mParentIndex: " + std::to_string(mParentIndex) + "\n";
+		output += "[SkeletonEntry] mMirrorBoneName: " + mMirrorBoneName.ToString() + "\n";
+		output += "[SkeletonEntry] mMirrorBoneIndex: " + std::to_string(mMirrorBoneIndex) + "\n";
+		output += "[SkeletonEntry] mLocalPos: " + mLocalPos.ToString() + "\n";
+		output += "[SkeletonEntry] mLocalQuat: " + mLocalQuat.ToString() + "\n";
+		output += "[SkeletonEntry] mRestXform: " + mRestXform.ToString() + "\n";
+		output += "[SkeletonEntry] mGlobalTranslationScale: " + mGlobalTranslationScale.ToString() + "\n";
+		output += "[SkeletonEntry] mLocalTranslationScale: " + mLocalTranslationScale.ToString() + "\n";
+		output += "[SkeletonEntry] mAnimTranslationScale: " + mAnimTranslationScale.ToString() + "\n";
+		output += "[SkeletonEntry] mResourceGroupMembership: " + mResourceGroupMembership.ToString() + "\n";
+		output += "[SkeletonEntry] mBoneConstraints: " + mBoneConstraints.ToString() + "\n";
+		output += "[SkeletonEntry] mFlags: " + std::to_string(mFlags);
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
+
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(SkeletonEntry,
+		mJointName,
+		mParentName,
+		mParentIndex,
+		mMirrorBoneName,
+		mMirrorBoneIndex,
+		mLocalPos,
+		mLocalQuat,
+		mRestXform,
+		mGlobalTranslationScale,
+		mLocalTranslationScale,
+		mAnimTranslationScale,
+		mResourceGroupMembership,
+		mBoneConstraints,
+		mFlags)
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [x BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += mJointName.GetByteSize(); //[8 BYTES] mJointName
+		totalByteSize += mParentName.GetByteSize(); //[8 BYTES] mParentName
+		totalByteSize += 4; //[4 BYTES] mParentIndex
+		totalByteSize += mMirrorBoneName.GetByteSize(); //[8 BYTES] mMirrorBoneName
+		totalByteSize += 4; //[4 BYTES] mMirrorBoneIndex
+		totalByteSize += mLocalPos.GetByteSize(); //[12 BYTES] mLocalPos
+		totalByteSize += mLocalQuat.GetByteSize(); //[16 BYTES] mLocalQuat
+		totalByteSize += mRestXform.GetByteSize(); //[32 BYTES] mRestXform
+		totalByteSize += mGlobalTranslationScale.GetByteSize(); //[12 BYTES] mGlobalTranslationScale
+		totalByteSize += mLocalTranslationScale.GetByteSize(); //[12 BYTES] mLocalTranslationScale
+		totalByteSize += mAnimTranslationScale.GetByteSize(); //[12 BYTES] mAnimTranslationScale
+		totalByteSize += mResourceGroupMembership.GetByteSize(); //[x BYTES] mResourceGroupMembership
+		totalByteSize += mBoneConstraints.GetByteSize(); //[60 BYTES] mBoneConstraints
+		totalByteSize += 4; //[4 BYTES] mFlags
+		return totalByteSize;
+	}
 };
 
 #endif

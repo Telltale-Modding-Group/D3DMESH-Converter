@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VECTOR_2_H
-#define VECTOR_2_H
+#ifndef T_RANGE_FLOAT_H
+#define T_RANGE_FLOAT_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
@@ -11,41 +11,35 @@
 #include "BinaryDeserialization.h"
 #include "Json.h"
 
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T RANGE FLOAT |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T RANGE FLOAT |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T RANGE FLOAT |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [8 BYTES] Vector with 2 float32 components (x, y)
+/// [8 BYTES]
 /// </summary>
-struct Vector2
+struct TRangeFloat
 {
 	/// <summary>
-	/// [4 BYTES] x (horizontal) component.
+	/// [4 BYTES]
 	/// </summary>
-	float x;
+	float min;
 
 	/// <summary>
-	/// [4 BYTES] y (vertical) component.
+	/// [4 BYTES]
 	/// </summary>
-	float y;
+	float max;
 
-	Vector2()
+	TRangeFloat()
 	{
-		x = 0.0f;
-		y = 0.0f;
+		min = 0.0f;
+		max = 0.0f;
 	};
 
-	Vector2(float x, float y)
+	TRangeFloat(std::ifstream* inputFileStream)
 	{
-		this->x = x;
-		this->y = y;
-	};
-
-	Vector2(std::ifstream* inputFileStream)
-	{
-		x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+		min = ReadFloat32FromBinary(inputFileStream);
+		max = ReadFloat32FromBinary(inputFileStream);
 	};
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -54,8 +48,8 @@ struct Vector2
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
-		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
+		WriteFloat32ToBinary(outputFileStream, min);
+		WriteFloat32ToBinary(outputFileStream, max);
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -64,7 +58,7 @@ struct Vector2
 
 	std::string ToString() const
 	{
-		return "[Vector2] x:" + std::to_string(x) + " y: " + std::to_string(y);
+		return "[TRangeFloat] min:" + std::to_string(min) + " max: " + std::to_string(max);
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
@@ -75,7 +69,7 @@ struct Vector2
 
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
-	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Vector2, x, y)
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(TRangeFloat, min, max)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -88,11 +82,11 @@ struct Vector2
 	/// [8 BYTES]
 	/// </summary>
 	/// <returns></returns>
-	unsigned int GetByteSize() 
+	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += 4; //[4 BYTES] x
-		totalByteSize += 4; //[4 BYTES] y
+		totalByteSize += 4; //[4 BYTES] min
+		totalByteSize += 4; //[4 BYTES] max
 		return totalByteSize;
 	}
 };

@@ -18,27 +18,27 @@
 //However there are cases where the vector types do hold integer data per component.
 
 /// <summary>
-/// [16 bytes] Vector with 4 int32 components (x, y, z, w)
+/// [16 BYTES] Vector with 4 int32 components (x, y, z, w)
 /// </summary>
 struct IntegerVector4
 {
 	/// <summary>
-	/// [4 bytes] x (horizontal) component.
+	/// [4 BYTES] x (horizontal) component.
 	/// </summary>
 	int x;
 
 	/// <summary>
-	/// [4 bytes] y (vertical) component.
+	/// [4 BYTES] y (vertical) component.
 	/// </summary>
 	int y;
 
 	/// <summary>
-	/// [4 bytes] z (depth) component.
+	/// [4 BYTES] z (depth) component.
 	/// </summary>
 	int z;
 
 	/// <summary>
-	/// [4 bytes] w (scalar) component.
+	/// [4 BYTES] w (scalar) component.
 	/// </summary>
 	int w;
 
@@ -66,6 +66,10 @@ struct IntegerVector4
 		w = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		WriteInt32ToBinary(outputFileStream, x); //[4 BYTES]
@@ -90,7 +94,6 @@ struct IntegerVector4
 	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
 
 	//These are supposed to be inside the class/struct
-	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
 	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(IntegerVector4, x, y, z, w)
 };

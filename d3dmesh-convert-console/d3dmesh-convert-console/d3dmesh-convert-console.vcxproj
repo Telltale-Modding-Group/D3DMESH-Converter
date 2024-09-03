@@ -136,6 +136,7 @@
     <ClCompile Include="Application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="BoneConstraints.h" />
     <ClInclude Include="BoneType.h" />
     <ClInclude Include="D3DMeshDataToAssimp.h" />
     <ClInclude Include="Json.h" />
@@ -152,6 +153,8 @@
     <ClInclude Include="IntegerVector4.h" />
     <ClInclude Include="NewMesh.h" />
     <ClInclude Include="Quaternion.h" />
+    <ClInclude Include="ResourceGroupMembership.h" />
+    <ClInclude Include="ResourceGroupMembershipMapEntry.h" />
     <ClInclude Include="Skeleton.h" />
     <ClInclude Include="SkeletonEntry.h" />
     <ClInclude Include="Symbol.h" />
@@ -171,6 +174,7 @@
     <ClInclude Include="TelltaleMetaHeaderVersion6.h" />
     <ClInclude Include="T3GFXBufferSerialization.h" />
     <ClInclude Include="TelltaleSkeletonFile.h" />
+    <ClInclude Include="TRangeFloat.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UnsignedIntegerVector2.h" />
     <ClInclude Include="UnsignedIntegerVector3.h" />

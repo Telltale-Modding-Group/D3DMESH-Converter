@@ -1,14 +1,23 @@
-				//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
 
 //#define FULL_CONSOLE_OUTPUT
+
 //#define READ_D3DMESH
 //#define READ_D3DMESH_EXPORT_ASSIMP
 //#define READ_D3DMESH_EXPORT_JSON
 //#define READ_D3DMESH_EXPORT_D3DMESH
 //#define READ_JSON_EXPORT_D3DMESH
-#define READ_SKL
+
+//#define READ_SKL
+//#define READ_SKL_EXPORT_JSON
+//#define READ_SKL_EXPORT_SKL
+//#define READ_JSON_EXPORT_SKL
+
+//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 
 //Standard C++ Library
 #include <string>
@@ -85,6 +94,7 @@ int main()
 #if defined (READ_SKL)
 	for (int i = 0; i < sklFilePaths.size(); i++)
 	{
+		//=================== READ SKL ===================
 		std::string currentSKL_FilePath = sklFilePaths[i];
 		std::string currentSKL_FileName = sklFileNames[i];
 		unsigned long currentSKL_FileSize = sklFileSizes[i];
@@ -100,12 +110,113 @@ int main()
 	}
 #endif
 
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
+#if defined (READ_SKL_EXPORT_JSON)
+	for (int i = 0; i < sklFilePaths.size(); i++)
+	{
+		//=================== READ SKL ===================
+		std::string currentSKL_FilePath = sklFilePaths[i];
+		std::string currentSKL_FileName = sklFileNames[i];
+		unsigned long currentSKL_FileSize = sklFileSizes[i];
+
+		std::cout << "READING... " << currentSKL_FilePath << " [" << currentSKL_FileSize << " BYTES]" << std::endl;
+
+		std::ifstream currentSKL_inputFileStream;
+		currentSKL_inputFileStream.open(currentSKL_FilePath, std::fstream::in | std::fstream::binary);
+
+		TelltaleSkeletonFile sklFile = TelltaleSkeletonFile(&currentSKL_inputFileStream);
+
+		currentSKL_inputFileStream.close();
+
+		//=================== EXPORT SKL TO JSON ===================
+		std::ofstream jsonOutputFileStream;
+		std::string jsonExportPath = "OutputSKL_TO_JSON/" + currentSKL_FileName + ".json";
+		jsonOutputFileStream.open(jsonExportPath);
+
+		nlohmann::ordered_json json;
+		json = sklFile;
+
+		std::string jsonDump = json.dump(4); //pretty print with indents
+		jsonOutputFileStream.write(jsonDump.c_str(), jsonDump.length());
+
+		jsonOutputFileStream.close();
+	}
+#endif
+
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
+#if defined (READ_SKL_EXPORT_SKL)
+	for (int i = 0; i < sklFilePaths.size(); i++)
+	{
+		//=================== READ SKL ===================
+		std::string currentSKL_FilePath = sklFilePaths[i];
+		std::string currentSKL_FileName = sklFileNames[i];
+		unsigned long currentSKL_FileSize = sklFileSizes[i];
+
+		std::cout << "READING... " << currentSKL_FilePath << " [" << currentSKL_FileSize << " BYTES]" << std::endl;
+
+		std::ifstream currentSKL_inputFileStream;
+		currentSKL_inputFileStream.open(currentSKL_FilePath, std::fstream::in | std::fstream::binary);
+
+		TelltaleSkeletonFile sklFile = TelltaleSkeletonFile(&currentSKL_inputFileStream);
+
+		currentSKL_inputFileStream.close();
+
+		//=================== EXPORT SKL ===================
+		sklFile.UpdateValues();
+
+		std::ofstream sklOutputFileStream;
+		std::string sklExportPath = "OutputSKL_TO_SKL/" + currentSKL_FileName;
+		sklOutputFileStream.open(sklExportPath, std::ios::binary);
+		sklFile.BinarySerialize(&sklOutputFileStream);
+		sklOutputFileStream.close();
+	}
+#endif
+
+	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
+#if defined (READ_JSON_EXPORT_SKL)
+	for (const auto& entry : std::filesystem::recursive_directory_iterator("InputSKL_JSON"))
+	{
+		std::string assetFilePath = entry.path().string();
+		std::string assetFileName = entry.path().filename().string();
+
+		if (entry.path().extension() == ".json")
+		{
+			//=================== READ SKL JSON ===================
+			std::ifstream inputFileStream;
+			inputFileStream.open(assetFilePath, std::fstream::in | std::fstream::binary);
+
+			nlohmann::ordered_json readJson;
+			inputFileStream >> readJson;
+
+			TelltaleSkeletonFile parsedSKL = readJson.template get<TelltaleSkeletonFile>();
+
+			inputFileStream.close();
+
+			//=================== EXPORT SKL ===================
+			std::ofstream sklOutputFileStream;
+			std::string sklExportPath = "OutputJSON_TO_SKL/" + assetFileName + ".skl";
+			sklOutputFileStream.open(sklExportPath, std::ios::binary);
+			parsedSKL.BinarySerialize(&sklOutputFileStream);
+			sklOutputFileStream.close();
+
+			std::cout << "EXPORTED... " << sklExportPath << std::endl;
+		}
+	}
+#endif
+
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH)
 	for (int d3dmeshFilePathIndex = 0; d3dmeshFilePathIndex < d3dmeshFilePaths.size(); d3dmeshFilePathIndex++)
 	{
+		//=================== READ D3DMESH ===================
 		std::string currentD3DMESH_FilePath = d3dmeshFilePaths[d3dmeshFilePathIndex];
 		std::string currentD3DMESH_FileName = d3dmeshFileNames[d3dmeshFilePathIndex];
 		unsigned long currentD3DMESH_FileSize = d3dmeshFileSizes[d3dmeshFilePathIndex];
@@ -127,6 +238,7 @@ int main()
 #if defined (READ_D3DMESH_EXPORT_D3DMESH)
 	for (int d3dmeshFilePathIndex = 0; d3dmeshFilePathIndex < d3dmeshFilePaths.size(); d3dmeshFilePathIndex++)
 	{
+		//=================== READ D3DMESH ===================
 		std::string currentD3DMESH_FilePath = d3dmeshFilePaths[d3dmeshFilePathIndex];
 		std::string currentD3DMESH_FileName = d3dmeshFileNames[d3dmeshFilePathIndex];
 		unsigned long currentD3DMESH_FileSize = d3dmeshFileSizes[d3dmeshFilePathIndex];
@@ -140,6 +252,7 @@ int main()
 
 		currentD3DMESH_inputFileStream.close();
 
+		//=================== D3DMESH DATA TESTS ===================
 		//This is a D3DMESH export test, here we just simply take the D3DMESH data that we just parsed...
 		//Then we use that data, recalculate header lengths/sizes/etc. and then write a new d3dmesh file.
 		//If all goes well the D3DMESH file that we exported should be the EXACT same sa the D3DMESH file we just parsed.
@@ -195,6 +308,7 @@ int main()
 		}
 		*/
 
+		//=================== EXPORT D3DMESH ===================
 		d3dmeshFile.UpdateValues();
 
 		std::ofstream d3dmeshOutputFileStream;
@@ -211,6 +325,7 @@ int main()
 #if defined (READ_D3DMESH_EXPORT_JSON)
 	for (int d3dmeshFilePathIndex = 0; d3dmeshFilePathIndex < d3dmeshFilePaths.size(); d3dmeshFilePathIndex++)
 	{
+		//=================== READ D3DMESH ===================
 		std::string currentD3DMESH_FilePath = d3dmeshFilePaths[d3dmeshFilePathIndex];
 		std::string currentD3DMESH_FileName = d3dmeshFileNames[d3dmeshFilePathIndex];
 		unsigned long currentD3DMESH_FileSize = d3dmeshFileSizes[d3dmeshFilePathIndex];
@@ -224,8 +339,9 @@ int main()
 
 		currentD3DMESH_inputFileStream.close();
 
+		//=================== EXPORT JSON ===================
 		std::ofstream jsonOutputFileStream;
-		std::string jsonExportPath = "OutputJSON/" + currentD3DMESH_FileName + ".json";
+		std::string jsonExportPath = "OutputD3DMESH_TO_JSON/" + currentD3DMESH_FileName + ".json";
 		jsonOutputFileStream.open(jsonExportPath);
 
 		nlohmann::ordered_json json;
@@ -244,6 +360,7 @@ int main()
 #if defined (READ_D3DMESH_EXPORT_ASSIMP)
 	for (int d3dmeshFilePathIndex = 0; d3dmeshFilePathIndex < d3dmeshFilePaths.size(); d3dmeshFilePathIndex++)
 	{
+		//=================== READ D3DMESH ===================
 		std::string currentD3DMESH_FilePath = d3dmeshFilePaths[d3dmeshFilePathIndex];
 		std::string currentD3DMESH_FileName = d3dmeshFileNames[d3dmeshFilePathIndex];
 		unsigned long currentD3DMESH_FileSize = d3dmeshFileSizes[d3dmeshFilePathIndex];
@@ -257,6 +374,7 @@ int main()
 
 		currentD3DMESH_inputFileStream.close();
 
+		//=================== EXPORT ASSIMP ===================
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
@@ -343,13 +461,14 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_JSON_EXPORT_D3DMESH)
-	for (const auto& entry : std::filesystem::recursive_directory_iterator("InputJSON"))
+	for (const auto& entry : std::filesystem::recursive_directory_iterator("InputD3DMESH_JSON"))
 	{
 		std::string assetFilePath = entry.path().string();
 		std::string assetFileName = entry.path().filename().string();
 
 		if (entry.path().extension() == ".json")
 		{
+			//=================== READ D3DMESH JSON ===================
 			std::ifstream inputFileStream;
 			inputFileStream.open(assetFilePath, std::fstream::in | std::fstream::binary);
 
@@ -360,6 +479,7 @@ int main()
 
 			inputFileStream.close();
 
+			//=================== EXPORT D3DMESH ===================
 			std::ofstream d3dmeshOutputFileStream;
 			std::string d3dmeshExportPath = "OutputJSON_TO_D3DMESH/" + assetFileName + ".d3dmesh";
 			d3dmeshOutputFileStream.open(d3dmeshExportPath, std::ios::binary);

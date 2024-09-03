@@ -55,6 +55,10 @@ struct Transform
 		mTrans = Vector3(inputFileStream); //[12 BYTES]
 	};
 
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
 		//update values
@@ -88,7 +92,6 @@ struct Transform
 	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
 
 	//These are supposed to be inside the class/struct
-	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
 	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Transform, mBlockSize, mRot, mTrans)
 

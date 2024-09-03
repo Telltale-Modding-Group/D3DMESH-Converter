@@ -158,5 +158,17 @@
     <ClInclude Include="SkeletonEntry.h">
       <Filter>Header Files\Telltale\DataTypes</Filter>
     </ClInclude>
+    <ClInclude Include="BoneConstraints.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceGroupMembership.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="TRangeFloat.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="ResourceGroupMembershipMapEntry.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

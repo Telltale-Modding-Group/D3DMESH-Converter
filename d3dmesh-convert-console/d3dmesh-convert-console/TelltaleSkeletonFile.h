@@ -27,7 +27,8 @@ public:
 
 	TelltaleSkeletonFile()
 	{
-
+		metaHeader = {};
+		skeleton = {};
 	};
 
 	TelltaleSkeletonFile(std::ifstream* inputFileStream)
@@ -52,10 +53,62 @@ public:
 			std::cout << "[READER INFO] |||||||||||||||||||||||||||||||| DID NOT REACH END OF FILE! Bytes Left To Traverse In File: " << bytesLeftInFile << std::endl;
 	};
 
+	void UpdateValues()
+	{
+		skeleton.UpdateValues();
+		metaHeader.mDefaultSectionChunkSize = skeleton.GetByteSize();
+	}
+
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-
+		metaHeader.BinarySerialize(outputFileStream);
+		skeleton.BinarySerialize(outputFileStream);
 	};
+
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
+
+	std::string ToString() const
+	{
+		std::string output = "";
+		output += "[TelltaleSkeletonFile] metaHeader: " + metaHeader.ToString() + "\n";
+		output += "[TelltaleSkeletonFile] skeleton: " + skeleton.ToString() + "\n";
+		return output;
+	};
+
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
+	//REFERENCE - https://json.nlohmann.me/features/arbitrary_types/
+	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
+
+	//These are supposed to be inside the class/struct
+	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(TelltaleSkeletonFile, metaHeader, skeleton)
+
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
+	//NOTE: Yes I'm aware that C++ has functionality/operators for returning the size of the object, however...
+	//For some of these structs/classes the size C++ returns/gets is wrong and doesn't match what telltale would expect.
+	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
+
+	/// <summary>
+	/// [x BYTES]
+	/// </summary>
+	/// <returns></returns>
+	unsigned int GetByteSize()
+	{
+		unsigned int totalByteSize = 0;
+		totalByteSize += metaHeader.GetByteSize(); //[x BYTES] metaHeader
+		totalByteSize += skeleton.GetByteSize(); //[x BYTES] skeleton
+		return totalByteSize;
+	}
 };
 
 #endif

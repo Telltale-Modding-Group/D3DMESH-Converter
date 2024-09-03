@@ -1,6 +1,6 @@
 #pragma once
-#ifndef VECTOR_2_H
-#define VECTOR_2_H
+#ifndef RESOURCE_GROUP_MEMBERSHIP_H
+#define RESOURCE_GROUP_MEMBERSHIP_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
@@ -11,42 +11,59 @@
 #include "BinaryDeserialization.h"
 #include "Json.h"
 
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
+#include "ResourceGroupMembershipMapEntry.h"
+
+//||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [8 BYTES] Vector with 2 float32 components (x, y)
+/// [x BYTES]
 /// </summary>
-struct Vector2
+struct ResourceGroupMembership
 {
 	/// <summary>
-	/// [4 BYTES] x (horizontal) component.
+	/// [4 BYTES]
 	/// </summary>
-	float x;
+	unsigned int mBlockSize;
 
 	/// <summary>
-	/// [4 BYTES] y (vertical) component.
+	/// [4 BYTES]
 	/// </summary>
-	float y;
+	unsigned int mEntryCount;
 
-	Vector2()
+	/// <summary>
+	/// [x BYTES]
+	/// </summary>
+	std::vector<ResourceGroupMembershipMapEntry> mEntries;
+
+	ResourceGroupMembership()
 	{
-		x = 0.0f;
-		y = 0.0f;
+		mBlockSize = 0;
+		mEntryCount = 0;
+		mEntries = {};
 	};
 
-	Vector2(float x, float y)
+	ResourceGroupMembership(std::ifstream* inputFileStream)
 	{
-		this->x = x;
-		this->y = y;
+		mBlockSize = ReadUInt32FromBinary(inputFileStream);
+		mEntryCount = 0;
+
+		if (mBlockSize > 0)
+		{
+			mEntryCount = ReadUInt32FromBinary(inputFileStream);
+			mEntries = {};
+
+			for (int i = 0; i < mEntryCount; i++)
+				mEntries.push_back(ResourceGroupMembershipMapEntry(inputFileStream));
+		}
 	};
 
-	Vector2(std::ifstream* inputFileStream)
+	void UpdateValues()
 	{
-		x = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
-	};
+		mBlockSize = GetByteSize();
+		mEntryCount = mEntries.size();
+	}
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -54,8 +71,15 @@ struct Vector2
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
-		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
+		WriteUInt32ToBinary(outputFileStream, mBlockSize);
+
+		if (mBlockSize > 0)
+		{
+			WriteUInt32ToBinary(outputFileStream, mEntryCount);
+
+			for (int i = 0; i < mEntryCount; i++)
+				mEntries[i].BinarySerialize(outputFileStream);
+		}
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -64,7 +88,17 @@ struct Vector2
 
 	std::string ToString() const
 	{
-		return "[Vector2] x:" + std::to_string(x) + " y: " + std::to_string(y);
+		std::string output = "";
+		output += "[ResourceGroupMembership] mBlockSize: " + std::to_string(mBlockSize) + "\n";
+		output += "[ResourceGroupMembership] mEntryCount: " + std::to_string(mEntryCount) + "\n";
+		output += "[ResourceGroupMembership] ============ ResourceGroupMembershipMapEntry ARRAY START ============ \n";
+
+		for (int i = 0; i < mEntryCount; i++)
+			output += mEntries[i].ToString() + "\n";
+
+		output += "[ResourceGroupMembership] ============ ResourceGroupMembershipMapEntry ARRAY END ============";
+
+		return output;
 	};
 
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
@@ -75,7 +109,7 @@ struct Vector2
 
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
-	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(Vector2, x, y)
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(ResourceGroupMembership, mBlockSize, mEntryCount, mEntries)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -85,14 +119,18 @@ struct Vector2
 	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
 
 	/// <summary>
-	/// [8 BYTES]
+	/// [x BYTES]
 	/// </summary>
 	/// <returns></returns>
-	unsigned int GetByteSize() 
+	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += 4; //[4 BYTES] x
-		totalByteSize += 4; //[4 BYTES] y
+		totalByteSize += 4; //[4 BYTES] mBlockSize
+		totalByteSize += 4; //[4 BYTES] mEntryCount
+
+		for (int i = 0; i < mEntryCount; i++)
+			totalByteSize += mEntries[i].GetByteSize(); //[12 BYTES]
+
 		return totalByteSize;
 	}
 };

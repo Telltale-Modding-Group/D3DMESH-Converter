@@ -52,8 +52,8 @@ struct GFXPlatformAttributeParams
 
 	GFXPlatformAttributeParams()
 	{
-		mAttribute = eGFXPlatformAttribute_None;
-		mFormat = eGFXPlatformFormat_None;
+		mAttribute = GFXPlatformVertexAttribute::eGFXPlatformAttribute_None;
+		mFormat = GFXPlatformFormat::eGFXPlatformFormat_None;
 		mAttributeIndex = 0;
 		mBufferIndex = 0;
 		mBufferOffset = 0;
@@ -67,6 +67,10 @@ struct GFXPlatformAttributeParams
 		mBufferIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 		mBufferOffset = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
+
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
@@ -99,7 +103,6 @@ struct GFXPlatformAttributeParams
 	//NOTE: These macros are limited to 64 members at most (if there are more you'll need to implement manually.
 
 	//These are supposed to be inside the class/struct
-	//NLOHMANN_DEFINE_TYPE_INTRUSIVE(...) //throws exceptions when there are missing values
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
 	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(GFXPlatformAttributeParams, mAttribute, mFormat, mAttributeIndex, mBufferIndex, mBufferOffset)
 

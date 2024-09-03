@@ -39,18 +39,15 @@ static void BuildAssimpMeshFromD3DMesh(aiMesh* assimpMesh, TelltaleD3DMeshFileV5
 
 	assimpMesh->mMaterialIndex = d3dmeshBatch.mMaterialIndex;
 
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX SETUP ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX SETUP ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX SETUP ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
+
+	assimpMesh->mVertices = new aiVector3D[assimpMesh->mNumVertices];
+	assimpMesh->mNumVertices = d3dmeshLOD.mVertexCount;
 
 	int vertexArrayStart = d3dmeshLOD.mVertexStart;
 	int vertexArrayLength = d3dmeshLOD.mVertexStart + assimpMesh->mNumVertices;
-
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
-	assimpMesh->mNumVertices = d3dmeshLOD.mVertexCount; //SELF NOTE: assign amount of verticies first... or all hell breaks loose
-	assimpMesh->mVertices = new aiVector3D[assimpMesh->mNumVertices];
 
 	for (int i = vertexArrayStart; i < vertexArrayLength; i++)
 		assimpMesh->mVertices[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexPositions[0][i].x, d3dmeshFile->d3dmeshData.vertexPositions[0][i].y, d3dmeshFile->d3dmeshData.vertexPositions[0][i].z);
