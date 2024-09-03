@@ -146,5 +146,17 @@
     <ClInclude Include="D3DMeshDataToAssimp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TelltaleSkeletonFile.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="BoneType.h">
+      <Filter>Header Files\Telltale\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="Skeleton.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonEntry.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

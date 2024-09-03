@@ -69,35 +69,35 @@ static void BuildAssimpMeshFromD3DMesh(aiMesh* assimpMesh, TelltaleD3DMeshFileV5
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX TANGENTS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX TANGENTS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX TANGENTS ||||||||||||||||||||||||||||||||||||||||
-	assimpMesh->mTangents = new aiVector3D[assimpMesh->mNumVertices];
+	//assimpMesh->mTangents = new aiVector3D[assimpMesh->mNumVertices];
 
-	if (d3dmeshFile->d3dmeshData.vertexTangents.size() > 0)
-	{
-		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
-			assimpMesh->mTangents[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexTangents[0][i].x, d3dmeshFile->d3dmeshData.vertexTangents[0][i].y, d3dmeshFile->d3dmeshData.vertexTangents[0][i].z);
-	}
+	//if (d3dmeshFile->d3dmeshData.vertexTangents.size() > 0)
+	//{
+		//for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			//assimpMesh->mTangents[i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexTangents[0][i].x, d3dmeshFile->d3dmeshData.vertexTangents[0][i].y, d3dmeshFile->d3dmeshData.vertexTangents[0][i].z);
+	//}
 
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX COLORS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX COLORS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX COLORS ||||||||||||||||||||||||||||||||||||||||
 
-	for(int j = 0; j < d3dmeshFile->d3dmeshData.vertexColors.size(); j++)
-	{
-		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
-			assimpMesh->mColors[j][i] = aiColor4D(d3dmeshFile->d3dmeshData.vertexColors[j][i].x, d3dmeshFile->d3dmeshData.vertexColors[j][i].y, d3dmeshFile->d3dmeshData.vertexColors[j][i].z, d3dmeshFile->d3dmeshData.vertexColors[j][i].w);
-	}
+	//for(int j = 0; j < d3dmeshFile->d3dmeshData.vertexColors.size(); j++)
+	//{
+		//for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			//assimpMesh->mColors[j][i] = aiColor4D(d3dmeshFile->d3dmeshData.vertexColors[j][i].x, d3dmeshFile->d3dmeshData.vertexColors[j][i].y, d3dmeshFile->d3dmeshData.vertexColors[j][i].z, d3dmeshFile->d3dmeshData.vertexColors[j][i].w);
+	//}
 
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX UVS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX UVS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX UVS ||||||||||||||||||||||||||||||||||||||||
 
-	for (int j = 0; j < d3dmeshFile->d3dmeshData.vertexUVs.size(); j++)
-	{
-		assimpMesh->mNumUVComponents[j] = 2;
+	//for (int j = 0; j < d3dmeshFile->d3dmeshData.vertexUVs.size(); j++)
+	//{
+		//assimpMesh->mNumUVComponents[j] = 2;
 
-		for (int i = vertexArrayStart; i < vertexArrayLength; i++)
-			assimpMesh->mTextureCoords[j][i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexUVs[j][i].x, d3dmeshFile->d3dmeshData.vertexUVs[j][i].y, d3dmeshFile->d3dmeshData.vertexUVs[j][i].z);
-	}
+		//for (int i = vertexArrayStart; i < vertexArrayLength; i++)
+			//assimpMesh->mTextureCoords[j][i] = aiVector3D(d3dmeshFile->d3dmeshData.vertexUVs[j][i].x, d3dmeshFile->d3dmeshData.vertexUVs[j][i].y, d3dmeshFile->d3dmeshData.vertexUVs[j][i].z);
+	//}
 
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
@@ -580,7 +580,7 @@ static void ExportFullAssimpMesh(TelltaleD3DMeshFileV55* d3dmeshFile, std::strin
 	std::string extension = "fbx";
 
 	//construct our final exported file path for the final mesh
-	std::string exportPath = "Output/" + fileName + "." + extension;
+	std::string exportPath = "OutputASSIMP/" + fileName + "." + extension;
 
 	std::cout << "[ASSIMP EXPORT] Exporting..." << std::endl;
 

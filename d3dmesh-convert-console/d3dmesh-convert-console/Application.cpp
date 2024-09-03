@@ -1,12 +1,14 @@
-	//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
+				//||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 
 //#define FULL_CONSOLE_OUTPUT
+//#define READ_D3DMESH
 //#define READ_D3DMESH_EXPORT_ASSIMP
 //#define READ_D3DMESH_EXPORT_JSON
 //#define READ_D3DMESH_EXPORT_D3DMESH
-#define READ_JSON_EXPORT_D3DMESH
+//#define READ_JSON_EXPORT_D3DMESH
+#define READ_SKL
 
 //Standard C++ Library
 #include <string>
@@ -18,6 +20,7 @@
 
 //Custom
 #include "TelltaleD3DMeshFileV55.h"
+#include "TelltaleSkeletonFile.h"
 #include "NewMesh.h"
 #include "NewMeshToAssimp.h"
 #include "D3DMeshDataToAssimp.h"
@@ -28,10 +31,10 @@
 
 int main()
 {
-	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM DATA FOLDER ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM DATA FOLDER ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM DATA FOLDER ||||||||||||||||||||||||||||||||||||||||
-	//First we start by reading all of the .d3dmesh files in the Data folder relative to the application.
+	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM INPUT FOLDER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM INPUT FOLDER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READING D3DMESH FILES FROM INPUT FOLDER ||||||||||||||||||||||||||||||||||||||||
+	//First we start by reading all of the .d3dmesh files in the InputD3DMESH folder relative to the application.
 	//We read them into multiple array so we can iterate through each one and parse them
 
 	std::vector<std::string> d3dmeshFilePaths; //array of the d3dmesh file paths relative to the application
@@ -39,7 +42,7 @@ int main()
 	std::vector<unsigned long> d3dmeshFileSizes; //array of the d3dmesh file byte sizes (only used for comparison later to check if we've reached the end of the file)
 
 	//iterate through every file that we find in the Data/ folder relative to the application
-	for (const auto& entry : std::filesystem::recursive_directory_iterator("Data"))
+	for (const auto& entry : std::filesystem::recursive_directory_iterator("InputD3DMESH"))
 	{
 		//extract path information
 		std::string assetFilePath = entry.path().string();
@@ -53,6 +56,70 @@ int main()
 			d3dmeshFileSizes.push_back(entry.file_size());
 		}
 	}
+
+	//|||||||||||||||||||||||||||||||||||||||| READING SKL FILES FROM INPUT FOLDER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READING SKL FILES FROM INPUT FOLDER ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READING SKL FILES FROM INPUT FOLDER ||||||||||||||||||||||||||||||||||||||||
+
+	std::vector<std::string> sklFilePaths;
+	std::vector<std::string> sklFileNames;
+	std::vector<unsigned long> sklFileSizes;
+
+	for (const auto& entry : std::filesystem::recursive_directory_iterator("InputSKL"))
+	{
+		std::string assetFilePath = entry.path().string();
+		std::string assetFileName = entry.path().filename().string();
+
+		//if the extension matches what we are looking for, then add them!
+		if (entry.path().extension() == ".skl")
+		{
+			sklFilePaths.push_back(assetFilePath);
+			sklFileNames.push_back(assetFileName);
+			sklFileSizes.push_back(entry.file_size());
+		}
+	}
+
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
+#if defined (READ_SKL)
+	for (int i = 0; i < sklFilePaths.size(); i++)
+	{
+		std::string currentSKL_FilePath = sklFilePaths[i];
+		std::string currentSKL_FileName = sklFileNames[i];
+		unsigned long currentSKL_FileSize = sklFileSizes[i];
+
+		std::cout << "READING... " << currentSKL_FilePath << " [" << currentSKL_FileSize << " BYTES]" << std::endl;
+
+		std::ifstream currentSKL_inputFileStream;
+		currentSKL_inputFileStream.open(currentSKL_FilePath, std::fstream::in | std::fstream::binary);
+
+		TelltaleSkeletonFile sklFile = TelltaleSkeletonFile(&currentSKL_inputFileStream);
+
+		currentSKL_inputFileStream.close();
+	}
+#endif
+
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
+#if defined (READ_D3DMESH)
+	for (int d3dmeshFilePathIndex = 0; d3dmeshFilePathIndex < d3dmeshFilePaths.size(); d3dmeshFilePathIndex++)
+	{
+		std::string currentD3DMESH_FilePath = d3dmeshFilePaths[d3dmeshFilePathIndex];
+		std::string currentD3DMESH_FileName = d3dmeshFileNames[d3dmeshFilePathIndex];
+		unsigned long currentD3DMESH_FileSize = d3dmeshFileSizes[d3dmeshFilePathIndex];
+
+		std::cout << "READING... " << currentD3DMESH_FilePath << " [" << currentD3DMESH_FileSize << " BYTES]" << std::endl;
+
+		std::ifstream currentD3DMESH_inputFileStream;
+		currentD3DMESH_inputFileStream.open(currentD3DMESH_FilePath, std::fstream::in | std::fstream::binary);
+
+		TelltaleD3DMeshFileV55 d3dmeshFile = TelltaleD3DMeshFileV55(&currentD3DMESH_inputFileStream);
+
+		currentD3DMESH_inputFileStream.close();
+	}
+#endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
@@ -268,7 +335,7 @@ int main()
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
 		//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
 
-		//ExportFullAssimpMesh(&d3dmeshFile, currentD3DMESH_FileName);
+		ExportFullAssimpMesh(&d3dmeshFile, currentD3DMESH_FileName);
 	}
 #endif
 
