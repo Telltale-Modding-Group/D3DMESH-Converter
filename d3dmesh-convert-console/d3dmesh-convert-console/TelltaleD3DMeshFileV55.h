@@ -68,6 +68,17 @@ public:
 		d3dmeshHeader.mIndexBufferCount = d3dmeshData.indexBuffers.size();
 	}
 
+	bool HasBones() 
+	{
+		for (int i = 0; i < d3dmeshHeader.mLODs_ArrayLength; i++)
+		{
+			if (d3dmeshHeader.mLODs[i].mBones_ArrayLength > 0)
+				return true;
+		}
+
+		return false;
+	}
+
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||

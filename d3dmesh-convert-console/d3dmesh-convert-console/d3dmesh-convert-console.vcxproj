@@ -136,11 +136,14 @@
     <ClCompile Include="Application.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AssimpHelper.h" />
     <ClInclude Include="BoneConstraints.h" />
     <ClInclude Include="BoneType.h" />
-    <ClInclude Include="D3DMeshDataToAssimp.h" />
+    <ClInclude Include="D3DMeshDataToAssimpV1.h" />
+    <ClInclude Include="D3DMeshDataToAssimpV2.h" />
+    <ClInclude Include="D3DMeshDataToAssimpV3.h" />
+    <ClInclude Include="FileEntry.h" />
     <ClInclude Include="Json.h" />
-    <ClInclude Include="NewMeshToAssimp.h" />
     <ClInclude Include="BinaryDeserialization.h" />
     <ClInclude Include="BinaryHelper.h" />
     <ClInclude Include="BinarySerialization.h" />
@@ -151,7 +154,6 @@
     <ClInclude Include="IntegerVector2.h" />
     <ClInclude Include="IntegerVector3.h" />
     <ClInclude Include="IntegerVector4.h" />
-    <ClInclude Include="NewMesh.h" />
     <ClInclude Include="Quaternion.h" />
     <ClInclude Include="ResourceGroupMembership.h" />
     <ClInclude Include="ResourceGroupMembershipMapEntry.h" />

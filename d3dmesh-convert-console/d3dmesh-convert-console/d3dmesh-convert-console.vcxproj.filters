@@ -41,9 +41,6 @@
     <ClInclude Include="BinaryHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NewMeshToAssimp.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="T3GFXBufferDeserialization.h">
       <Filter>Header Files\Telltale</Filter>
     </ClInclude>
@@ -137,13 +134,7 @@
     <ClInclude Include="GFXPlatformFormat.h">
       <Filter>Header Files\Telltale\Enums</Filter>
     </ClInclude>
-    <ClInclude Include="NewMesh.h">
-      <Filter>Header Files\CustomTypes</Filter>
-    </ClInclude>
     <ClInclude Include="Json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="D3DMeshDataToAssimp.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="TelltaleSkeletonFile.h">
@@ -169,6 +160,21 @@
     </ClInclude>
     <ClInclude Include="ResourceGroupMembershipMapEntry.h">
       <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DMeshDataToAssimpV1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssimpHelper.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DMeshDataToAssimpV2.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="D3DMeshDataToAssimpV3.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="FileEntry.h">
+      <Filter>Header Files\CustomTypes</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
