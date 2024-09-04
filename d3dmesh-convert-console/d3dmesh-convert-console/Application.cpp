@@ -2,10 +2,11 @@
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
 
-//#define FULL_CONSOLE_OUTPUT
+#define ASSIMP_EXPORT_SHADOW
 
 //#define READ_D3DMESH
-//#define READ_D3DMESH_EXPORT_ASSIMP
+//#define READ_D3DMESH_AND_SKL
+#define READ_D3DMESH_EXPORT_ASSIMP
 //#define READ_D3DMESH_EXPORT_JSON
 //#define READ_D3DMESH_EXPORT_D3DMESH
 //#define READ_JSON_EXPORT_D3DMESH
@@ -13,7 +14,7 @@
 //#define READ_SKL
 //#define READ_SKL_EXPORT_JSON
 //#define READ_SKL_EXPORT_SKL
-#define READ_JSON_EXPORT_SKL
+//#define READ_JSON_EXPORT_SKL
 
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
@@ -404,6 +405,47 @@ int main()
 			outputFileStream.close();
 
 			std::cout << "EXPORTED... " << d3dmeshExportPath << std::endl;
+		}
+	}
+#endif
+
+#if defined (READ_D3DMESH_AND_SKL)
+	for (const auto& d3dmeshDirectoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH_AND_SKL"))
+	{
+		FileEntry d3dmeshFileEntry = FileEntry(d3dmeshDirectoryEntry);
+
+		if (d3dmeshFileEntry.fileExtension == ".d3dmesh")
+		{
+			//=================== READ D3DMESH ===================
+			std::cout << "READING... " << d3dmeshFileEntry.filePath << " [" << d3dmeshFileEntry.fileSize << " BYTES]" << std::endl;
+
+			std::ifstream inputFileStream;
+			inputFileStream.open(d3dmeshFileEntry.filePath, std::fstream::in | std::fstream::binary);
+			TelltaleD3DMeshFileV55 parsedD3DMesh = TelltaleD3DMeshFileV55(&inputFileStream);
+			inputFileStream.close();
+
+			if (parsedD3DMesh.HasBones())
+			{
+				FileEntry sklFileEntry;
+				bool hasSKL = false;
+
+				for (const auto& sklDirectoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH_AND_SKL"))
+				{
+					FileEntry newFileEntry = FileEntry(sklDirectoryEntry);
+
+					if (newFileEntry.fileExtension == ".skl")
+					{
+						if (d3dmeshFileEntry.fileNameWithoutExtension == newFileEntry.fileNameWithoutExtension)
+						{
+							sklFileEntry = newFileEntry;
+							hasSKL = true;
+						}
+					}
+				}
+
+				if (!hasSKL)
+					std::cout << "[D3DMESH INFO] " << d3dmeshFileEntry.filePath << " has bones but no matching .skl file was found!" << std::endl;
+			}
 		}
 	}
 #endif

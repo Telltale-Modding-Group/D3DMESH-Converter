@@ -20,6 +20,7 @@
 #include "T3MaterialRequirements.h"
 #include "T3GFXBuffer.h"
 #include "GFXPlatformAttributeParams.h"
+#include "T3MeshMaterial.h"
 
 //||||||||||||||||||||||||||||| TELLTALE D3DMESH HEADER V55 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| TELLTALE D3DMESH HEADER V55 |||||||||||||||||||||||||||||
@@ -77,8 +78,7 @@ struct TelltaleD3DMeshHeaderV55
 	/// </summary>
 	unsigned int mMaterials_ArrayCapacity;
 	unsigned int mMaterials_ArrayLength;
-	//char* mMaterialsData;
-	std::vector<char> mMaterialsData;
+	std::vector<T3MeshMaterial> mMaterials;
 
 	/// <summary>
 	/// [4 bytes]
@@ -164,7 +164,7 @@ struct TelltaleD3DMeshHeaderV55
 		mTexturesData = {};
 		mMaterials_ArrayCapacity = 0;
 		mMaterials_ArrayLength = 0;
-		mMaterialsData = {};
+		mMaterials = {};
 		mMaterialOverrides_ArrayCapacity = 0;
 		mMaterialOverrides_ArrayLength = 0;
 		mMaterialOverridesData = {};
@@ -248,7 +248,9 @@ struct TelltaleD3DMeshHeaderV55
 		//parse the materials block
 		mMaterials_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
 		mMaterials_ArrayLength = ReadUInt32FromBinary(inputFileStream);
-		mMaterialsData = ReadByteVectorBufferFromBinary(inputFileStream, mMaterials_ArrayCapacity - 8); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+
+		for (int i = 0; i < mMaterials_ArrayLength; i++)
+			mMaterials.push_back(T3MeshMaterial(inputFileStream));
 
 		//parse the materials overrides block
 		mMaterialOverrides_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
@@ -315,6 +317,12 @@ struct TelltaleD3DMeshHeaderV55
 
 		for (int i = 0; i < mLODs_ArrayLength; i++)
 			mLODs_ArrayCapacity += mLODs[i].GetByteSize();
+
+		mMaterials_ArrayLength = mMaterials.size();
+		mMaterials_ArrayCapacity = 8;
+
+		for (int i = 0; i < mMaterials_ArrayLength; i++)
+			mMaterials_ArrayCapacity += mMaterials[i].GetByteSize();
 
 		mBones_ArrayLength = mBones.size();
 		mBones_ArrayCapacity = 8;
@@ -385,7 +393,9 @@ struct TelltaleD3DMeshHeaderV55
 
 		WriteUInt32ToBinary(outputFileStream, mMaterials_ArrayCapacity);
 		WriteUInt32ToBinary(outputFileStream, mMaterials_ArrayLength);
-		WriteByteVectorBufferToBinary(outputFileStream, mMaterialsData);
+
+		for (int i = 0; i < mMaterials_ArrayLength; i++)
+			mMaterials[i].BinarySerialize(outputFileStream);
 
 		WriteUInt32ToBinary(outputFileStream, mMaterialOverrides_ArrayCapacity);
 		WriteUInt32ToBinary(outputFileStream, mMaterialOverrides_ArrayLength);
@@ -486,7 +496,7 @@ struct TelltaleD3DMeshHeaderV55
 		output += "[TelltaleD3DMeshHeaderV55] mTexturesData [" + std::to_string(mTextures_ArrayCapacity - 8) + " BYTES] \n";
 		output += "[TelltaleD3DMeshHeaderV55] mMaterials_ArrayCapacity: " + std::to_string(mMaterials_ArrayCapacity) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mMaterials_ArrayLength: " + std::to_string(mMaterials_ArrayLength) + "\n";
-		output += "[TelltaleD3DMeshHeaderV55] mMaterialsData [" + std::to_string(mMaterials_ArrayCapacity - 8) + " BYTES] \n";
+		output += "[TelltaleD3DMeshHeaderV55] mMaterials [" + std::to_string(mMaterials_ArrayCapacity - 8) + " BYTES] \n";
 		output += "[TelltaleD3DMeshHeaderV55] mMaterialOverrides_ArrayCapacity: " + std::to_string(mMaterialOverrides_ArrayCapacity) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mMaterialOverrides_ArrayLength: " + std::to_string(mMaterialOverrides_ArrayLength) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mMaterialOverridesData [" + std::to_string(mMaterialOverrides_ArrayCapacity - 8) + " BYTES] \n";
@@ -597,7 +607,7 @@ struct TelltaleD3DMeshHeaderV55
 		mTexturesData,
 		mMaterials_ArrayCapacity,
 		mMaterials_ArrayLength,
-		mMaterialsData,
+		mMaterials,
 		mMaterialOverrides_ArrayCapacity,
 		mMaterialOverrides_ArrayLength,
 		mMaterialOverridesData,
@@ -655,7 +665,10 @@ struct TelltaleD3DMeshHeaderV55
 		totalByteSize += mTextures_ArrayCapacity - 8; //[x BYTES] mTexturesData
 		totalByteSize += 4; //[4 BYTES] mMaterials_ArrayCapacity
 		totalByteSize += 4; //[4 BYTES] mMaterials_ArrayLength
-		totalByteSize += mMaterials_ArrayCapacity - 8; //[x BYTES] mMaterialsData
+
+		for (int i = 0; i < mMaterials_ArrayLength; i++)
+			totalByteSize += mMaterials[i].GetByteSize(); //[76 BYTES]
+
 		totalByteSize += 4; //[4 BYTES] mMaterialOverrides_ArrayCapacity
 		totalByteSize += 4; //[4 BYTES] mMaterialOverrides_ArrayLength
 		totalByteSize += mMaterialOverrides_ArrayCapacity - 8; //[x BYTES] mMaterialOverridesData

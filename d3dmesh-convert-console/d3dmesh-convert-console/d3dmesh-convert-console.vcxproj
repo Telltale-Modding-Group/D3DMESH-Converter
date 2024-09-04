@@ -137,11 +137,13 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssimpHelper.h" />
+    <ClInclude Include="AssimpToD3DMeshDataV1.h" />
     <ClInclude Include="BoneConstraints.h" />
     <ClInclude Include="BoneType.h" />
     <ClInclude Include="D3DMeshDataToAssimpV1.h" />
     <ClInclude Include="D3DMeshDataToAssimpV2.h" />
     <ClInclude Include="D3DMeshDataToAssimpV3.h" />
+    <ClInclude Include="eMeshBatchUsage.h" />
     <ClInclude Include="FileEntry.h" />
     <ClInclude Include="Json.h" />
     <ClInclude Include="BinaryDeserialization.h" />
@@ -166,6 +168,7 @@
     <ClInclude Include="T3MeshBoneEntry.h" />
     <ClInclude Include="T3MeshLocalTransformEntry.h" />
     <ClInclude Include="T3MeshLOD.h" />
+    <ClInclude Include="T3MeshMaterial.h" />
     <ClInclude Include="TelltaleClassName.h" />
     <ClInclude Include="TelltaleD3DMeshDataV55.h" />
     <ClInclude Include="TelltaleD3DMeshFileV55.h" />
@@ -173,6 +176,7 @@
     <ClInclude Include="T3GFXBufferDeserialization.h" />
     <ClInclude Include="GFXPlatformVertexAttribute.h" />
     <ClInclude Include="TelltaleInternalResource.h" />
+    <ClInclude Include="TelltaleMeshDataStorage.h" />
     <ClInclude Include="TelltaleMetaHeaderVersion6.h" />
     <ClInclude Include="T3GFXBufferSerialization.h" />
     <ClInclude Include="TelltaleSkeletonFile.h" />

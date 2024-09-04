@@ -358,6 +358,18 @@ struct TelltaleD3DMeshDataV55
 		//*/
 	};
 
+	void EraseData() 
+	{
+		indexBuffers.erase(indexBuffers.begin(), indexBuffers.end());
+		vertexPositions.erase(vertexPositions.begin(), vertexPositions.end());
+		vertexNormals.erase(vertexNormals.begin(), vertexNormals.end());
+		vertexTangents.erase(vertexTangents.begin(), vertexTangents.end());
+		vertexUVs.erase(vertexUVs.begin(), vertexUVs.end());
+		vertexColors.erase(vertexColors.begin(), vertexColors.end());
+		vertexBlendWeight.erase(vertexBlendWeight.begin(), vertexBlendWeight.end());
+		vertexBlendIndex.erase(vertexBlendIndex.begin(), vertexBlendIndex.end());
+	}
+
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||

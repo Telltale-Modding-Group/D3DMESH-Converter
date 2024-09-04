@@ -40,4 +40,14 @@ static aiColor4D GetAssimpColor4FromVector4(Vector4 value)
 	return aiColor4D(value.x, value.y, value.z, value.w);
 }
 
+static Vector4 GetVector4FromAssimpVector3(aiVector3D value)
+{
+	return Vector4(value.x, value.y, value.z, 0.0f);
+}
+
+static Vector4 GetVector4FromAssimpColor4(aiColor4D value)
+{
+	return Vector4(value.r, value.g, value.b, value.a);
+}
+
 #endif

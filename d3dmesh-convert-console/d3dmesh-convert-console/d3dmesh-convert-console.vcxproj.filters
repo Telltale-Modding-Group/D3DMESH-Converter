@@ -176,5 +176,17 @@
     <ClInclude Include="FileEntry.h">
       <Filter>Header Files\CustomTypes</Filter>
     </ClInclude>
+    <ClInclude Include="TelltaleMeshDataStorage.h">
+      <Filter>Header Files\CustomTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="AssimpToD3DMeshDataV1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="eMeshBatchUsage.h">
+      <Filter>Header Files\Telltale\Enums</Filter>
+    </ClInclude>
+    <ClInclude Include="T3MeshMaterial.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

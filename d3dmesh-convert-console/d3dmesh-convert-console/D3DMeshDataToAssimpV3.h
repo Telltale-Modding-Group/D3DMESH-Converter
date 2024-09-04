@@ -26,6 +26,10 @@
 #include "TelltaleD3DMeshFileV55.h"
 #include "AssimpHelper.h"
 
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
+
 static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFileV55* d3dmeshFile, int d3dmeshIndexLOD, int d3dmeshIndexBatch, bool defaultMesh)
 {
 	T3MeshLOD d3dmeshLOD = d3dmeshFile->d3dmeshHeader.mLODs[d3dmeshIndexLOD];
@@ -41,7 +45,17 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
-	int vertexCount = d3dmeshFile->d3dmeshData.vertexPositions[0].size();
+	//batch (doesn't work?)
+	//int vertexCount = (d3dmeshBatch.mMaxVertIndex + 1) - d3dmeshBatch.mMinVertIndex;
+	//int vertexStart = d3dmeshBatch.mMinVertIndex;
+	
+	//lod (doesn't work?)
+	int vertexCount = d3dmeshLOD.mVertexCount;
+	int vertexStart = d3dmeshLOD.mVertexStart;
+	
+	//total
+	//int vertexCount = d3dmeshFile->d3dmeshHeader.mVertexCount;
+	//int vertexStart = 0;
 
 	assimpMesh->mNumVertices = vertexCount;
 
@@ -54,18 +68,18 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 		assimpMesh->mTangents = new aiVector3D[vertexCount];
 
 	for (int i = 0; i < vertexCount; i++)
-		assimpMesh->mVertices[i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexPositions[0][i]);
+		assimpMesh->mVertices[i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexPositions[0][i + vertexStart]);
 
 	if (d3dmeshFile->d3dmeshData.vertexNormals.size() > 0)
 	{
 		for (int i = 0; i < vertexCount; i++)
-			assimpMesh->mNormals[i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexNormals[0][i]);
+			assimpMesh->mNormals[i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexNormals[0][i + vertexStart]);
 	}
 
 	if (d3dmeshFile->d3dmeshData.vertexTangents.size() > 0)
 	{
 		for (int i = 0; i < vertexCount; i++)
-			assimpMesh->mTangents[i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexTangents[0][i]);
+			assimpMesh->mTangents[i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexTangents[0][i + vertexStart]);
 	}
 
 	for (int j = 0; j < d3dmeshFile->d3dmeshData.vertexColors.size(); j++)
@@ -73,7 +87,7 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 		assimpMesh->mColors[j] = new aiColor4D[vertexCount];
 
 		for (int i = 0; i < vertexCount; i++)
-			assimpMesh->mColors[j][i] = GetAssimpColor4FromVector4(d3dmeshFile->d3dmeshData.vertexColors[j][i]);
+			assimpMesh->mColors[j][i] = GetAssimpColor4FromVector4(d3dmeshFile->d3dmeshData.vertexColors[j][i + vertexStart]);
 	}
 
 	for (int j = 0; j < d3dmeshFile->d3dmeshData.vertexUVs.size(); j++)
@@ -82,7 +96,7 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 		assimpMesh->mTextureCoords[j] = new aiVector3D[vertexCount];
 
 		for (int i = 0; i < vertexCount; i++)
-			assimpMesh->mTextureCoords[j][i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexUVs[j][i]);
+			assimpMesh->mTextureCoords[j][i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexUVs[j][i + vertexStart]);
 	}
 
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
@@ -103,8 +117,7 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 	{
 		aiFace newFace = aiFace();
 
-		//triangles are made up of 3 vertex positions, so indicies are 3
-		newFace.mNumIndices = 3;
+		newFace.mNumIndices = 3; //triangles are made up of 3 vertex positions, so indicies are 3
 		newFace.mIndices = new unsigned int[newFace.mNumIndices];
 
 		//assign each extracted triangle index to our assimp face
@@ -200,10 +213,12 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	defaultMeshParentNode->mChildren = new aiNode * [lodCount];
 	defaultMeshParentNode->mNumChildren = lodCount;
 
+#if defined (ASSIMP_EXPORT_SHADOW)
 	aiNode* shadowMeshParentNode = new aiNode;
 	shadowMeshParentNode->mName = aiString("Shadow");
 	shadowMeshParentNode->mChildren = new aiNode * [lodCount];
 	shadowMeshParentNode->mNumChildren = lodCount;
+#endif
 
 	d3dmeshParentNode->mChildren[0] = defaultMeshParentNode;
 	d3dmeshParentNode->mChildren[1] = shadowMeshParentNode;
@@ -214,8 +229,10 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 		defaultMeshParentNode->mChildren[i] = new aiNode;
 		defaultMeshParentNode->mChildren[i]->mName = "Default_LOD" + std::to_string(i);
 
+#if defined (ASSIMP_EXPORT_SHADOW)
 		shadowMeshParentNode->mChildren[i] = new aiNode;
 		shadowMeshParentNode->mChildren[i]->mName = "Shadow_LOD" + std::to_string(i);
+#endif
 	}
 
 	//|||||||||||||||||||||||||||||||| ASSIMP MATERIAL SETUP ||||||||||||||||||||||||||||||||
@@ -229,8 +246,10 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 
 	for (int i = 0; i < meshMaterialCount; i++)
 	{
+		aiString assimpMaterialName = aiString(d3dmeshFile->d3dmeshHeader.mMaterials[i].mBaseMaterialName.ValueString());
+
 		assimpScene->mMaterials[i] = new aiMaterial(); //create an actual material object
-		//assimpScene->mMaterials[i]->Get(AI_MATKEY_NAME, aiString("New D3DMESH Material: " + std::to_string(i)));
+		assimpScene->mMaterials[i]->AddProperty(&assimpMaterialName, AI_MATKEY_NAME);
 	}
 
 	assimpScene->mNumMaterials = meshMaterialCount; //update the material count
@@ -259,10 +278,16 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	for (int i = 0; i < lodCount; i++)
 	{
 		int defaultMeshCurrentLODLevelSubmeshCount = d3dmeshFile->d3dmeshHeader.mLODs[i].mBatches0_ArrayLength;
+
+#if defined (ASSIMP_EXPORT_SHADOW)
 		int shadowMeshCurrentLODLevelSubmeshCount = d3dmeshFile->d3dmeshHeader.mLODs[i].mBatches1_ArrayLength;
+#endif
 
 		aiNode* defaultMeshParentLOD = defaultMeshParentNode->mChildren[i];
+
+#if defined (ASSIMP_EXPORT_SHADOW)
 		aiNode* shadowMeshParentLOD = shadowMeshParentNode->mChildren[i];
+#endif
 
 		defaultMeshParentLOD->mMeshes = new unsigned int[defaultMeshCurrentLODLevelSubmeshCount];
 
@@ -271,12 +296,14 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 
 		defaultMeshParentLOD->mNumMeshes = defaultMeshCurrentLODLevelSubmeshCount;
 
+#if defined (ASSIMP_EXPORT_SHADOW)
 		shadowMeshParentLOD->mMeshes = new unsigned int[shadowMeshCurrentLODLevelSubmeshCount];
 
 		for (int j = 0; j < shadowMeshCurrentLODLevelSubmeshCount; j++)
 			shadowMeshParentLOD->mMeshes[j] = 0;
 
 		shadowMeshParentLOD->mNumMeshes = shadowMeshCurrentLODLevelSubmeshCount;
+#endif
 
 		for (int j = 0; j < defaultMeshParentLOD->mNumMeshes; j++)
 		{
@@ -284,11 +311,13 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 			assimpMeshIndex++;
 		}
 
+#if defined (ASSIMP_EXPORT_SHADOW)
 		for (int j = 0; j < shadowMeshParentLOD->mNumMeshes; j++)
 		{
 			shadowMeshParentLOD->mMeshes[j] = assimpMeshIndex;
 			assimpMeshIndex++;
 		}
+#endif
 	}
 
 	//|||||||||||||||||||||||||||||||| ASSIMP DEFAULT MESH CONVERSION ||||||||||||||||||||||||||||||||
@@ -302,16 +331,18 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 			aiMesh* defaultSubmesh = assimpScene->mMeshes[defaultMeshParentNode->mChildren[i]->mMeshes[j]];
 			defaultSubmesh->mName = "Default_LOD" + std::to_string(i) + "_Submesh" + std::to_string(j);
 
-			BuildAssimpMeshFromD3DMeshV2(defaultSubmesh, d3dmeshFile, i, j, true);
+			BuildAssimpMeshFromD3DMeshV3(defaultSubmesh, d3dmeshFile, i, j, true);
 		}
 
+#if defined (ASSIMP_EXPORT_SHADOW)
 		for (int j = 0; j < shadowMeshParentNode->mChildren[i]->mNumMeshes; j++)
 		{
 			aiMesh* shadowSubmesh = assimpScene->mMeshes[shadowMeshParentNode->mChildren[i]->mMeshes[j]];
 			shadowSubmesh->mName = "Shadow_LOD" + std::to_string(i) + "_Submesh" + std::to_string(j);
 
-			BuildAssimpMeshFromD3DMeshV2(shadowSubmesh, d3dmeshFile, i, j, false);
+			BuildAssimpMeshFromD3DMeshV3(shadowSubmesh, d3dmeshFile, i, j, false);
 		}
+#endif
 	}
 
 	//|||||||||||||||||||||||||||||||||||||||| ASSIMP EXPORT ||||||||||||||||||||||||||||||||||||||||

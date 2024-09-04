@@ -62,6 +62,7 @@ struct T3MeshLOD
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: This seems to always be 8. </para>
 	/// </summary>
 	unsigned int mVertexStreams_BlockSize;
 
@@ -82,11 +83,13 @@ struct T3MeshLOD
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: This seems to always be zero? </para>
 	/// </summary>
 	unsigned int mFlags;
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: This seems to always be zero? </para>
 	/// </summary>
 	unsigned int mVertexStateIndex;
 
@@ -105,31 +108,38 @@ struct T3MeshLOD
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: Always 0 on the first LOD0 level. </para>
 	/// </summary>
 	unsigned int mVertexStart;
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: If there are no LOD levels (i.e. only one LOD) this will equal mVertexCount in T3MeshData. </para>
+	/// <para> NOTE: If there are multiple LOD levels, this added up should equal mVertexCount in T3MeshData. </para>
 	/// </summary>
 	unsigned int mVertexCount;
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: This seems to always be zero? </para>
 	/// </summary>
 	unsigned int mTextureAtlasWidth;
 
 	/// <summary>
 	/// [4 BYTES] 
+	/// <para> NOTE: This seems to always be zero? </para>
 	/// </summary>
 	unsigned int mTextureAtlasHeight;
 
 	/// <summary>
 	/// [4 BYTES] LOD specific parameter
+	/// <para> NOTE: If there are no LOD levels (i.e. only one LOD) this will be 0.0f </para>
 	/// </summary>
 	float mPixelSize;
 
 	/// <summary>
 	/// [4 BYTES] LOD specific parameter
+	/// <para> NOTE: If there are no LOD levels (i.e. only one LOD) this will be 0.0f </para>
 	/// </summary>
 	float mDistance;
 

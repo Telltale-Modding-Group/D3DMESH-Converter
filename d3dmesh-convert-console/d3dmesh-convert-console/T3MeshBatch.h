@@ -12,6 +12,7 @@
 #include "Json.h"
 #include "BoundingBox.h"
 #include "BoundingSphere.h"
+#include "eMeshBatchUsage.h"
 
 //||||||||||||||||||||||||||||| T3 MESH BATCH |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| T3 MESH BATCH |||||||||||||||||||||||||||||
@@ -37,7 +38,7 @@ public:
 	/// <summary>
 	/// [4 BYTES] mFlags
 	/// </summary>
-	unsigned int mBatchUsage;
+	eMeshBatchUsage mBatchUsage;
 
 	/// <summary>
 	/// [4 BYTES] 
@@ -104,7 +105,7 @@ public:
 	{
 		mBoundingBox = {};
 		mBoundingSphere = {};
-		mBatchUsage = 0;
+		mBatchUsage = (eMeshBatchUsage)0;
 		mMinVertIndex = 0;
 		mMaxVertIndex = 0;
 		mBaseIndex = 0;
@@ -122,7 +123,7 @@ public:
 	{
 		mBoundingBox = BoundingBox(inputFileStream); //[24 BYTES]
 		mBoundingSphere = BoundingSphere(inputFileStream); //[20 BYTES]
-		mBatchUsage = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
+		mBatchUsage = (eMeshBatchUsage)ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 		mMinVertIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 		mMaxVertIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 		mBaseIndex = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]

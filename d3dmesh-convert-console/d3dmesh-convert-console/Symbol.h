@@ -53,6 +53,11 @@ struct Symbol
 		return "[Symbol] mCrc64:" + std::to_string(mCrc64);
 	};
 
+	std::string ValueString() const
+	{
+		return std::to_string(mCrc64);
+	};
+
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| JSON |||||||||||||||||||||||||||||

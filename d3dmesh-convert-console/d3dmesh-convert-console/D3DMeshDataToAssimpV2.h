@@ -26,6 +26,10 @@
 #include "TelltaleD3DMeshFileV55.h"
 #include "AssimpHelper.h"
 
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
+
 static void BuildAssimpMeshFromD3DMeshV2(aiMesh* assimpMesh, TelltaleD3DMeshFileV55* d3dmeshFile, int d3dmeshIndexLOD, int d3dmeshIndexBatch, bool defaultMesh)
 {
 	T3MeshLOD d3dmeshLOD = d3dmeshFile->d3dmeshHeader.mLODs[d3dmeshIndexLOD];

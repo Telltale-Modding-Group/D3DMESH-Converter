@@ -26,6 +26,10 @@
 #include "TelltaleD3DMeshFileV55.h"
 #include "AssimpHelper.h"
 
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V1 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V1 |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V1 |||||||||||||||||||||||||||||
+
 static void ExportD3DMeshToAssimpV1(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName)
 {
 	//start by building a scene in assimp
