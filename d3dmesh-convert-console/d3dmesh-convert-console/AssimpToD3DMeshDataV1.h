@@ -40,10 +40,10 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	std::ifstream d3dmeshJsonInputFileStream;
 	d3dmeshJsonInputFileStream.open(d3dmeshJsonFilePath->filePath, std::fstream::in | std::fstream::binary);
 
-	nlohmann::ordered_json readJson;
-	d3dmeshJsonInputFileStream >> readJson;
+	nlohmann::ordered_json jsonReader;
+	d3dmeshJsonInputFileStream >> jsonReader;
 
-	TelltaleD3DMeshFileV55 parsedD3DMesh = readJson.template get<TelltaleD3DMeshFileV55>();
+	TelltaleD3DMeshFileV55 originalD3DMesh = jsonReader.template get<TelltaleD3DMeshFileV55>();
 
 	d3dmeshJsonInputFileStream.close();
 
@@ -58,168 +58,163 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
-	std::vector<Vector4> meshVertexPositions;
-	std::vector<Vector4> meshVertexNormals;
-	std::vector<Vector4> meshVertexTangents;
-	std::vector<std::vector<Vector4>> meshVertexUVs;
-	std::vector<std::vector<Vector4>> meshVertexColors;
-	std::vector<Vector4> meshVertexBlendWeight;
-	std::vector<UnsignedIntegerVector4> meshVertexBlendIndex;
+	std::vector<Vector4> assimpMeshVertexPositions;
+	std::vector<Vector4> assimpMeshVertexNormals;
+	std::vector<Vector4> assimpMeshVertexTangents;
+	std::vector<std::vector<Vector4>> assimpMeshVertexUVs;
+	std::vector<std::vector<Vector4>> assimpMeshVertexColors;
+	std::vector<Vector4> assimpMeshVertexBlendWeight;
+	std::vector<UnsignedIntegerVector4> assimpMeshVertexBlendIndex;
 
-	int totalVertexCount = 0;
-	unsigned int maxVertexIndex = 0;
+	unsigned int assimpMeshTotalVertexCount = 0;
+	unsigned int assimpMeshMaxVertexIndex = 0;
+	unsigned int assimpMeshTotalTriangleCount = 0;
+	unsigned int assimpMeshTotalIndiciesCount = 0;
 
-	std::vector<Vector4> meshVertexUVChannel;
-	std::vector<Vector4> meshVertexColorChannel;
+	std::vector<Vector4> assimpMeshVertexUVChannel;
+	std::vector<Vector4> assimpMeshVertexColorChannel;
 
-	Vector4 boundingBoxMin = Vector4();
-	Vector4 boundingBoxMax = Vector4();
+	Vector4 newD3DMeshBoundingBoxMin = Vector4();
+	Vector4 newD3DMeshBoundingBoxMax = Vector4();
 
 	for (int i = 0; i < pScene->mNumMeshes; i++)
 	{
 		aiMesh* assimpMesh = pScene->mMeshes[i];
 
-		totalVertexCount += assimpMesh->mNumVertices;
+		assimpMeshTotalVertexCount += assimpMesh->mNumVertices;
 
 		if (assimpMesh->HasPositions())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
-				meshVertexPositions.push_back(GetVector4FromAssimpVector3(assimpMesh->mVertices[j]));
+				assimpMeshVertexPositions.push_back(GetVector4FromAssimpVector3(assimpMesh->mVertices[j]));
 		}
 
 		if (assimpMesh->HasNormals())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
-				meshVertexNormals.push_back(GetVector4FromAssimpVector3(assimpMesh->mNormals[j]));
+				assimpMeshVertexNormals.push_back(GetVector4FromAssimpVector3(assimpMesh->mNormals[j]));
 		}
 
 		if (assimpMesh->HasTangentsAndBitangents())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
-				meshVertexTangents.push_back(GetVector4FromAssimpVector3(assimpMesh->mTangents[j]));
+				assimpMeshVertexTangents.push_back(GetVector4FromAssimpVector3(assimpMesh->mTangents[j]));
 		}
 
 		//for (int j = 0; j < assimpMesh->GetNumUVChannels(); j++)
 		//{
-			//std::vector<Vector4> meshVertexUVChannel;
+			//std::vector<Vector4> assimpMeshVertexUVChannel;
 
 			//for (int x = 0; x < assimpMesh->mNumVertices; x++)
-				//meshVertexUVChannel.push_back(GetVector4FromAssimpVector3(assimpMesh->mTextureCoords[j][x]));
+				//assimpMeshVertexUVChannel.push_back(GetVector4FromAssimpVector3(assimpMesh->mTextureCoords[j][x]));
 
-			//meshVertexUVs.push_back(meshVertexUVChannel);
+			//assimpMeshVertexUVs.push_back(assimpMeshVertexUVChannel);
 		//}
 
-		//std::vector<Vector4> meshVertexUVChannel;
+		//std::vector<Vector4> assimpMeshVertexUVChannel;
 
 		for (int j = 0; j < assimpMesh->GetNumUVChannels(); j++)
 		{
 			for (int x = 0; x < assimpMesh->mNumVertices; x++)
-				meshVertexUVChannel.push_back(GetVector4FromAssimpVector3(assimpMesh->mTextureCoords[j][x]));
+				assimpMeshVertexUVChannel.push_back(GetVector4FromAssimpVector3(assimpMesh->mTextureCoords[j][x]));
 		}
 
 		//for (int j = 0; j < assimpMesh->GetNumColorChannels(); j++)
 		for (int j = 0; j < 1; j++)
 		{
 			//for (int x = 0; x < assimpMesh->mNumVertices; x++)
-				//meshVertexColorChannel.push_back(GetVector4FromAssimpColor4(assimpMesh->mColors[j][x]));
+				//assimpMeshVertexColorChannel.push_back(GetVector4FromAssimpColor4(assimpMesh->mColors[j][x]));
 
 			for (int x = 0; x < assimpMesh->mNumVertices; x++)
-				meshVertexColorChannel.push_back(Vector4(1, 1, 1, 1));
+				assimpMeshVertexColorChannel.push_back(Vector4(1, 1, 1, 1));
 		}
 
 		Vector4 assimpMeshBoundingBoxMin = GetVector4FromAssimpVector3(assimpMesh->mAABB.mMin);
 		Vector4 assimpMeshBoundingBoxMax = GetVector4FromAssimpVector3(assimpMesh->mAABB.mMax);
 
-		boundingBoxMin.x = fmin(boundingBoxMin.x, assimpMeshBoundingBoxMin.x);
-		boundingBoxMin.y = fmin(boundingBoxMin.y, assimpMeshBoundingBoxMin.y);
-		boundingBoxMin.z = fmin(boundingBoxMin.z, assimpMeshBoundingBoxMin.z);
-		boundingBoxMin.w = fmin(boundingBoxMin.w, assimpMeshBoundingBoxMin.w);
+		newD3DMeshBoundingBoxMin.x = fmin(newD3DMeshBoundingBoxMin.x, assimpMeshBoundingBoxMin.x);
+		newD3DMeshBoundingBoxMin.y = fmin(newD3DMeshBoundingBoxMin.y, assimpMeshBoundingBoxMin.y);
+		newD3DMeshBoundingBoxMin.z = fmin(newD3DMeshBoundingBoxMin.z, assimpMeshBoundingBoxMin.z);
+		newD3DMeshBoundingBoxMin.w = fmin(newD3DMeshBoundingBoxMin.w, assimpMeshBoundingBoxMin.w);
 
-		boundingBoxMax.x = fmax(boundingBoxMax.x, assimpMeshBoundingBoxMax.x);
-		boundingBoxMax.y = fmax(boundingBoxMax.y, assimpMeshBoundingBoxMax.y);
-		boundingBoxMax.z = fmax(boundingBoxMax.z, assimpMeshBoundingBoxMax.z);
-		boundingBoxMax.w = fmax(boundingBoxMax.w, assimpMeshBoundingBoxMax.w);
+		newD3DMeshBoundingBoxMax.x = fmax(newD3DMeshBoundingBoxMax.x, assimpMeshBoundingBoxMax.x);
+		newD3DMeshBoundingBoxMax.y = fmax(newD3DMeshBoundingBoxMax.y, assimpMeshBoundingBoxMax.y);
+		newD3DMeshBoundingBoxMax.z = fmax(newD3DMeshBoundingBoxMax.z, assimpMeshBoundingBoxMax.z);
+		newD3DMeshBoundingBoxMax.w = fmax(newD3DMeshBoundingBoxMax.w, assimpMeshBoundingBoxMax.w);
 	}
 
-	meshVertexUVs.push_back(meshVertexUVChannel);
-	meshVertexColors.push_back(meshVertexColorChannel);
+	assimpMeshVertexUVs.push_back(assimpMeshVertexUVChannel);
+	assimpMeshVertexColors.push_back(assimpMeshVertexColorChannel);
 
-	BoundingBox newBoundingBox = BoundingBox();
-	newBoundingBox.mMin = Vector3(boundingBoxMin.x, boundingBoxMin.y, boundingBoxMin.z);
-	newBoundingBox.mMax = Vector3(boundingBoxMax.x, boundingBoxMax.y, boundingBoxMax.z);
-	Vector3 boundingBoxCenter = newBoundingBox.CalculateCenter();
+	BoundingBox newD3DMeshBoundingBox = BoundingBox();
+	newD3DMeshBoundingBox.mMin = Vector3(newD3DMeshBoundingBoxMin.x, newD3DMeshBoundingBoxMin.y, newD3DMeshBoundingBoxMin.z);
+	newD3DMeshBoundingBox.mMax = Vector3(newD3DMeshBoundingBoxMax.x, newD3DMeshBoundingBoxMax.y, newD3DMeshBoundingBoxMax.z);
+	Vector3 newD3DMeshBoundingBoxCenter = newD3DMeshBoundingBox.CalculateCenter();
 
-	parsedD3DMesh.d3dmeshHeader.mBoundingBox = newBoundingBox;
+	originalD3DMesh.d3dmeshHeader.mBoundingBox = newD3DMeshBoundingBox;
 
-	//Vector3 newPositionScale = Vector3();
-	//Vector3 newPositionScale = Vector3(1.0f, 1.0f, 1.0f);
-	Vector3 newPositionScale = newBoundingBox.CalculateSize();
+	Vector3 newPositionScale = newD3DMeshBoundingBox.CalculateSize();
 
 	//NOTE: Since we are assuming buffer format eGFXPlatformFormat_UN10x3_UN2 this means we need a final position to be 0..1
 	//So offset needed here is the extents "half size of bounds" to nudge the models from -0.5 to 0
 	//In addition we also need to get the center of the bounding box and offset by that as well
 	//NOTE: Compared to original hammer, position offset is negative
-	Vector3 newPositionOffset = newBoundingBox.CalculateExtents();
-	newPositionOffset.x -= boundingBoxCenter.x; //subtract by center offset
-	newPositionOffset.y -= boundingBoxCenter.y; //subtract by center offset
-	newPositionOffset.z -= boundingBoxCenter.z; //subtract by center offset
+	Vector3 newPositionOffset = newD3DMeshBoundingBox.CalculateExtents();
+	newPositionOffset -= newD3DMeshBoundingBoxCenter; //subtract by center offset
 
 	//reverse offset
-	newPositionOffset.x = -newPositionOffset.x;
-	newPositionOffset.y = -newPositionOffset.y;
-	newPositionOffset.z = -newPositionOffset.z;
+	newPositionOffset = -newPositionOffset;
 
-	parsedD3DMesh.d3dmeshHeader.mPositionOffset = newPositionOffset;
-	parsedD3DMesh.d3dmeshHeader.mPositionScale = newPositionScale;
+	originalD3DMesh.d3dmeshHeader.mPositionOffset = newPositionOffset;
+	originalD3DMesh.d3dmeshHeader.mPositionScale = newPositionScale;
 
 	//clear original vertex buffer data
-	parsedD3DMesh.EraseVertexBufferHeaderData();
-	parsedD3DMesh.EraseGFXAttributeParamsHeaderData();
-	parsedD3DMesh.EraseVertexBufferMeshData();
+	originalD3DMesh.EraseVertexBufferHeaderData();
+	originalD3DMesh.EraseGFXAttributeParamsHeaderData();
+	originalD3DMesh.EraseVertexBufferMeshData();
 
-	parsedD3DMesh.AddNewVertexBufferVector4(
+	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position, //mAttribute 0
 		GFXPlatformFormat::eGFXPlatformFormat_UN10x3_UN2, //Format 41
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, //mBufferUsage 9
-		meshVertexPositions);
+		assimpMeshVertexPositions);
 
-	parsedD3DMesh.AddNewVertexBufferVector4(
+	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal, //mAttribute 1
 		GFXPlatformFormat::eGFXPlatformFormat_SN8x4, //Format 37
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
-		meshVertexNormals);
+		assimpMeshVertexNormals);
 
 	/*
-	parsedD3DMesh.AddNewVertexBufferVector4(
+	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent, //mAttribute 2
 		GFXPlatformFormat::eGFXPlatformFormat_SN8x4, //Format 37
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
-		meshVertexTangents);
+		assimpMeshVertexTangents);
 
-	parsedD3DMesh.AddNewVertexBufferVector4(
+	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord, //mAttribute 6
 		GFXPlatformFormat::eGFXPlatformFormat_SN16x2, //Format 23
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
-		meshVertexUVs[0]);
+		assimpMeshVertexUVs[0]);
 	*/
 
-	parsedD3DMesh.AddNewVertexBufferVector4(
+	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color, //mAttribute 5
 		GFXPlatformFormat::eGFXPlatformFormat_UN8x4, //Format 23
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, //mBufferUsage 9
-		meshVertexColors[0]);
+		assimpMeshVertexColors[0]);
 
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||
-	std::vector<unsigned short> meshTriangles;
-	unsigned int faceCount = 0;
+	std::vector<unsigned short> assimpMeshTriangles;
 
 	for (int i = 0; i < pScene->mNumMeshes; i++)
 	{
 		aiMesh* assimpMesh = pScene->mMeshes[i];
 
-		faceCount += assimpMesh->mNumFaces;
+		assimpMeshTotalTriangleCount += assimpMesh->mNumFaces;
 		
 		for (int j = 0; j < assimpMesh->mNumFaces; j++)
 		{
@@ -227,18 +222,20 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 			for (int x = 0; x < assimpMeshFace.mNumIndices; x++)
 			{
-				meshTriangles.push_back(assimpMeshFace.mIndices[x]);
-				maxVertexIndex = fmax(maxVertexIndex, assimpMeshFace.mIndices[x]);
+				assimpMeshTriangles.push_back(assimpMeshFace.mIndices[x]);
+				assimpMeshMaxVertexIndex = fmax(assimpMeshMaxVertexIndex, assimpMeshFace.mIndices[x]);
 			}
+
+			assimpMeshTotalIndiciesCount += assimpMeshFace.mNumIndices;
 		}
 	}
 
 	//clear original index buffer data
-	parsedD3DMesh.EraseIndexBufferHeaderData();
-	parsedD3DMesh.EraseIndexBufferMeshData();
+	originalD3DMesh.EraseIndexBufferHeaderData();
+	originalD3DMesh.EraseIndexBufferMeshData();
 
-	parsedD3DMesh.AddNewIndexBuffer(meshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead); //BUFFER USAGE 10
-	//parsedD3DMesh.AddNewIndexBuffer(meshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index); //BUFFER USAGE 2
+	originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead); //BUFFER USAGE 10
+	//originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index); //BUFFER USAGE 2
 
 	//||||||||||||||||||||||||||||| D3DMESH HEADER TO ASSIMP CONVERSION (LODS/SUBMESHES) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH HEADER TO ASSIMP CONVERSION (LODS/SUBMESHES) |||||||||||||||||||||||||||||
@@ -252,7 +249,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//6. On the D3DMESH end there is no mBatches1 (shadow) mesh batches, there is only 1 single mBatches0 (default) mesh batch.
 	//7. On the D3DMESH end there is only one index buffer needed for rendering triangles (remember that initally most/if not all d3dmeshes has two index buffers?)
 
-	parsedD3DMesh.d3dmeshHeader.mVertexCount = totalVertexCount;
+	originalD3DMesh.d3dmeshHeader.mVertexCount = assimpMeshTotalVertexCount;
 
 	T3MeshLOD newLOD0 = T3MeshLOD();
 	T3MeshBatch fullDefaultSubmesh = T3MeshBatch();
@@ -260,46 +257,46 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//set new default mesh batch properties
 	fullDefaultSubmesh.mBatchUsage = (T3MeshBatchUsageFlag)0;
 	fullDefaultSubmesh.mMinVertIndex = 0;
-	fullDefaultSubmesh.mMaxVertIndex = maxVertexIndex;
+	fullDefaultSubmesh.mMaxVertIndex = assimpMeshMaxVertexIndex;
 	fullDefaultSubmesh.mBaseIndex = 0;
 	fullDefaultSubmesh.mStartIndex = 0;
-	fullDefaultSubmesh.mNumPrimitives = faceCount;
-	fullDefaultSubmesh.mNumIndices = meshTriangles.size();
+	fullDefaultSubmesh.mNumPrimitives = assimpMeshTotalTriangleCount;
+	fullDefaultSubmesh.mNumIndices = assimpMeshTotalIndiciesCount;
 	fullDefaultSubmesh.mMaterialIndex = 0;
-	fullDefaultSubmesh.mBoundingBox = newBoundingBox;
-	fullDefaultSubmesh.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newBoundingBox);
+	fullDefaultSubmesh.mBoundingBox = newD3DMeshBoundingBox;
+	fullDefaultSubmesh.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 
 	//set new LOD properties
 	newLOD0.mVertexStart = 0;
-	newLOD0.mVertexCount = totalVertexCount;
-	newLOD0.mNumPrimitives = faceCount; //NOTE: this should be the total face count for both mBatches0 + mBatches1
-	//newLOD0.mNumPrimitives = faceCount * 2;
-	newLOD0.mBoundingBox = newBoundingBox;
-	newLOD0.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newBoundingBox);
+	newLOD0.mVertexCount = assimpMeshTotalVertexCount;
+	newLOD0.mNumPrimitives = assimpMeshTotalTriangleCount; //NOTE: this should be the total face count for both mBatches0 + mBatches1
+	//newLOD0.mNumPrimitives = assimpMeshTotalTriangleCount * 2; //NOTE: this should be the total face count for both mBatches0 + mBatches1
+	newLOD0.mBoundingBox = newD3DMeshBoundingBox;
+	newLOD0.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 
 	//copy original LOD properties
-	newLOD0.mVertexStreams = parsedD3DMesh.d3dmeshHeader.mLODs[0].mVertexStreams;
+	newLOD0.mVertexStreams = originalD3DMesh.d3dmeshHeader.mLODs[0].mVertexStreams;
 
 	//add new batches to new LOD level
 	newLOD0.mBatches0.push_back(fullDefaultSubmesh);
 
 	//clear original LOD data and add our new LOD level
-	parsedD3DMesh.d3dmeshHeader.mLODs.erase(parsedD3DMesh.d3dmeshHeader.mLODs.begin(), parsedD3DMesh.d3dmeshHeader.mLODs.end());
-	parsedD3DMesh.d3dmeshHeader.mLODs.push_back(newLOD0);
+	originalD3DMesh.d3dmeshHeader.mLODs.erase(originalD3DMesh.d3dmeshHeader.mLODs.begin(), originalD3DMesh.d3dmeshHeader.mLODs.end());
+	originalD3DMesh.d3dmeshHeader.mLODs.push_back(newLOD0);
 
 	//update bounding boxes on materials?
-	parsedD3DMesh.d3dmeshHeader.mMaterials[0].mBoundingBox = newBoundingBox;
-	parsedD3DMesh.d3dmeshHeader.mMaterials[0].mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newBoundingBox);
+	originalD3DMesh.d3dmeshHeader.mMaterials[0].mBoundingBox = newD3DMeshBoundingBox;
+	originalD3DMesh.d3dmeshHeader.mMaterials[0].mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 
 	//||||||||||||||||||||||||||||| D3DMESH EXPORT |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH EXPORT |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH EXPORT |||||||||||||||||||||||||||||
 
-	parsedD3DMesh.UpdateStructures();
+	originalD3DMesh.UpdateStructures();
 
 	std::ofstream outputFileStream;
 	outputFileStream.open(outputPath, std::ios::binary);
-	parsedD3DMesh.BinarySerialize(&outputFileStream);
+	originalD3DMesh.BinarySerialize(&outputFileStream);
 	outputFileStream.close();
 
 	std::cout << "EXPORTED... " << outputPath << std::endl;

@@ -37,6 +37,10 @@ struct UnsignedIntegerVector3
 	/// </summary>
 	unsigned int z;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	UnsignedIntegerVector3()
 	{
 		x = 0;

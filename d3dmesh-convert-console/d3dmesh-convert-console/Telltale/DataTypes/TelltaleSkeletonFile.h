@@ -24,6 +24,10 @@ public:
 	TelltaleMetaHeaderVersion6 metaHeader;
 	Skeleton skeleton;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	TelltaleSkeletonFile()
 	{
 		metaHeader = {};

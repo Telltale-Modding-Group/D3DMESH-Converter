@@ -42,6 +42,10 @@ struct TelltaleInternalResource
 	//char* mInternalResourceData;
 	std::vector<char> mInternalResourceData;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	TelltaleInternalResource()
 	{
 		mInternalResourceSymbol = {};

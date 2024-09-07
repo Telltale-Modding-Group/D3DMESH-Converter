@@ -42,6 +42,10 @@ struct UnsignedIntegerVector4
 	/// </summary>
 	unsigned int w;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	UnsignedIntegerVector4()
 	{
 		x = 0;

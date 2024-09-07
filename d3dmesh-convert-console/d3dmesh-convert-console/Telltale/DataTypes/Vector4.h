@@ -40,6 +40,10 @@ struct Vector4
 	/// </summary>
 	float w;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	Vector4()
 	{
 		x = 0.0f;
@@ -74,6 +78,140 @@ struct Vector4
 		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, z); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, w); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+
+	//Negative Vector4
+	Vector4 operator-()
+	{
+		x = -x;
+		y = -y;
+		z = -z;
+		w = -w;
+		return *this;
+	};
+
+	//Add Vector4
+	Vector4 operator+(const Vector4& b)
+	{
+		x += b.x;
+		y += b.y;
+		z += b.z;
+		w += b.w;
+		return *this;
+	};
+
+	//Add Vector4
+	Vector4 operator+=(const Vector4& b)
+	{
+		x += b.x;
+		y += b.y;
+		z += b.z;
+		w += b.w;
+		return *this;
+	};
+
+	//Subtract Vector4
+	Vector4 operator-(const Vector4& b)
+	{
+		x -= b.x;
+		y -= b.y;
+		z -= b.z;
+		w -= b.w;
+		return *this;
+	};
+
+	//Subtract Vector4
+	Vector4 operator-=(const Vector4& b)
+	{
+		x -= b.x;
+		y -= b.y;
+		z -= b.z;
+		w -= b.w;
+		return *this;
+	};
+
+	//Multiply Vector4
+	Vector4 operator*(const Vector4& b)
+	{
+		x *= b.x;
+		y *= b.y;
+		z *= b.z;
+		w *= b.w;
+		return *this;
+	};
+
+	//Multiply Vector4
+	Vector4 operator*=(const Vector4& b)
+	{
+		x *= b.x;
+		y *= b.y;
+		z *= b.z;
+		w *= b.w;
+		return *this;
+	};
+
+	//Divide Vector4
+	Vector4 operator/(const Vector4& b)
+	{
+		x /= b.x;
+		y /= b.y;
+		z /= b.z;
+		w /= b.w;
+		return *this;
+	};
+
+	//Divide Vector4
+	Vector4 operator/=(const Vector4& b)
+	{
+		x /= b.x;
+		y /= b.y;
+		z /= b.z;
+		w /= b.w;
+		return *this;
+	};
+
+	//Multiply float
+	Vector4 operator*(const float& b)
+	{
+		x *= b;
+		y *= b;
+		z *= b;
+		w *= b;
+		return *this;
+	};
+
+	//Multiply float
+	Vector4 operator*=(const float& b)
+	{
+		x *= b;
+		y *= b;
+		z *= b;
+		w *= b;
+		return *this;
+	};
+
+	//Divide float
+	Vector4 operator/(const float& b)
+	{
+		x /= b;
+		y /= b;
+		z /= b;
+		w /= b;
+		return *this;
+	};
+
+	//Divide float
+	Vector4 operator/=(const float& b)
+	{
+		x /= b;
+		y /= b;
+		z /= b;
+		w /= b;
+		return *this;
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

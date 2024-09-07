@@ -30,6 +30,10 @@ struct Vector2
 	/// </summary>
 	float y;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	Vector2()
 	{
 		x = 0.0f;
@@ -56,6 +60,114 @@ struct Vector2
 	{
 		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+
+	//Negative Vector2
+	Vector2 operator-()
+	{
+		x = -x;
+		y = -y;
+		return *this;
+	};
+
+	//Add Vector2
+	Vector2 operator+(const Vector2& b)
+	{
+		x += b.x;
+		y += b.y;
+		return *this;
+	};
+
+	//Add Vector2
+	Vector2 operator+=(const Vector2& b)
+	{
+		x += b.x;
+		y += b.y;
+		return *this;
+	};
+
+	//Subtract Vector2
+	Vector2 operator-(const Vector2& b)
+	{
+		x -= b.x;
+		y -= b.y;
+		return *this;
+	};
+
+	//Subtract Vector2
+	Vector2 operator-=(const Vector2& b)
+	{
+		x -= b.x;
+		y -= b.y;
+		return *this;
+	};
+
+	//Multiply Vector2
+	Vector2 operator*(const Vector2& b)
+	{
+		x *= b.x;
+		y *= b.y;
+		return *this;
+	};
+
+	//Multiply Vector2
+	Vector2 operator*=(const Vector2& b)
+	{
+		x *= b.x;
+		y *= b.y;
+		return *this;
+	};
+
+	//Divide Vector2
+	Vector2 operator/(const Vector2& b)
+	{
+		x /= b.x;
+		y /= b.y;
+		return *this;
+	};
+
+	//Divide Vector2
+	Vector2 operator/=(const Vector2& b)
+	{
+		x /= b.x;
+		y /= b.y;
+		return *this;
+	};
+
+	//Multiply float
+	Vector2 operator*(const float& b)
+	{
+		x *= b;
+		y *= b;
+		return *this;
+	};
+
+	//Multiply float
+	Vector2 operator*=(const float& b)
+	{
+		x *= b;
+		y *= b;
+		return *this;
+	};
+
+	//Divide float
+	Vector2 operator/(const float& b)
+	{
+		x /= b;
+		y /= b;
+		return *this;
+	};
+
+	//Divide float
+	Vector2 operator/=(const float& b)
+	{
+		x /= b;
+		y /= b;
+		return *this;
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

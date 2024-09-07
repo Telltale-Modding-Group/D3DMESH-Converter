@@ -35,6 +35,10 @@ struct Vector3
 	/// </summary>
 	float z;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	Vector3()
 	{
 		x = 0.0f;
@@ -65,6 +69,127 @@ struct Vector3
 		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, z); //[4 BYTES]
+	};
+
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
+
+	//Negative Vector3
+	Vector3 operator-()
+	{
+		x = -x;
+		y = -y;
+		z = -z;
+		return *this;
+	};
+
+	//Add Vector3
+	Vector3 operator+(const Vector3& b)
+	{
+		x += b.x;
+		y += b.y;
+		z += b.z;
+		return *this;
+	};
+
+	//Add Vector3
+	Vector3 operator+=(const Vector3& b)
+	{
+		x += b.x;
+		y += b.y;
+		z += b.z;
+		return *this;
+	};
+
+	//Subtract Vector3
+	Vector3 operator-(const Vector3& b)
+	{
+		x -= b.x;
+		y -= b.y;
+		z -= b.z;
+		return *this;
+	};
+
+	//Subtract Vector3
+	Vector3 operator-=(const Vector3& b)
+	{
+		x -= b.x;
+		y -= b.y;
+		z -= b.z;
+		return *this;
+	};
+
+	//Multiply Vector3
+	Vector3 operator*(const Vector3& b)
+	{
+		x *= b.x;
+		y *= b.y;
+		z *= b.z;
+		return *this;
+	};
+
+	//Multiply Vector3
+	Vector3 operator*=(const Vector3& b)
+	{
+		x *= b.x;
+		y *= b.y;
+		z *= b.z;
+		return *this;
+	};
+
+	//Divide Vector3
+	Vector3 operator/(const Vector3& b)
+	{
+		x /= b.x;
+		y /= b.y;
+		z /= b.z;
+		return *this;
+	};
+
+	//Divide Vector3
+	Vector3 operator/=(const Vector3& b)
+	{
+		x /= b.x;
+		y /= b.y;
+		z /= b.z;
+		return *this;
+	};
+
+	//Multiply float
+	Vector3 operator*(const float& b)
+	{
+		x *= b;
+		y *= b;
+		z *= b;
+		return *this;
+	};
+
+	//Multiply float
+	Vector3 operator*=(const float& b)
+	{
+		x *= b;
+		y *= b;
+		z *= b;
+		return *this;
+	};
+
+	//Divide float
+	Vector3 operator/(const float& b)
+	{
+		x /= b;
+		y /= b;
+		z /= b;
+		return *this;
+	};
+
+	//Divide float
+	Vector3 operator/=(const float& b)
+	{
+		x /= b;
+		y /= b;
+		z /= b;
+		return *this;
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

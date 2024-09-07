@@ -32,6 +32,10 @@ struct UnsignedIntegerVector2
 	/// </summary>
 	unsigned int y;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	UnsignedIntegerVector2()
 	{
 		x = 0;

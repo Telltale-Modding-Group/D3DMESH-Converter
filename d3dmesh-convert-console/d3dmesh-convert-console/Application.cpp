@@ -8,12 +8,12 @@
 //d3dmesh conversion modes
 //#define READ_D3DMESH
 //#define READ_D3DMESH_AND_SKL
-//#define READ_D3DMESH_EXPORT_ASSIMP
+#define READ_D3DMESH_EXPORT_ASSIMP
 //#define READ_D3DMESH_EXPORT_JSON
 //#define READ_D3DMESH_EXPORT_D3DMESH
 //#define READ_D3DMESH_EXPORT_JSON_AND_ASSIMP
 //#define READ_JSON_EXPORT_D3DMESH
-#define READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH
+//#define READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH
 
 //skl conversion modes
 //#define READ_SKL
@@ -74,12 +74,109 @@
 //|||||||||||||||||||||||||||||||||||||||| MAIN ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| MAIN ||||||||||||||||||||||||||||||||||||||||
 
+void SetupDevelopmentDirectories() 
+{
+	if (std::filesystem::is_directory(INPUT_DIRECTORY_D3DMESH) == false)
+	{
+		std::cout << "INPUT_DIRECTORY_D3DMESH: " << INPUT_DIRECTORY_D3DMESH << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(INPUT_DIRECTORY_D3DMESH);
+	}
+
+	if (std::filesystem::is_directory(INPUT_DIRECTORY_D3DMESH_AND_SKL) == false)
+	{
+		std::cout << "INPUT_DIRECTORY_D3DMESH_AND_SKL: " << INPUT_DIRECTORY_D3DMESH_AND_SKL << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(INPUT_DIRECTORY_D3DMESH_AND_SKL);
+	}
+
+	if (std::filesystem::is_directory(INPUT_DIRECTORY_D3DMESH_JSON) == false)
+	{
+		std::cout << "INPUT_DIRECTORY_D3DMESH_JSON: " << INPUT_DIRECTORY_D3DMESH_JSON << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(INPUT_DIRECTORY_D3DMESH_JSON);
+	}
+
+	if (std::filesystem::is_directory(INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP) == false)
+	{
+		std::cout << "INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP: " << INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP);
+	}
+
+	if (std::filesystem::is_directory(INPUT_DIRECTORY_SKL) == false)
+	{
+		std::cout << "INPUT_DIRECTORY_SKL: " << INPUT_DIRECTORY_SKL << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(INPUT_DIRECTORY_SKL);
+	}
+
+	if (std::filesystem::is_directory(INPUT_DIRECTORY_SKL_JSON) == false)
+	{
+		std::cout << "INPUT_DIRECTORY_SKL_JSON: " << INPUT_DIRECTORY_SKL_JSON << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(INPUT_DIRECTORY_SKL_JSON);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_ASSIMP_TO_D3DMESH) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_ASSIMP_TO_D3DMESH: " << OUTPUT_DIRECTORY_ASSIMP_TO_D3DMESH << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_ASSIMP_TO_D3DMESH);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP: " << OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP: " << OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_D3DMESH_TO_D3DMESH) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_D3DMESH_TO_D3DMESH: " << OUTPUT_DIRECTORY_D3DMESH_TO_D3DMESH << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_D3DMESH_TO_D3DMESH);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_D3DMESH_TO_JSON) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_D3DMESH_TO_JSON: " << OUTPUT_DIRECTORY_D3DMESH_TO_JSON << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_D3DMESH_TO_JSON);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_JSON_TO_D3DMESH) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_JSON_TO_D3DMESH: " << OUTPUT_DIRECTORY_JSON_TO_D3DMESH << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_JSON_TO_D3DMESH);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_JSON_TO_SKL) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_JSON_TO_SKL: " << OUTPUT_DIRECTORY_JSON_TO_SKL << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_JSON_TO_SKL);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_SKL_TO_JSON) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_SKL_TO_JSON: " << OUTPUT_DIRECTORY_SKL_TO_JSON << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_SKL_TO_JSON);
+	}
+
+	if (std::filesystem::is_directory(OUTPUT_DIRECTORY_SKL_TO_SKL) == false)
+	{
+		std::cout << "OUTPUT_DIRECTORY_SKL_TO_SKL: " << OUTPUT_DIRECTORY_SKL_TO_SKL << " does not exist! Creating directory..." << std::endl;
+		std::filesystem::create_directory(OUTPUT_DIRECTORY_SKL_TO_SKL);
+	}
+}
+
 int main()
 {
+	SetupDevelopmentDirectories();
+
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_SKL)
+	std::cout << "Starting... READ_SKL " << std::endl;
+
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -97,12 +194,16 @@ int main()
 			inputFileStream.close();
 		}
 	}
+
+	std::cout << "Finished... READ_SKL " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_SKL_EXPORT_JSON)
+	std::cout << "Starting... READ_SKL_EXPORT_JSON " << std::endl;
+
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -132,12 +233,16 @@ int main()
 			outputFileStream.close();
 		}
 	}
+
+	std::cout << "Finished... READ_SKL_EXPORT_JSON " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_SKL_EXPORT_SKL)
+	std::cout << "Starting... READ_SKL_EXPORT_SKL " << std::endl;
+
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -164,12 +269,16 @@ int main()
 			outputFileStream.close();
 		}
 	}
+
+	std::cout << "Finished... READ_SKL_EXPORT_SKL " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_JSON_EXPORT_SKL)
+	std::cout << "Starting... READ_JSON_EXPORT_SKL " << std::endl;
+
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL_JSON))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -199,12 +308,16 @@ int main()
 			std::cout << "EXPORTED... " << sklExportPath << std::endl;
 		}
 	}
+
+	std::cout << "Finished... READ_JSON_EXPORT_SKL " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH)
+	std::cout << "Starting... READ_D3DMESH " << std::endl;
+
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -225,12 +338,16 @@ int main()
 				std::cout << "[D3DMESH INFO] " << fileEntry.filePath << " has bones!" << std::endl;
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_D3DMESH)
+	std::cout << "Starting... READ_D3DMESH_EXPORT_D3DMESH " << std::endl;
+
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -318,12 +435,16 @@ int main()
 			std::cout << "EXPORTED... " << d3dmeshExportPath << std::endl;
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH_EXPORT_D3DMESH " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_JSON)
+	std::cout << "Starting... READ_D3DMESH_EXPORT_JSON " << std::endl;
+	
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -359,12 +480,16 @@ int main()
 			std::cout << "EXPORTED... " << jsonExportPath << std::endl;
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH_EXPORT_JSON " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT ASSIMP ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT ASSIMP ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT ASSIMP ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_ASSIMP)
+	std::cout << "Starting... READ_D3DMESH_EXPORT_ASSIMP " << std::endl;
+	
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -410,12 +535,16 @@ int main()
 			ExportD3DMeshToAssimpV3(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP);
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH_EXPORT_ASSIMP " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON AND ASSIMP ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON AND ASSIMP ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON AND ASSIMP ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_JSON_AND_ASSIMP)
+	std::cout << "Starting... READ_D3DMESH_EXPORT_JSON_AND_ASSIMP " << std::endl;
+	
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -474,12 +603,16 @@ int main()
 			ExportD3DMeshToAssimpV3(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP);
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH_EXPORT_JSON_AND_ASSIMP " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_JSON_EXPORT_D3DMESH)
+	std::cout << "Starting... READ_JSON_EXPORT_D3DMESH " << std::endl;
+	
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_JSON))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
@@ -507,12 +640,16 @@ int main()
 			std::cout << "EXPORTED... " << d3dmeshExportPath << std::endl;
 		}
 	}
+
+	std::cout << "Finished... READ_JSON_EXPORT_D3DMESH " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_AND_SKL)
+	std::cout << "Starting... READ_D3DMESH_AND_SKL " << std::endl;
+	
 	for (const auto& d3dmeshDirectoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_AND_SKL))
 	{
 		FileEntry d3dmeshFileEntry = FileEntry(d3dmeshDirectoryEntry);
@@ -551,12 +688,16 @@ int main()
 			}
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH_AND_SKL " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH JSON AND ASSIMP / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH JSON AND ASSIMP / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH JSON AND ASSIMP / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined(READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH)
+	std::cout << "Starting... READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH " << std::endl;
+	
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP))
 	{
 		FileEntry d3dmeshJsonFileEntry = FileEntry(directoryEntry);
@@ -575,6 +716,8 @@ int main()
 			}
 		}
 	}
+
+	std::cout << "Finished... READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH " << std::endl;
 #endif
 
 	return 0;

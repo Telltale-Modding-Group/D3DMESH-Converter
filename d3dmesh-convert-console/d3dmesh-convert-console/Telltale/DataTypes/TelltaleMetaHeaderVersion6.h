@@ -51,6 +51,10 @@ struct TelltaleMetaHeaderVersion6
 	/// </summary>
 	std::vector<TelltaleClassName> mClassNames;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	TelltaleMetaHeaderVersion6()
 	{
 		mMetaStreamVersion = "";

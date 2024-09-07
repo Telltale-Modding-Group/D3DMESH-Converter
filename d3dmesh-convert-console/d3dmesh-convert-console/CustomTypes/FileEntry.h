@@ -24,6 +24,10 @@ struct FileEntry
 	std::string fileDirectory;
 	unsigned long fileSize;
 
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+
 	FileEntry()
 	{
 		filePath = {};

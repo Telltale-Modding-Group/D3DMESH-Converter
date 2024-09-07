@@ -7,8 +7,8 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "TelltaleD3DMeshFileV55.h"
-#include "TelltaleSkeletonFile.h"
+#include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
+#include "../../Telltale/DataTypes/TelltaleSkeletonFile.h"
 
 //||||||||||||||||||||||||||||| TELLTALE MESH DATA STORAGE |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| TELLTALE MESH DATA STORAGE |||||||||||||||||||||||||||||
@@ -19,6 +19,10 @@ struct TelltaleMeshDataStorage
 {
 	TelltaleD3DMeshFileV55 d3dmeshFile;
 	TelltaleSkeletonFile skeletonFile;
+
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 
 	TelltaleMeshDataStorage()
 	{
