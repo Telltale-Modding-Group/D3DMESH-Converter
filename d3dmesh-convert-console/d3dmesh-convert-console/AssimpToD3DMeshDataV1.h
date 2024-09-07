@@ -52,7 +52,17 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//||||||||||||||||||||||||||||| READ ASSIMP MESH |||||||||||||||||||||||||||||
 	Assimp::Importer assimpImporter;
 
-	unsigned int assimpImportFlags = aiProcess_Triangulate | aiProcess_CalcTangentSpace | aiProcess_GenBoundingBoxes | aiProcess_SortByPType | aiProcess_JoinIdenticalVertices;
+	unsigned int assimpImportFlags = 
+		aiProcess_Triangulate | 
+		aiProcess_CalcTangentSpace | 
+		aiProcess_GenBoundingBoxes | 
+		aiProcess_SortByPType | 
+		aiProcess_JoinIdenticalVertices | 
+		//aiProcess_FlipWindingOrder | 
+		aiProcess_FindDegenerates | 
+		aiProcess_ImproveCacheLocality | 
+		aiProcess_GenUVCoords;
+
 	const aiScene* pScene = assimpImporter.ReadFile(assimpFilePath->filePath.c_str(), assimpImportFlags);
 
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
@@ -151,8 +161,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	newD3DMeshBoundingBox.mMax = Vector3(newD3DMeshBoundingBoxMax.x, newD3DMeshBoundingBoxMax.y, newD3DMeshBoundingBoxMax.z);
 	Vector3 newD3DMeshBoundingBoxCenter = newD3DMeshBoundingBox.CalculateCenter();
 
-	originalD3DMesh.d3dmeshHeader.mBoundingBox = newD3DMeshBoundingBox;
-
 	Vector3 newPositionScale = newD3DMeshBoundingBox.CalculateSize();
 
 	//NOTE: Since we are assuming buffer format eGFXPlatformFormat_UN10x3_UN2 this means we need a final position to be 0..1
@@ -165,8 +173,20 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//reverse offset
 	newPositionOffset = -newPositionOffset;
 
+	Vector3 newPositionWScale = Vector3();
+
+	if (newPositionScale.x > newPositionScale.y && newPositionScale.x > newPositionScale.z)
+		newPositionWScale.x = newPositionScale.x * 3.0f;
+	else if (newPositionScale.y > newPositionScale.x && newPositionScale.y > newPositionScale.z)
+		newPositionWScale.y = newPositionScale.y * 3.0f;
+	else if (newPositionScale.z > newPositionScale.x && newPositionScale.z > newPositionScale.y)
+		newPositionWScale.z = newPositionScale.z * 3.0f;
+
+	originalD3DMesh.d3dmeshHeader.mBoundingBox = newD3DMeshBoundingBox;
+	originalD3DMesh.d3dmeshHeader.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 	originalD3DMesh.d3dmeshHeader.mPositionOffset = newPositionOffset;
 	originalD3DMesh.d3dmeshHeader.mPositionScale = newPositionScale;
+	originalD3DMesh.d3dmeshHeader.mPositionWScale = newPositionWScale;
 
 	//clear original vertex buffer data
 	originalD3DMesh.EraseVertexBufferHeaderData();
@@ -185,7 +205,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
 		assimpMeshVertexNormals);
 
-	/*
 	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent, //mAttribute 2
 		GFXPlatformFormat::eGFXPlatformFormat_SN8x4, //Format 37
@@ -197,13 +216,20 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		GFXPlatformFormat::eGFXPlatformFormat_SN16x2, //Format 23
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
 		assimpMeshVertexUVs[0]);
-	*/
+
+	originalD3DMesh.AddNewVertexBufferVector4(
+		GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord, //mAttribute 6
+		GFXPlatformFormat::eGFXPlatformFormat_SN16x2, //Format 23
+		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
+		assimpMeshVertexUVs[0],
+		6);
 
 	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color, //mAttribute 5
 		GFXPlatformFormat::eGFXPlatformFormat_UN8x4, //Format 23
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, //mBufferUsage 9
-		assimpMeshVertexColors[0]);
+		assimpMeshVertexColors[0],
+		1); //mAttributeIndex = 1 (NOTE THIS IS KEY TO GETTING THE MESH TO SHOW UP)
 
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||

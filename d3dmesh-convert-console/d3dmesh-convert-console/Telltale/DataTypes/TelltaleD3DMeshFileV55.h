@@ -233,7 +233,7 @@ public:
 		d3dmeshHeader.mIndexBufferCount = d3dmeshHeader.mIndexBuffers.size();
 	}
 
-	void AddNewVertexBufferVector4(GFXPlatformVertexAttribute attributeType, GFXPlatformFormat format, GFXPlatformBufferUsage bufferUsage, std::vector<Vector4> newMeshVertexBufferData)
+	void AddNewVertexBufferVector4(GFXPlatformVertexAttribute attributeType, GFXPlatformFormat format, GFXPlatformBufferUsage bufferUsage, std::vector<Vector4> newMeshVertexBufferData, unsigned int newAttributeIndex = 0)
 	{
 		//int currentIndex = fmin(d3dmeshHeader.GFXPlatformAttributeParamsArray.size() - 1, 0
 		int currentIndex = d3dmeshHeader.GFXPlatformAttributeParamsArray.size();
@@ -241,7 +241,7 @@ public:
 		GFXPlatformAttributeParams newAttributeParams = GFXPlatformAttributeParams();
 		newAttributeParams.mAttribute = attributeType;
 		newAttributeParams.mFormat = format;
-		newAttributeParams.mAttributeIndex = 0;
+		newAttributeParams.mAttributeIndex = newAttributeIndex;
 		newAttributeParams.mBufferIndex = currentIndex;
 		newAttributeParams.mBufferOffset = 0;
 

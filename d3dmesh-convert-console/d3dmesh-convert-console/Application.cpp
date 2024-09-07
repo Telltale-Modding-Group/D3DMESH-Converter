@@ -8,12 +8,12 @@
 //d3dmesh conversion modes
 //#define READ_D3DMESH
 //#define READ_D3DMESH_AND_SKL
-#define READ_D3DMESH_EXPORT_ASSIMP
+//#define READ_D3DMESH_EXPORT_ASSIMP
 //#define READ_D3DMESH_EXPORT_JSON
 //#define READ_D3DMESH_EXPORT_D3DMESH
 //#define READ_D3DMESH_EXPORT_JSON_AND_ASSIMP
-//#define READ_JSON_EXPORT_D3DMESH
-//#define READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH
+//#define READ_D3DMESH_JSON_EXPORT_D3DMESH
+#define READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH
 
 //skl conversion modes
 //#define READ_SKL
@@ -610,8 +610,8 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
-#if defined (READ_JSON_EXPORT_D3DMESH)
-	std::cout << "Starting... READ_JSON_EXPORT_D3DMESH " << std::endl;
+#if defined (READ_D3DMESH_JSON_EXPORT_D3DMESH)
+	std::cout << "Starting... READ_D3DMESH_JSON_EXPORT_D3DMESH " << std::endl;
 	
 	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_JSON))
 	{
@@ -631,6 +631,8 @@ int main()
 			inputFileStream.close();
 
 			//=================== EXPORT D3DMESH ===================
+			parsedD3DMesh.UpdateStructures();
+
 			std::ofstream outputFileStream;
 			std::string d3dmeshExportPath = OUTPUT_DIRECTORY_JSON_TO_D3DMESH + fileEntry.fileNameWithoutExtension + D3DMESH_EXTENSION;
 			outputFileStream.open(d3dmeshExportPath, std::ios::binary);
@@ -641,7 +643,7 @@ int main()
 		}
 	}
 
-	std::cout << "Finished... READ_JSON_EXPORT_D3DMESH " << std::endl;
+	std::cout << "Finished... READ_D3DMESH_JSON_EXPORT_D3DMESH " << std::endl;
 #endif
 
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
