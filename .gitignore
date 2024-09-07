@@ -91,6 +91,21 @@ d3dmesh-convert-console/d3dmesh-convert-console/[Oo]bj/
 d3dmesh-convert-console/d3dmesh-convert-console/[Ll]og/
 d3dmesh-convert-console/d3dmesh-convert-console/[Ll]ogs/
 
+d3dmesh-convert-console/[Dd]ebug/
+d3dmesh-convert-console/[Dd]ebugPublic/
+d3dmesh-convert-console/[Rr]elease/
+d3dmesh-convert-console/[Rr]eleases/
+d3dmesh-convert-console/x64/
+d3dmesh-convert-console/x86/
+d3dmesh-convert-console/[Ww][Ii][Nn]32/
+d3dmesh-convert-console/[Aa][Rr][Mm]/
+d3dmesh-convert-console/[Aa][Rr][Mm]64/
+d3dmesh-convert-console/bld/
+d3dmesh-convert-console/[Bb]in/
+d3dmesh-convert-console/[Oo]bj/
+d3dmesh-convert-console/[Ll]og/
+d3dmesh-convert-console/[Ll]ogs/
+
 # Visual Studio 2015/2017 cache/options directory
 d3dmesh-convert-console/.vs/
 d3dmesh-convert-console/d3dmesh-convert-console/.vs/
