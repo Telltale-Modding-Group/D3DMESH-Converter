@@ -13,7 +13,7 @@
 #include <time.h>
 
 //Custom
-#include "BinaryHelper.h"
+#include "../../BinaryHelper.h"
 
 #pragma once
 #ifndef BINARY_DESERIALIZATION_H

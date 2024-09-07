@@ -71,7 +71,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <LibraryPath>G:\work\david-d3dmesh-converter\project-libraries\ASSIMP_Library;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(ProjectDir)ExternalLibraries\assimp;$(LibraryPath)</LibraryPath>
+    <IncludePath>$(ProjectDir)ExternalLibraries\json;$(ProjectDir)ExternalLibraries\assimp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -108,13 +109,17 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp20</LanguageStandard>
-      <AdditionalIncludeDirectories>G:\work\david-d3dmesh-converter\project-libraries\JSON_Library;G:\work\david-d3dmesh-converter\project-libraries\ASSIMP_Library;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>
+      </AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>assimp-vc143-mt.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>xcopy /y "$(ProjectDir)ExternalLibraries\assimp\assimp-vc143-mt.dll" "$(OutDir)"</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -140,10 +145,19 @@
     <ClInclude Include="AssimpToD3DMeshDataV1.h" />
     <ClInclude Include="BoneConstraints.h" />
     <ClInclude Include="BoneType.h" />
+    <ClInclude Include="CustomTypes\FileEntry.h" />
+    <ClInclude Include="CustomTypes\IntegerVector2.h" />
+    <ClInclude Include="CustomTypes\IntegerVector3.h" />
+    <ClInclude Include="CustomTypes\IntegerVector4.h" />
+    <ClInclude Include="CustomTypes\TelltaleMeshDataStorage.h" />
+    <ClInclude Include="CustomTypes\UnsignedIntegerVector2.h" />
+    <ClInclude Include="CustomTypes\UnsignedIntegerVector3.h" />
+    <ClInclude Include="CustomTypes\UnsignedIntegerVector4.h" />
     <ClInclude Include="D3DMeshDataToAssimpV1.h" />
     <ClInclude Include="D3DMeshDataToAssimpV2.h" />
     <ClInclude Include="D3DMeshDataToAssimpV3.h" />
-    <ClInclude Include="eMeshBatchUsage.h" />
+    <ClInclude Include="GFXPlatformBufferUsage.h" />
+    <ClInclude Include="T3MeshBatchUsageFlag.h" />
     <ClInclude Include="FileEntry.h" />
     <ClInclude Include="Json.h" />
     <ClInclude Include="BinaryDeserialization.h" />
@@ -169,6 +183,7 @@
     <ClInclude Include="T3MeshLocalTransformEntry.h" />
     <ClInclude Include="T3MeshLOD.h" />
     <ClInclude Include="T3MeshMaterial.h" />
+    <ClInclude Include="T3ResourceUsage.h" />
     <ClInclude Include="TelltaleClassName.h" />
     <ClInclude Include="TelltaleD3DMeshDataV55.h" />
     <ClInclude Include="TelltaleD3DMeshFileV55.h" />
@@ -180,6 +195,43 @@
     <ClInclude Include="TelltaleMetaHeaderVersion6.h" />
     <ClInclude Include="T3GFXBufferSerialization.h" />
     <ClInclude Include="TelltaleSkeletonFile.h" />
+    <ClInclude Include="Telltale\DataTypes\BoneConstraints.h" />
+    <ClInclude Include="Telltale\DataTypes\BoundingBox.h" />
+    <ClInclude Include="Telltale\DataTypes\BoundingSphere.h" />
+    <ClInclude Include="Telltale\DataTypes\GFXPlatformAttributeParams.h" />
+    <ClInclude Include="Telltale\DataTypes\Quaternion.h" />
+    <ClInclude Include="Telltale\DataTypes\ResourceGroupMembership.h" />
+    <ClInclude Include="Telltale\DataTypes\ResourceGroupMembershipMapEntry.h" />
+    <ClInclude Include="Telltale\DataTypes\Skeleton.h" />
+    <ClInclude Include="Telltale\DataTypes\SkeletonEntry.h" />
+    <ClInclude Include="Telltale\DataTypes\Symbol.h" />
+    <ClInclude Include="Telltale\DataTypes\T3GFXBuffer.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MaterialRequirements.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshBatch.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshBoneEntry.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshLocalTransformEntry.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshLOD.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshMaterial.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleClassName.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleD3DMeshDataV55.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleD3DMeshFileV55.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleD3DMeshHeaderV55.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleInternalResource.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleMetaHeaderVersion6.h" />
+    <ClInclude Include="Telltale\DataTypes\TelltaleSkeletonFile.h" />
+    <ClInclude Include="Telltale\DataTypes\TRangeFloat.h" />
+    <ClInclude Include="Telltale\DataTypes\Transform.h" />
+    <ClInclude Include="Telltale\DataTypes\Vector2.h" />
+    <ClInclude Include="Telltale\DataTypes\Vector3.h" />
+    <ClInclude Include="Telltale\DataTypes\Vector4.h" />
+    <ClInclude Include="Telltale\Enums\BoneType.h" />
+    <ClInclude Include="Telltale\Enums\GFXPlatformBufferUsage.h" />
+    <ClInclude Include="Telltale\Enums\GFXPlatformFormat.h" />
+    <ClInclude Include="Telltale\Enums\GFXPlatformVertexAttribute.h" />
+    <ClInclude Include="Telltale\Enums\T3MeshBatchUsageFlag.h" />
+    <ClInclude Include="Telltale\Enums\T3ResourceUsage.h" />
+    <ClInclude Include="Telltale\T3GFXBufferDeserialization.h" />
+    <ClInclude Include="Telltale\T3GFXBufferSerialization.h" />
     <ClInclude Include="TRangeFloat.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="UnsignedIntegerVector2.h" />

@@ -23,8 +23,7 @@
 #include <stdlib.h>
 
 //Custom
-#include "Vector2.h"
-#include "Vector4.h"
+#include "../../Telltale/DataTypes/Vector4.h"
 
 //||||||||||||||||||||||||||||| ASSIMP HELPER |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| ASSIMP HELPER |||||||||||||||||||||||||||||

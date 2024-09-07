@@ -23,14 +23,14 @@
 #include <stdlib.h>
 
 //Custom
-#include "TelltaleD3DMeshFileV55.h"
-#include "AssimpHelper.h"
+#include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
+#include "../../AssimpHelper.h"
 
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V1 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V1 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V1 |||||||||||||||||||||||||||||
 
-static void ExportD3DMeshToAssimpV1(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName)
+static void ExportD3DMeshToAssimpV1(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName, std::string outputFolderName)
 {
 	//start by building a scene in assimp
 	aiScene* assimpScene = new aiScene;
@@ -232,7 +232,7 @@ static void ExportD3DMeshToAssimpV1(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	std::string extension = "fbx";
 
 	//construct our final exported file path for the final mesh
-	std::string exportPath = "OutputD3DMESH_TO_ASSIMP/" + fileName + "." + extension;
+	std::string exportPath = outputFolderName + "/" + fileName + "." + extension;
 
 	std::cout << "[ASSIMP EXPORT] Exporting..." << std::endl;
 

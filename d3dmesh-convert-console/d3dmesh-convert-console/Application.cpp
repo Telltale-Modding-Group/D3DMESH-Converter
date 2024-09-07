@@ -2,19 +2,50 @@
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS |||||||||||||||||||||||||||||
 
+//assimp export options
 #define ASSIMP_EXPORT_SHADOW
 
+//d3dmesh conversion modes
 //#define READ_D3DMESH
 //#define READ_D3DMESH_AND_SKL
-#define READ_D3DMESH_EXPORT_ASSIMP
+//#define READ_D3DMESH_EXPORT_ASSIMP
 //#define READ_D3DMESH_EXPORT_JSON
 //#define READ_D3DMESH_EXPORT_D3DMESH
+//#define READ_D3DMESH_EXPORT_JSON_AND_ASSIMP
 //#define READ_JSON_EXPORT_D3DMESH
+#define READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH
 
+//skl conversion modes
 //#define READ_SKL
 //#define READ_SKL_EXPORT_JSON
 //#define READ_SKL_EXPORT_SKL
 //#define READ_JSON_EXPORT_SKL
+
+//file extensions
+#define D3DMESH_EXTENSION ".d3dmesh"
+#define SKL_EXTENSION ".skl"
+#define JSON_EXTENSION ".json"
+#define ASSIMP_EXTENSION ".fbx"
+
+//input directories
+//#define INPUT_DIRECTORY_D3DMESH "DebugWorkingDirectory/InputD3DMESH"
+#define INPUT_DIRECTORY_D3DMESH "DebugWorkingDirectory/InputD3DMESH_MODIFIED"
+#define INPUT_DIRECTORY_D3DMESH_AND_SKL "DebugWorkingDirectory/InputD3DMESH_AND_SKL"
+#define INPUT_DIRECTORY_D3DMESH_JSON "DebugWorkingDirectory/InputD3DMESH_JSON"
+#define INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP "DebugWorkingDirectory/InputD3DMESH_JSON_AND_ASSIMP"
+#define INPUT_DIRECTORY_SKL "DebugWorkingDirectory/InputSKL"
+#define INPUT_DIRECTORY_SKL_JSON "DebugWorkingDirectory/InputSKL_JSON"
+
+//output directories
+#define OUTPUT_DIRECTORY_ASSIMP_TO_D3DMESH "DebugWorkingDirectory/OutputASSIMP_TO_D3DMESH/"
+#define OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP "DebugWorkingDirectory/OutputD3DMESH_JSON_AND_ASSIMP/"
+#define OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP "DebugWorkingDirectory/OutputD3DMESH_TO_ASSIMP/"
+#define OUTPUT_DIRECTORY_D3DMESH_TO_D3DMESH "DebugWorkingDirectory/OutputD3DMESH_TO_D3DMESH/"
+#define OUTPUT_DIRECTORY_D3DMESH_TO_JSON "DebugWorkingDirectory/OutputD3DMESH_TO_JSON/"
+#define OUTPUT_DIRECTORY_JSON_TO_D3DMESH "DebugWorkingDirectory/OutputJSON_TO_D3DMESH/"
+#define OUTPUT_DIRECTORY_JSON_TO_SKL "DebugWorkingDirectory/OutputJSON_TO_SKL/"
+#define OUTPUT_DIRECTORY_SKL_TO_JSON "DebugWorkingDirectory/OutputSKL_TO_JSON/"
+#define OUTPUT_DIRECTORY_SKL_TO_SKL "DebugWorkingDirectory/OutputSKL_TO_SKL/"
 
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| LIBRARIES |||||||||||||||||||||||||||||
@@ -29,12 +60,15 @@
 #include <filesystem>
 
 //Custom
-#include "FileEntry.h"
-#include "TelltaleD3DMeshFileV55.h"
-#include "TelltaleSkeletonFile.h"
+#include "CustomTypes/FileEntry.h"
+#include "Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
+#include "Telltale/DataTypes/TelltaleSkeletonFile.h"
+
 #include "D3DMeshDataToAssimpV1.h"
 #include "D3DMeshDataToAssimpV2.h"
 #include "D3DMeshDataToAssimpV3.h"
+
+#include "AssimpToD3DMeshDataV1.h"
 
 //|||||||||||||||||||||||||||||||||||||||| MAIN ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| MAIN ||||||||||||||||||||||||||||||||||||||||
@@ -46,11 +80,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_SKL)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputSKL"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".skl")
+		if (fileEntry.fileExtension == SKL_EXTENSION)
 		{
 			//=================== READ SKL ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -69,11 +103,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_SKL_EXPORT_JSON)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputSKL"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".skl")
+		if (fileEntry.fileExtension == SKL_EXTENSION)
 		{
 			//=================== READ SKL ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -87,7 +121,7 @@ int main()
 
 			//=================== EXPORT SKL TO JSON ===================
 			std::ofstream outputFileStream;
-			std::string jsonExportPath = "OutputSKL_TO_JSON/" + fileEntry.fileNameWithoutExtension + ".json";
+			std::string jsonExportPath = OUTPUT_DIRECTORY_SKL_TO_JSON + fileEntry.fileNameWithoutExtension + JSON_EXTENSION;
 			outputFileStream.open(jsonExportPath);
 
 			nlohmann::ordered_json json;
@@ -104,11 +138,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ SKL / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_SKL_EXPORT_SKL)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputSKL"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".skl")
+		if (fileEntry.fileExtension == SKL_EXTENSION)
 		{
 			//=================== READ SKL ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -124,7 +158,7 @@ int main()
 			sklFile.UpdateValues();
 
 			std::ofstream outputFileStream;
-			std::string sklExportPath = "OutputSKL_TO_SKL/" + fileEntry.fileNameWithExtension;
+			std::string sklExportPath = OUTPUT_DIRECTORY_SKL_TO_SKL + fileEntry.fileNameWithExtension;
 			outputFileStream.open(sklExportPath, std::ios::binary);
 			sklFile.BinarySerialize(&outputFileStream);
 			outputFileStream.close();
@@ -136,11 +170,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_JSON_EXPORT_SKL)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputSKL_JSON"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_SKL_JSON))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".json")
+		if (fileEntry.fileExtension == JSON_EXTENSION)
 		{
 			//=================== READ SKL JSON ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -157,7 +191,7 @@ int main()
 
 			//=================== EXPORT SKL ===================
 			std::ofstream outputFileStream;
-			std::string sklExportPath = "OutputJSON_TO_SKL/" + fileEntry.fileNameWithoutExtension + ".skl";
+			std::string sklExportPath = OUTPUT_DIRECTORY_JSON_TO_SKL + fileEntry.fileNameWithoutExtension + SKL_EXTENSION;
 			outputFileStream.open(sklExportPath, std::ios::binary);
 			sklFile.BinarySerialize(&outputFileStream);
 			outputFileStream.close();
@@ -171,11 +205,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".d3dmesh")
+		if (fileEntry.fileExtension == D3DMESH_EXTENSION)
 		{
 			//=================== READ D3DMESH ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -197,11 +231,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_D3DMESH)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".d3dmesh")
+		if (fileEntry.fileExtension == D3DMESH_EXTENSION)
 		{
 			//=================== READ D3DMESH ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -276,7 +310,7 @@ int main()
 			parsedD3DMesh.UpdateValues();
 
 			std::ofstream outputFileStream;
-			std::string d3dmeshExportPath = "OutputD3DMESH_TO_D3DMESH/" + fileEntry.fileNameWithExtension;
+			std::string d3dmeshExportPath = OUTPUT_DIRECTORY_D3DMESH_TO_D3DMESH + fileEntry.fileNameWithExtension;
 			outputFileStream.open(d3dmeshExportPath, std::ios::binary);
 			parsedD3DMesh.BinarySerialize(&outputFileStream);
 			outputFileStream.close();
@@ -290,11 +324,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_JSON)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".d3dmesh")
+		if (fileEntry.fileExtension == D3DMESH_EXTENSION)
 		{
 			//=================== READ D3DMESH ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -311,7 +345,7 @@ int main()
 
 			//=================== EXPORT JSON ===================
 			std::ofstream outputFileStream;
-			std::string jsonExportPath = "OutputD3DMESH_TO_JSON/" + fileEntry.fileNameWithoutExtension + ".json";
+			std::string jsonExportPath = OUTPUT_DIRECTORY_D3DMESH_TO_JSON + fileEntry.fileNameWithoutExtension + JSON_EXTENSION;
 			outputFileStream.open(jsonExportPath);
 
 			nlohmann::ordered_json json;
@@ -321,6 +355,8 @@ int main()
 			outputFileStream.write(jsonDump.c_str(), jsonDump.length());
 
 			outputFileStream.close();
+
+			std::cout << "EXPORTED... " << jsonExportPath << std::endl;
 		}
 	}
 #endif
@@ -329,11 +365,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT ASSIMP ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT ASSIMP ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_EXPORT_ASSIMP)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".d3dmesh")
+		if (fileEntry.fileExtension == D3DMESH_EXTENSION)
 		{
 			//=================== READ D3DMESH ===================
 			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
@@ -356,7 +392,7 @@ int main()
 			//This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
 			//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes/etc... it's a basic single mesh
 			//If the d3dmesh has multiple LOD levels then this breaks pretty much
-			//ExportD3DMeshToAssimpV1(&parsedD3DMesh, fileEntry.fileNameWithoutExtension);
+			//ExportD3DMeshToAssimpV1(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP);
 
 			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
 			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
@@ -366,12 +402,76 @@ int main()
 			//The verticies however that are currently referenced are from the ENTIRE model. (Ideally we segment the verticies by only what we use)
 			//This is alot more sucessful than the first attempt as now we can factor in LOD/Submeshes
 			//The only drawback however is that the entire verticie set of the model is dumped, rather than being segmented properly.
-			//ExportD3DMeshToAssimpV2(&parsedD3DMesh, fileEntry.fileNameWithoutExtension);
+			//ExportD3DMeshToAssimpV2(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP);
 
 			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
 			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
 			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
-			ExportD3DMeshToAssimpV3(&parsedD3DMesh, fileEntry.fileNameWithoutExtension);
+			ExportD3DMeshToAssimpV3(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_TO_ASSIMP);
+		}
+	}
+#endif
+
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON AND ASSIMP ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON AND ASSIMP ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH / EXPORT JSON AND ASSIMP ||||||||||||||||||||||||||||||||||||||||
+#if defined (READ_D3DMESH_EXPORT_JSON_AND_ASSIMP)
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH))
+	{
+		FileEntry fileEntry = FileEntry(directoryEntry);
+
+		if (fileEntry.fileExtension == D3DMESH_EXTENSION)
+		{
+			//=================== READ D3DMESH ===================
+			std::cout << "READING... " << fileEntry.filePath << " [" << fileEntry.fileSize << " BYTES]" << std::endl;
+
+			std::ifstream inputFileStream;
+			inputFileStream.open(fileEntry.filePath, std::fstream::in | std::fstream::binary);
+
+			TelltaleD3DMeshFileV55 parsedD3DMesh = TelltaleD3DMeshFileV55(&inputFileStream);
+
+			inputFileStream.close();
+
+			if (parsedD3DMesh.HasBones())
+				std::cout << "[D3DMESH INFO] " << fileEntry.filePath << " has bones!" << std::endl;
+
+			//=================== EXPORT JSON ===================
+			std::ofstream outputFileStream;
+			std::string jsonExportPath = OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP + fileEntry.fileNameWithoutExtension + JSON_EXTENSION;
+			outputFileStream.open(jsonExportPath);
+
+			nlohmann::ordered_json json;
+			json = parsedD3DMesh;
+
+			std::string jsonDump = json.dump(4); //pretty print with indents
+			outputFileStream.write(jsonDump.c_str(), jsonDump.length());
+
+			outputFileStream.close();
+
+			//=================== EXPORT ASSIMP ===================
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V1 ||||||||||||||||||||||||||||||||||||||||
+			//First attempt at doing a conversion of a d3dmesh to a standard model format (THIS DOES WORK... BUT THERE ARE PROBLEMS)
+			//This simply shoves the entire mesh into an assimp mesh, ignoring all LODs. 
+			//This atleast works for getting a useable mesh export, however there are no materials/lods/submeshes/etc... it's a basic single mesh
+			//If the d3dmesh has multiple LOD levels then this breaks pretty much
+			//ExportD3DMeshToAssimpV1(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP);
+
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V2 ||||||||||||||||||||||||||||||||||||||||
+			//Second attempt at doing a conversion of a d3dmesh to a standard model format.
+			//This uses the mLOD's and T3MeshBatch's to pull each LOD/Submesh from the model.
+			//The verticies however that are currently referenced are from the ENTIRE model. (Ideally we segment the verticies by only what we use)
+			//This is alot more sucessful than the first attempt as now we can factor in LOD/Submeshes
+			//The only drawback however is that the entire verticie set of the model is dumped, rather than being segmented properly.
+			//ExportD3DMeshToAssimpV2(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP);
+
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
+			//|||||||||||||||||||||||||||||||||||||||| ASSIMP MODEL EXPORT V3 ||||||||||||||||||||||||||||||||||||||||
+			ExportD3DMeshToAssimpV3(&parsedD3DMesh, fileEntry.fileNameWithoutExtension, OUTPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP);
 		}
 	}
 #endif
@@ -380,11 +480,11 @@ int main()
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| READ JSON / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_JSON_EXPORT_D3DMESH)
-	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH_JSON"))
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_JSON))
 	{
 		FileEntry fileEntry = FileEntry(directoryEntry);
 
-		if (fileEntry.fileExtension == ".json")
+		if (fileEntry.fileExtension == JSON_EXTENSION)
 		{
 			//=================== READ D3DMESH JSON ===================
 			std::ifstream inputFileStream;
@@ -399,7 +499,7 @@ int main()
 
 			//=================== EXPORT D3DMESH ===================
 			std::ofstream outputFileStream;
-			std::string d3dmeshExportPath = "OutputJSON_TO_D3DMESH/" + fileEntry.fileNameWithoutExtension + ".d3dmesh";
+			std::string d3dmeshExportPath = OUTPUT_DIRECTORY_JSON_TO_D3DMESH + fileEntry.fileNameWithoutExtension + D3DMESH_EXTENSION;
 			outputFileStream.open(d3dmeshExportPath, std::ios::binary);
 			parsedD3DMesh.BinarySerialize(&outputFileStream);
 			outputFileStream.close();
@@ -409,12 +509,15 @@ int main()
 	}
 #endif
 
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH AND SKL ||||||||||||||||||||||||||||||||||||||||
 #if defined (READ_D3DMESH_AND_SKL)
-	for (const auto& d3dmeshDirectoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH_AND_SKL"))
+	for (const auto& d3dmeshDirectoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_AND_SKL))
 	{
 		FileEntry d3dmeshFileEntry = FileEntry(d3dmeshDirectoryEntry);
 
-		if (d3dmeshFileEntry.fileExtension == ".d3dmesh")
+		if (d3dmeshFileEntry.fileExtension == D3DMESH_EXTENSION)
 		{
 			//=================== READ D3DMESH ===================
 			std::cout << "READING... " << d3dmeshFileEntry.filePath << " [" << d3dmeshFileEntry.fileSize << " BYTES]" << std::endl;
@@ -429,11 +532,11 @@ int main()
 				FileEntry sklFileEntry;
 				bool hasSKL = false;
 
-				for (const auto& sklDirectoryEntry : std::filesystem::recursive_directory_iterator("InputD3DMESH_AND_SKL"))
+				for (const auto& sklDirectoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_AND_SKL))
 				{
 					FileEntry newFileEntry = FileEntry(sklDirectoryEntry);
 
-					if (newFileEntry.fileExtension == ".skl")
+					if (newFileEntry.fileExtension == SKL_EXTENSION)
 					{
 						if (d3dmeshFileEntry.fileNameWithoutExtension == newFileEntry.fileNameWithoutExtension)
 						{
@@ -445,6 +548,30 @@ int main()
 
 				if (!hasSKL)
 					std::cout << "[D3DMESH INFO] " << d3dmeshFileEntry.filePath << " has bones but no matching .skl file was found!" << std::endl;
+			}
+		}
+	}
+#endif
+
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH JSON AND ASSIMP / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH JSON AND ASSIMP / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| READ D3DMESH JSON AND ASSIMP / EXPORT D3DMESH ||||||||||||||||||||||||||||||||||||||||
+#if defined(READ_D3DMESH_JSON_AND_ASSIMP_EXPORT_D3DMESH)
+	for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP))
+	{
+		FileEntry d3dmeshJsonFileEntry = FileEntry(directoryEntry);
+
+		if (d3dmeshJsonFileEntry.fileExtension == JSON_EXTENSION)
+		{
+			for (const auto& directoryEntry : std::filesystem::recursive_directory_iterator(INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP))
+			{
+				FileEntry assimpFileEntry = FileEntry(directoryEntry);
+
+				if (assimpFileEntry.fileExtension == ASSIMP_EXTENSION && assimpFileEntry.fileNameWithoutExtension == d3dmeshJsonFileEntry.fileNameWithoutExtension)
+				{
+					ConvertAssimpToD3DMeshDataV1(&d3dmeshJsonFileEntry, &assimpFileEntry, OUTPUT_DIRECTORY_ASSIMP_TO_D3DMESH + d3dmeshJsonFileEntry.fileNameWithoutExtension + D3DMESH_EXTENSION);
+					break;
+				}
 			}
 		}
 	}

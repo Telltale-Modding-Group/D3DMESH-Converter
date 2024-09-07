@@ -23,8 +23,8 @@
 #include <stdlib.h>
 
 //Custom
-#include "TelltaleD3DMeshFileV55.h"
-#include "AssimpHelper.h"
+#include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
+#include "../../AssimpHelper.h"
 
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
@@ -135,7 +135,7 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 	std::copy(faces.begin(), faces.end(), assimpMesh->mFaces);
 }
 
-static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName)
+static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName, std::string outputFolderName)
 {
 	//|||||||||||||||||||||||||||||||| D3DMESH PRE-SETUP ||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||| D3DMESH PRE-SETUP ||||||||||||||||||||||||||||||||
@@ -331,7 +331,8 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 			aiMesh* defaultSubmesh = assimpScene->mMeshes[defaultMeshParentNode->mChildren[i]->mMeshes[j]];
 			defaultSubmesh->mName = "Default_LOD" + std::to_string(i) + "_Submesh" + std::to_string(j);
 
-			BuildAssimpMeshFromD3DMeshV3(defaultSubmesh, d3dmeshFile, i, j, true);
+			BuildAssimpMeshFromD3DMeshV2(defaultSubmesh, d3dmeshFile, i, j, true);
+			//BuildAssimpMeshFromD3DMeshV3(defaultSubmesh, d3dmeshFile, i, j, true);
 		}
 
 #if defined (ASSIMP_EXPORT_SHADOW)
@@ -340,7 +341,8 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 			aiMesh* shadowSubmesh = assimpScene->mMeshes[shadowMeshParentNode->mChildren[i]->mMeshes[j]];
 			shadowSubmesh->mName = "Shadow_LOD" + std::to_string(i) + "_Submesh" + std::to_string(j);
 
-			BuildAssimpMeshFromD3DMeshV3(shadowSubmesh, d3dmeshFile, i, j, false);
+			BuildAssimpMeshFromD3DMeshV2(shadowSubmesh, d3dmeshFile, i, j, false);
+			//BuildAssimpMeshFromD3DMeshV3(shadowSubmesh, d3dmeshFile, i, j, false);
 		}
 #endif
 	}
@@ -379,7 +381,7 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	std::string extension = "fbx";
 
 	//construct our final exported file path for the final mesh
-	std::string exportPath = "OutputD3DMESH_TO_ASSIMP/" + fileName + "." + extension;
+	std::string exportPath = outputFolderName + "/" + fileName + "." + extension;
 
 	std::cout << "[ASSIMP EXPORT] Exporting..." << std::endl;
 

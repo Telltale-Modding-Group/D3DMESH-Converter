@@ -23,8 +23,8 @@
 #include <stdlib.h>
 
 //Custom
-#include "TelltaleD3DMeshFileV55.h"
-#include "AssimpHelper.h"
+#include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
+#include "../../AssimpHelper.h"
 
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
@@ -126,7 +126,7 @@ static void BuildAssimpMeshFromD3DMeshV2(aiMesh* assimpMesh, TelltaleD3DMeshFile
 	std::copy(faces.begin(), faces.end(), assimpMesh->mFaces);
 }
 
-static void ExportD3DMeshToAssimpV2(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName)
+static void ExportD3DMeshToAssimpV2(TelltaleD3DMeshFileV55* d3dmeshFile, std::string fileName, std::string outputFolderName)
 {
 	//|||||||||||||||||||||||||||||||| D3DMESH PRE-SETUP ||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||| D3DMESH PRE-SETUP ||||||||||||||||||||||||||||||||
@@ -352,7 +352,7 @@ static void ExportD3DMeshToAssimpV2(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	std::string extension = "fbx";
 
 	//construct our final exported file path for the final mesh
-	std::string exportPath = "OutputD3DMESH_TO_ASSIMP/" + fileName + "." + extension;
+	std::string exportPath = outputFolderName + "/" + fileName + "." + extension;
 
 	std::cout << "[ASSIMP EXPORT] Exporting..." << std::endl;
 
