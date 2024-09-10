@@ -65,6 +65,45 @@ enum GFXPlatformFormat
 	eGFXPlatformFormat_Count = 43,
 };
 
+//|||||||||||||||||||||||||||||||||||||||| GFX PLATFORM FORMAT BOOLS ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| GFX PLATFORM FORMAT BOOLS ||||||||||||||||||||||||||||||||||||||||
+//|||||||||||||||||||||||||||||||||||||||| GFX PLATFORM FORMAT BOOLS ||||||||||||||||||||||||||||||||||||||||
+
+static bool IsGFXPlatformFormatSignedNormalized(GFXPlatformFormat value)
+{
+	switch (value)
+	{
+	case eGFXPlatformFormat_SN16:
+	case eGFXPlatformFormat_SN16x2:
+	case eGFXPlatformFormat_SN16x4:
+	case eGFXPlatformFormat_SN8:
+	case eGFXPlatformFormat_SN8x2:
+	case eGFXPlatformFormat_SN8x4:
+	case eGFXPlatformFormat_SN10_SN11_SN11:
+	case eGFXPlatformFormat_SN10x3_SN2:
+		return true;
+	default:
+		return false;
+	}
+}
+
+static bool IsGFXPlatformFormatUnsignedNormalized(GFXPlatformFormat value)
+{
+	switch (value)
+	{
+	case eGFXPlatformFormat_UN16:
+	case eGFXPlatformFormat_UN16x2:
+	case eGFXPlatformFormat_UN16x4:
+	case eGFXPlatformFormat_UN8:
+	case eGFXPlatformFormat_UN8x2:
+	case eGFXPlatformFormat_UN8x4:
+	case eGFXPlatformFormat_UN10x3_UN2:
+		return true;
+	default:
+		return false;
+	}
+}
+
 //|||||||||||||||||||||||||||||||||||||||| GFX PLATFORM FORMAT STRINGS ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| GFX PLATFORM FORMAT STRINGS ||||||||||||||||||||||||||||||||||||||||
 //|||||||||||||||||||||||||||||||||||||||| GFX PLATFORM FORMAT STRINGS ||||||||||||||||||||||||||||||||||||||||

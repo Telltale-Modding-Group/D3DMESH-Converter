@@ -45,6 +45,10 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	TelltaleD3DMeshFileV55 originalD3DMesh = jsonReader.template get<TelltaleD3DMeshFileV55>();
 
+	bool isVertexPositionUnsignedNormalized = originalD3DMesh.IsVertexPositionFormatUnsignedNormalized();
+	bool isVertexPositionSignedNormalized = originalD3DMesh.IsVertexPositionFormatUnsignedNormalized();
+	bool isVertexPositionNormalized = isVertexPositionUnsignedNormalized || isVertexPositionSignedNormalized;
+
 	d3dmeshJsonInputFileStream.close();
 
 	//||||||||||||||||||||||||||||| READ ASSIMP MESH |||||||||||||||||||||||||||||
@@ -52,16 +56,22 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//||||||||||||||||||||||||||||| READ ASSIMP MESH |||||||||||||||||||||||||||||
 	Assimp::Importer assimpImporter;
 
-	unsigned int assimpImportFlags = 
-		aiProcess_Triangulate | 
-		aiProcess_CalcTangentSpace | 
-		aiProcess_GenBoundingBoxes | 
-		aiProcess_SortByPType | 
-		aiProcess_JoinIdenticalVertices | 
-		//aiProcess_FlipWindingOrder | 
+	//most d3dmeshes have a U16 index buffer limit set
+	assimpImporter.SetPropertyInteger(AI_CONFIG_PP_SLM_TRIANGLE_LIMIT, UINT16_MAX);
+	assimpImporter.SetPropertyBool(AI_CONFIG_PP_PTV_NORMALIZE, true); //default is false
+	assimpImporter.SetPropertyInteger(AI_CONFIG_PP_CT_TEXTURE_CHANNEL_INDEX, 0);
+	assimpImporter.SetPropertyFloat(AI_CONFIG_PP_CT_MAX_SMOOTHING_ANGLE, 45); //Default 45, Max is 175
+
+	unsigned int assimpImportFlags =
+		aiProcess_Triangulate |
+		aiProcess_CalcTangentSpace |
+		aiProcess_GenNormals |
+		aiProcess_GenBoundingBoxes |
+		aiProcess_SortByPType |
+		aiProcess_JoinIdenticalVertices |
+		aiProcess_ImproveCacheLocality |
 		aiProcess_FindDegenerates | 
-		aiProcess_ImproveCacheLocality | 
-		aiProcess_GenUVCoords;
+		aiProcess_SplitLargeMeshes;
 
 	const aiScene* pScene = assimpImporter.ReadFile(assimpFilePath->filePath.c_str(), assimpImportFlags);
 
@@ -102,13 +112,23 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		if (assimpMesh->HasNormals())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
+				//assimpMeshVertexNormals.push_back(Vector4(0, 1, 0, 1));
 				assimpMeshVertexNormals.push_back(GetVector4FromAssimpVector3(assimpMesh->mNormals[j]));
 		}
 
 		if (assimpMesh->HasTangentsAndBitangents())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
+				//assimpMeshVertexTangents.push_back(Vector4(1, 0, 0, 1));
 				assimpMeshVertexTangents.push_back(GetVector4FromAssimpVector3(assimpMesh->mTangents[j]));
+				//assimpMeshVertexTangents.push_back(GetVector4FromAssimpVector3(assimpMesh->mBitangents[j]));
+
+			//std::vector<Vector4> newTangents = CalculateMikkTSpaceTangentsFromMesh(assimpMesh);
+			//std::vector<Vector4> newTangents = CalculateTangentsFromMesh(assimpMesh, 0);
+			//std::vector<Vector4> newTangents = CalculateMikkTangentsFromMesh(assimpMesh, 0);
+
+			//for (int j = 0; j < assimpMesh->mNumVertices; j++)
+				//assimpMeshVertexTangents.push_back(newTangents[j]);
 		}
 
 		//for (int j = 0; j < assimpMesh->GetNumUVChannels(); j++)
@@ -136,7 +156,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 				//assimpMeshVertexColorChannel.push_back(GetVector4FromAssimpColor4(assimpMesh->mColors[j][x]));
 
 			for (int x = 0; x < assimpMesh->mNumVertices; x++)
-				assimpMeshVertexColorChannel.push_back(Vector4(1, 1, 1, 1));
+				assimpMeshVertexColorChannel.push_back(Vector4(0, 0, 0, 1));
 		}
 
 		Vector4 assimpMeshBoundingBoxMin = GetVector4FromAssimpVector3(assimpMesh->mAABB.mMin);
@@ -167,10 +187,16 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//So offset needed here is the extents "half size of bounds" to nudge the models from -0.5 to 0
 	//In addition we also need to get the center of the bounding box and offset by that as well
 	//NOTE: Compared to original hammer, position offset is negative
-	Vector3 newPositionOffset = newD3DMeshBoundingBox.CalculateExtents();
-	newPositionOffset -= newD3DMeshBoundingBoxCenter; //subtract by center offset
+	//Vector3 newPositionOffset = newD3DMeshBoundingBox.CalculateExtents();
+	//newPositionOffset -= newD3DMeshBoundingBoxCenter; //subtract by center offset
+	//newPositionOffset = -newPositionOffset;
 
-	//reverse offset
+	Vector3 newPositionOffset = Vector3();
+	newPositionOffset = -newD3DMeshBoundingBoxCenter;
+
+	if(originalD3DMesh.IsVertexPositionFormatUnsignedNormalized())
+		newPositionOffset += newD3DMeshBoundingBox.CalculateExtents(); //subtract by center offset
+
 	newPositionOffset = -newPositionOffset;
 
 	Vector3 newPositionWScale = Vector3();
@@ -188,6 +214,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	originalD3DMesh.d3dmeshHeader.mPositionScale = newPositionScale;
 	originalD3DMesh.d3dmeshHeader.mPositionWScale = newPositionWScale;
 
+	/*
 	//clear original vertex buffer data
 	originalD3DMesh.EraseVertexBufferHeaderData();
 	originalD3DMesh.EraseGFXAttributeParamsHeaderData();
@@ -214,15 +241,9 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord, //mAttribute 6
 		GFXPlatformFormat::eGFXPlatformFormat_SN16x2, //Format 23
-		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
-		assimpMeshVertexUVs[0]);
-
-	originalD3DMesh.AddNewVertexBufferVector4(
-		GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord, //mAttribute 6
-		GFXPlatformFormat::eGFXPlatformFormat_SN16x2, //Format 23
-		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRawAccess, //mBufferUsage 41
+		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, //mBufferUsage 9
 		assimpMeshVertexUVs[0],
-		6);
+		4);
 
 	originalD3DMesh.AddNewVertexBufferVector4(
 		GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color, //mAttribute 5
@@ -230,6 +251,19 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, //mBufferUsage 9
 		assimpMeshVertexColors[0],
 		1); //mAttributeIndex = 1 (NOTE THIS IS KEY TO GETTING THE MESH TO SHOW UP)
+
+	originalD3DMesh.AddNewVertexBufferVector4(
+		GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord, //mAttribute 6
+		GFXPlatformFormat::eGFXPlatformFormat_F32x2, //Format 2
+		GFXPlatformBufferUsage::eGFXPlatformBuffer_Vertex | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, //mBufferUsage 9
+		assimpMeshVertexUVs[0]);
+	*/
+
+	originalD3DMesh.ModifyVertexBuffers(GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position, assimpMeshVertexPositions); //mAttribute 0
+	originalD3DMesh.ModifyVertexBuffers(GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal, assimpMeshVertexNormals); //mAttribute 1
+	originalD3DMesh.ModifyVertexBuffers(GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent, assimpMeshVertexTangents); //mAttribute 2
+	originalD3DMesh.ModifyVertexBuffers(GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color, assimpMeshVertexColors[0]); //mAttribute 5
+	originalD3DMesh.ModifyVertexBuffers(GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord, assimpMeshVertexUVs[0]); //mAttribute 6
 
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (TRIANGLES) |||||||||||||||||||||||||||||
@@ -257,11 +291,16 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	}
 
 	//clear original index buffer data
-	originalD3DMesh.EraseIndexBufferHeaderData();
-	originalD3DMesh.EraseIndexBufferMeshData();
+	//originalD3DMesh.EraseIndexBufferHeaderData();
+	//originalD3DMesh.EraseIndexBufferMeshData();
 
-	originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead); //BUFFER USAGE 10
-	//originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index); //BUFFER USAGE 2
+	//originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead); //BUFFER USAGE 10 (DEFAULT)
+	//originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index); //BUFFER USAGE 2 (SHADOWS)
+
+	//originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index | GFXPlatformBufferUsage::eGFXPlatformBuffer_ShaderRead, eGFXPlatformFormat_U32); //BUFFER USAGE 10 (DEFAULT)
+	//originalD3DMesh.AddNewIndexBuffer(assimpMeshTriangles, GFXPlatformBufferUsage::eGFXPlatformBuffer_Index, eGFXPlatformFormat_U32); //BUFFER USAGE 2 (SHADOWS)
+
+	originalD3DMesh.ModifyIndexBuffers(assimpMeshTriangles);
 
 	//||||||||||||||||||||||||||||| D3DMESH HEADER TO ASSIMP CONVERSION (LODS/SUBMESHES) |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| D3DMESH HEADER TO ASSIMP CONVERSION (LODS/SUBMESHES) |||||||||||||||||||||||||||||
@@ -279,6 +318,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	T3MeshLOD newLOD0 = T3MeshLOD();
 	T3MeshBatch fullDefaultSubmesh = T3MeshBatch();
+	T3MeshBatch fullShadowSubmesh = T3MeshBatch();
 
 	//set new default mesh batch properties
 	fullDefaultSubmesh.mBatchUsage = (T3MeshBatchUsageFlag)0;
@@ -292,11 +332,22 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	fullDefaultSubmesh.mBoundingBox = newD3DMeshBoundingBox;
 	fullDefaultSubmesh.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 
+	//set new default mesh batch properties
+	fullShadowSubmesh.mBatchUsage = (T3MeshBatchUsageFlag)0;
+	fullShadowSubmesh.mMinVertIndex = 0;
+	fullShadowSubmesh.mMaxVertIndex = assimpMeshMaxVertexIndex;
+	fullShadowSubmesh.mBaseIndex = 0;
+	fullShadowSubmesh.mStartIndex = 0;
+	fullShadowSubmesh.mNumPrimitives = assimpMeshTotalTriangleCount;
+	fullShadowSubmesh.mNumIndices = assimpMeshTotalIndiciesCount;
+	fullShadowSubmesh.mMaterialIndex = 0;
+	fullShadowSubmesh.mBoundingBox = newD3DMeshBoundingBox;
+	fullShadowSubmesh.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
+
 	//set new LOD properties
 	newLOD0.mVertexStart = 0;
 	newLOD0.mVertexCount = assimpMeshTotalVertexCount;
-	newLOD0.mNumPrimitives = assimpMeshTotalTriangleCount; //NOTE: this should be the total face count for both mBatches0 + mBatches1
-	//newLOD0.mNumPrimitives = assimpMeshTotalTriangleCount * 2; //NOTE: this should be the total face count for both mBatches0 + mBatches1
+	newLOD0.mNumPrimitives = assimpMeshTotalTriangleCount * 2; //NOTE: this should be the total face count for both mBatches0 + mBatches1
 	newLOD0.mBoundingBox = newD3DMeshBoundingBox;
 	newLOD0.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 
@@ -305,6 +356,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	//add new batches to new LOD level
 	newLOD0.mBatches0.push_back(fullDefaultSubmesh);
+	newLOD0.mBatches1.push_back(fullShadowSubmesh);
 
 	//clear original LOD data and add our new LOD level
 	originalD3DMesh.d3dmeshHeader.mLODs.erase(originalD3DMesh.d3dmeshHeader.mLODs.begin(), originalD3DMesh.d3dmeshHeader.mLODs.end());

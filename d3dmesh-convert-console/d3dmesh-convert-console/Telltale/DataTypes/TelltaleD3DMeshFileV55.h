@@ -219,11 +219,46 @@ public:
 		d3dmeshHeader.mVertexBufferCount = 0;
 	}
 
-	void AddNewIndexBuffer(std::vector<unsigned short> newMeshIndexBufferData, GFXPlatformBufferUsage bufferUsage)
+	void EraseFullVertexPositionData()
+	{
+		d3dmeshData.vertexPositions.erase(d3dmeshData.vertexPositions.begin(), d3dmeshData.vertexPositions.end());
+	}
+
+	void EraseFullVertexNormalData()
+	{
+		d3dmeshData.vertexNormals.erase(d3dmeshData.vertexNormals.begin(), d3dmeshData.vertexNormals.end());
+	}
+
+	void EraseFullVertexTangentData()
+	{
+		d3dmeshData.vertexTangents.erase(d3dmeshData.vertexTangents.begin(), d3dmeshData.vertexTangents.end());
+	}
+
+	void EraseFullVertexUVData()
+	{
+		d3dmeshData.vertexUVs.erase(d3dmeshData.vertexUVs.begin(), d3dmeshData.vertexUVs.end());
+	}
+
+	void EraseFullVertexColorData()
+	{
+		d3dmeshData.vertexColors.erase(d3dmeshData.vertexColors.begin(), d3dmeshData.vertexColors.end());
+	}
+
+	void EraseFullVertexBlendWeightData()
+	{
+		d3dmeshData.vertexBlendWeight.erase(d3dmeshData.vertexBlendWeight.begin(), d3dmeshData.vertexBlendWeight.end());
+	}
+
+	void EraseFullVertexBlendIndexData()
+	{
+		d3dmeshData.vertexBlendIndex.erase(d3dmeshData.vertexBlendIndex.begin(), d3dmeshData.vertexBlendIndex.end());
+	}
+
+	void AddNewIndexBuffer(std::vector<unsigned short> newMeshIndexBufferData, GFXPlatformBufferUsage bufferUsage, GFXPlatformFormat platformFormat = eGFXPlatformFormat_U16)
 	{
 		T3GFXBuffer newIndexT3GFXBuffer = T3GFXBuffer();
 		newIndexT3GFXBuffer.mResourceUsage = eResourceUsage_Static;
-		newIndexT3GFXBuffer.mBufferFormat = eGFXPlatformFormat_U16;
+		newIndexT3GFXBuffer.mBufferFormat = platformFormat;
 		newIndexT3GFXBuffer.mBufferUsage = bufferUsage;
 		newIndexT3GFXBuffer.mCount = newMeshIndexBufferData.size();
 		newIndexT3GFXBuffer.UpdateIndexBuffer();
@@ -286,6 +321,171 @@ public:
 	void EraseBones() 
 	{
 		d3dmeshHeader.mBones.erase(d3dmeshHeader.mBones.begin(), d3dmeshHeader.mBones.end());
+	}
+
+	void ModifyIndexBuffers(std::vector<unsigned short> newMeshIndexBufferData)
+	{
+		for (int i = 0; i < d3dmeshHeader.mIndexBuffers.size(); i++)
+		{
+			T3GFXBuffer* indexT3GFXBuffer = &d3dmeshHeader.mIndexBuffers[i];
+			indexT3GFXBuffer->mCount = newMeshIndexBufferData.size();
+			indexT3GFXBuffer->UpdateIndexBuffer();
+			d3dmeshData.indexBuffers[i].erase(d3dmeshData.indexBuffers[i].begin(), d3dmeshData.indexBuffers[i].end());
+			d3dmeshData.indexBuffers[i] = newMeshIndexBufferData;
+		}
+	}
+
+	void ModifyVertexBuffers(GFXPlatformVertexAttribute attributeType, std::vector<Vector4> newMeshVertexBufferData)
+	{
+		for (int i = 0; i < d3dmeshHeader.GFXPlatformAttributeParamsArray.size(); i++)
+		{
+			GFXPlatformAttributeParams* currentVertexAttributeParams = &d3dmeshHeader.GFXPlatformAttributeParamsArray[i];
+			T3GFXBuffer* currentVertexT3GFXBuffer = &d3dmeshHeader.mVertexBuffers[i];
+
+			if (currentVertexAttributeParams->mAttribute == attributeType)
+			{
+				currentVertexT3GFXBuffer->mCount = newMeshVertexBufferData.size();
+				currentVertexT3GFXBuffer->UpdateVertexBuffer(currentVertexAttributeParams); //handles buffer format and stride
+			}
+		}
+
+		int originalSize = 0;
+
+		switch (attributeType)
+		{
+		case GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position:
+
+			originalSize = d3dmeshData.vertexPositions.size();
+			d3dmeshData.vertexPositions.erase(d3dmeshData.vertexPositions.begin(), d3dmeshData.vertexPositions.end());
+
+			for (int i = 0; i < originalSize; i++)
+				d3dmeshData.vertexPositions.push_back(newMeshVertexBufferData);
+
+			break;
+		case GFXPlatformVertexAttribute::eGFXPlatformAttribute_Normal:
+
+			originalSize = d3dmeshData.vertexNormals.size();
+			d3dmeshData.vertexNormals.erase(d3dmeshData.vertexNormals.begin(), d3dmeshData.vertexNormals.end());
+
+			for (int i = 0; i < originalSize; i++)
+				d3dmeshData.vertexNormals.push_back(newMeshVertexBufferData);
+
+			break;
+		case GFXPlatformVertexAttribute::eGFXPlatformAttribute_Tangent:
+
+			originalSize = d3dmeshData.vertexTangents.size();
+			d3dmeshData.vertexTangents.erase(d3dmeshData.vertexTangents.begin(), d3dmeshData.vertexTangents.end());
+
+			for (int i = 0; i < originalSize; i++)
+				d3dmeshData.vertexTangents.push_back(newMeshVertexBufferData);
+
+			break;
+		case GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendWeight:
+
+			originalSize = d3dmeshData.vertexBlendWeight.size();
+			d3dmeshData.vertexBlendWeight.erase(d3dmeshData.vertexBlendWeight.begin(), d3dmeshData.vertexBlendWeight.end());
+
+			for (int i = 0; i < originalSize; i++)
+				d3dmeshData.vertexBlendWeight.push_back(newMeshVertexBufferData);
+
+			break;
+		//case GFXPlatformVertexAttribute::eGFXPlatformAttribute_BlendIndex:
+			//d3dmeshData.vertexBlendIndex.push_back(newMeshVertexBufferData);
+			//break;
+		case GFXPlatformVertexAttribute::eGFXPlatformAttribute_Color:
+
+			originalSize = d3dmeshData.vertexColors.size();
+			d3dmeshData.vertexColors.erase(d3dmeshData.vertexColors.begin(), d3dmeshData.vertexColors.end());
+
+			for (int i = 0; i < originalSize; i++)
+				d3dmeshData.vertexColors.push_back(newMeshVertexBufferData);
+
+			break;
+		case GFXPlatformVertexAttribute::eGFXPlatformAttribute_TexCoord:
+
+			originalSize = d3dmeshData.vertexUVs.size();
+			d3dmeshData.vertexUVs.erase(d3dmeshData.vertexUVs.begin(), d3dmeshData.vertexUVs.end());
+
+			for (int i = 0; i < originalSize; i++)
+				d3dmeshData.vertexUVs.push_back(newMeshVertexBufferData);
+
+			break;
+		}
+	}
+
+	void EraseAllBoneData()
+	{
+		d3dmeshHeader.mBones.erase(d3dmeshHeader.mBones.begin(), d3dmeshHeader.mBones.end());
+		
+		for (int i = 0; i < d3dmeshHeader.mLODs.size(); i++)
+			d3dmeshHeader.mLODs[i].mBones.erase(d3dmeshHeader.mLODs[i].mBones.begin(), d3dmeshHeader.mLODs[i].mBones.end());
+
+		for (int i = 0; i < d3dmeshHeader.GFXPlatformAttributeParamsArray.size(); i++)
+		{
+			GFXPlatformAttributeParams* currentVertexAttributeParams = &d3dmeshHeader.GFXPlatformAttributeParamsArray[i];
+			T3GFXBuffer* currentVertexT3GFXBuffer = &d3dmeshHeader.mVertexBuffers[i];
+
+			if (currentVertexAttributeParams->mAttribute == eGFXPlatformAttribute_BlendIndex)
+			{
+				d3dmeshHeader.GFXPlatformAttributeParamsArray.erase(d3dmeshHeader.GFXPlatformAttributeParamsArray.begin() + i);
+				d3dmeshHeader.mVertexBuffers.erase(d3dmeshHeader.mVertexBuffers.begin() + i);
+			}
+		}
+
+		for (int i = 0; i < d3dmeshHeader.GFXPlatformAttributeParamsArray.size(); i++)
+		{
+			GFXPlatformAttributeParams* currentVertexAttributeParams = &d3dmeshHeader.GFXPlatformAttributeParamsArray[i];
+			T3GFXBuffer* currentVertexT3GFXBuffer = &d3dmeshHeader.mVertexBuffers[i];
+
+			if (currentVertexAttributeParams->mAttribute == eGFXPlatformAttribute_BlendWeight)
+			{
+				d3dmeshHeader.GFXPlatformAttributeParamsArray.erase(d3dmeshHeader.GFXPlatformAttributeParamsArray.begin() + i);
+				d3dmeshHeader.mVertexBuffers.erase(d3dmeshHeader.mVertexBuffers.begin() + i);
+			}
+		}
+
+		for (int i = 0; i < d3dmeshData.vertexBlendIndex.size(); i++)
+			d3dmeshData.vertexBlendIndex.erase(d3dmeshData.vertexBlendIndex.begin(), d3dmeshData.vertexBlendIndex.end());
+
+		for (int i = 0; i < d3dmeshData.vertexBlendWeight.size(); i++)
+			d3dmeshData.vertexBlendWeight.erase(d3dmeshData.vertexBlendWeight.begin(), d3dmeshData.vertexBlendWeight.end());
+	}
+
+	void ZeroOutBoneData()
+	{
+		for (int i = 0; i < d3dmeshData.vertexBlendIndex.size(); i++)
+		{
+			for (int j = 0; j < d3dmeshData.vertexBlendIndex[i].size(); j++)
+				d3dmeshData.vertexBlendIndex[i][j] = UnsignedIntegerVector4(0, 0, 0, 0);
+		}
+
+		for (int i = 0; i < d3dmeshData.vertexBlendWeight.size(); i++)
+		{
+			for (int j = 0; j < d3dmeshData.vertexBlendWeight[i].size(); j++)
+				d3dmeshData.vertexBlendWeight[i][j] = Vector4(0, 0, 0, 0);
+		}
+	}
+
+	bool IsVertexPositionFormatUnsignedNormalized()
+	{
+		for (int i = 0; i < d3dmeshHeader.GFXPlatformAttributeParamsArray.size(); i++)
+		{
+			if(d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
+				return IsGFXPlatformFormatUnsignedNormalized(d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mFormat);
+		}
+
+		return false;
+	}
+
+	bool IsVertexPositionFormatSignedNormalized()
+	{
+		for (int i = 0; i < d3dmeshHeader.GFXPlatformAttributeParamsArray.size(); i++)
+		{
+			if (d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mAttribute == GFXPlatformVertexAttribute::eGFXPlatformAttribute_Position)
+				return IsGFXPlatformFormatSignedNormalized(d3dmeshHeader.GFXPlatformAttributeParamsArray[i].mFormat);
+		}
+
+		return false;
 	}
 
 	//||||||||||||||||||||||||||||| UPDATE STRUCTURES |||||||||||||||||||||||||||||

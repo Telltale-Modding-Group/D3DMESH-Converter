@@ -139,9 +139,11 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
+    <ClCompile Include="ExternalLibraries\mikktspace\mikktspace.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AssimpHelper.h" />
+    <ClInclude Include="AssimpMeshProxy.h" />
     <ClInclude Include="AssimpToD3DMeshDataV1.h" />
     <ClInclude Include="CustomTypes\FileEntry.h" />
     <ClInclude Include="CustomTypes\IntegerVector2.h" />
@@ -154,10 +156,13 @@
     <ClInclude Include="D3DMeshDataToAssimpV1.h" />
     <ClInclude Include="D3DMeshDataToAssimpV2.h" />
     <ClInclude Include="D3DMeshDataToAssimpV3.h" />
+    <ClInclude Include="ExternalLibraries\mikktspace\mikktspace.h" />
     <ClInclude Include="Json.h" />
     <ClInclude Include="BinaryDeserialization.h" />
     <ClInclude Include="BinaryHelper.h" />
     <ClInclude Include="BinarySerialization.h" />
+    <ClInclude Include="Math.h" />
+    <ClInclude Include="MikkTSpace.h" />
     <ClInclude Include="Telltale\DataTypes\BoneConstraints.h" />
     <ClInclude Include="Telltale\DataTypes\BoundingBox.h" />
     <ClInclude Include="Telltale\DataTypes\BoundingSphere.h" />

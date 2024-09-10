@@ -192,6 +192,19 @@ struct Vector3
 		return *this;
 	};
 
+	float Length()
+	{
+		return sqrtf(x * x + y * y + z * z);;
+	}
+
+	void Normalize()
+	{
+		float vectorLength = Length();
+		x /= vectorLength;
+		y /= vectorLength;
+		z /= vectorLength;
+	}
+
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

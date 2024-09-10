@@ -631,6 +631,9 @@ int main()
 			inputFileStream.close();
 
 			//=================== EXPORT D3DMESH ===================
+			//parsedD3DMesh.EraseAllBoneData();
+			//parsedD3DMesh.ZeroOutBoneData();
+
 			parsedD3DMesh.UpdateStructures();
 
 			std::ofstream outputFileStream;

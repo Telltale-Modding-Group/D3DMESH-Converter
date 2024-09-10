@@ -25,10 +25,16 @@
     <Filter Include="Header Files\Telltale\Enums">
       <UniqueIdentifier>{247d4498-e591-4986-9fc7-10cec587ed7d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\External">
+      <UniqueIdentifier>{ee50ff97-6e38-45c9-b26e-4370a3f7bbde}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ExternalLibraries\mikktspace\mikktspace.c">
+      <Filter>Header Files\External</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -193,6 +199,18 @@
     </ClInclude>
     <ClInclude Include="Telltale\DataTypes\Vector4.h">
       <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Math.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalLibraries\mikktspace\mikktspace.h">
+      <Filter>Header Files\External</Filter>
+    </ClInclude>
+    <ClInclude Include="MikkTSpace.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AssimpMeshProxy.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
