@@ -6,10 +6,14 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
+#include "../../Helper/GLMHelper.h"
 #include "../../Telltale/DataTypes/Vector3.h"
 
 //||||||||||||||||||||||||||||| BOUNDING SPHERE |||||||||||||||||||||||||||||
@@ -89,11 +93,7 @@ struct BoundingSphere
 	void SetBoundingSphereBasedOnBoundingBox(BoundingBox boundingBox)
 	{
 		mCenter = boundingBox.CalculateCenter();
-
-		Vector3 boundingBoxScale = boundingBox.CalculateSize();
-		mRadius = fmax(mRadius, boundingBoxScale.x);
-		mRadius = fmax(mRadius, boundingBoxScale.y);
-		mRadius = fmax(mRadius, boundingBoxScale.z);
+		mRadius = glm::length(Get_vec3_FromVector3(boundingBox.CalculateSize()));
 	}
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

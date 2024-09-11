@@ -6,10 +6,14 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
+#include "../../Helper/GLMHelper.h"
 #include "../../Telltale/DataTypes/Vector3.h"
 
 //||||||||||||||||||||||||||||| BOUNDING BOX |||||||||||||||||||||||||||||
@@ -55,29 +59,20 @@ struct BoundingBox
 
 	Vector3 CalculateCenter()
 	{
-		Vector3 center = Vector3(0, 0, 0);
-		center.x = (mMax.x + mMin.x) * 0.5f;
-		center.y = (mMax.y + mMin.y) * 0.5f;
-		center.z = (mMax.z + mMin.z) * 0.5f;
-		return center;
+		glm::vec3 center = (Get_vec3_FromVector3(mMax) + Get_vec3_FromVector3(mMin)) * 0.5f;
+		return Vector3(center);
 	};
 
 	Vector3 CalculateSize()
 	{
-		Vector3 size = Vector3(0, 0, 0);
-		size.x = mMax.x - mMin.x;
-		size.y = mMax.y - mMin.y;
-		size.z = mMax.z - mMin.z;
-		return size;
+		glm::vec3 size = Get_vec3_FromVector3(mMax) - Get_vec3_FromVector3(mMin);
+		return Vector3(size);
 	};
 
 	Vector3 CalculateExtents()
 	{
-		Vector3 extents = Vector3(0, 0, 0);
-		extents.x = (mMax.x - mMin.x) * 0.5f;
-		extents.y = (mMax.y - mMin.y) * 0.5f;
-		extents.z = (mMax.z - mMin.z) * 0.5f;
-		return extents;
+		glm::vec3 extents = (Get_vec3_FromVector3(mMax) - Get_vec3_FromVector3(mMin)) * 0.5f;
+		return Vector3(extents);
 	};
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||

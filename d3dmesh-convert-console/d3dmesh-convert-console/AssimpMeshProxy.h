@@ -21,6 +21,13 @@
 #include "../../Telltale/DataTypes/Vector3.h"
 #include "../../Telltale/DataTypes/Vector2.h"
 
+//||||||||||||||||||||||||||||| ASSIMP MESH PROXY |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| ASSIMP MESH PROXY |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| ASSIMP MESH PROXY |||||||||||||||||||||||||||||
+
+/// <summary>
+/// This holds data from an assimp mesh, into a custom object that is then fed into the mikktspace tangent calculation library.
+/// </summary>
 struct AssimpMeshProxy
 {
 	unsigned int faceCount;

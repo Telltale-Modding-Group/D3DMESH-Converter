@@ -6,10 +6,14 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#define GLM_ENABLE_EXPERIMENTAL
+#include <gtx/quaternion.hpp>
+
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 
 //||||||||||||||||||||||||||||| QUATERNION |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| QUATERNION |||||||||||||||||||||||||||||
@@ -58,6 +62,14 @@ struct Quaternion
 		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 		z = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 		w = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
+	};
+
+	Quaternion(glm::quat newQuaternion)
+	{
+		x = newQuaternion.x;
+		y = newQuaternion.y;
+		z = newQuaternion.z;
+		w = newQuaternion.w;
 	};
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||

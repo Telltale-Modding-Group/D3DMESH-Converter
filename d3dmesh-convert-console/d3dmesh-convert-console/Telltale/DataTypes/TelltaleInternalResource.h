@@ -7,10 +7,10 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "BinarySerialization.h"
-#include "BinaryDeserialization.h"
-#include "Json.h"
-#include "Telltale/DataTypes/Symbol.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
+#include "../../Telltale/DataTypes/Symbol.h"
 
 //||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||

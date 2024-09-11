@@ -7,8 +7,8 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryHelper.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryHelper.h"
 #include "../../Telltale/DataTypes/Vector2.h"
 #include "../../Telltale/DataTypes/Vector3.h"
 #include "../../Telltale/DataTypes/Vector4.h"
@@ -331,15 +331,15 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 {
 	unsigned int final32Bits = 0;
 
+	unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
+	unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
+	unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
+
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	if (mPositionWScale.x != 0.0f)
 	{
-		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
-		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
-		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
-
 		first = KeepBitsOfValue(first, 0, 12);
 		second = KeepBitsOfValue(second, 0, 10);
 		third = KeepBitsOfValue(third, 0, 10);
@@ -356,10 +356,6 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	else if (mPositionWScale.y != 0.0f)
 	{
-		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
-		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
-		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
-
 		first = KeepBitsOfValue(first, 0, 10);
 		second = KeepBitsOfValue(second, 0, 12);
 		third = KeepBitsOfValue(third, 0, 10);
@@ -376,10 +372,6 @@ static void WriteT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std::
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	else if (mPositionWScale.z != 0.0f)
 	{
-		unsigned int first = vector3.x * 1023; //float [0, 1] to [0, 1023]
-		unsigned int second = vector3.y * 1023; //float [0, 1] to [0, 1023]
-		unsigned int third = vector3.z * 1023; //float [0, 1] to [0, 1023]
-
 		first = KeepBitsOfValue(first, 0, 10);
 		second = KeepBitsOfValue(second, 0, 10);
 		third = KeepBitsOfValue(third, 0, 12);
@@ -506,28 +498,5 @@ static void WriteT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ofstream
 	//vector3.y = secondValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
 	//vector3.z = thirdValue / (float)511; //normalize 10 bit ushort [-512, 511] to float [-1, 1]
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 #endif

@@ -15,6 +15,9 @@
 //||||||||||||||||||||||||||||| FILE ENTRY |||||||||||||||||||||||||||||
 //NOTE: This is NOT a data structure used by telltale.
 
+/// <summary>
+/// This is a custom type that holds common file information for IO operations.
+/// </summary>
 struct FileEntry
 {
 	std::string filePath;

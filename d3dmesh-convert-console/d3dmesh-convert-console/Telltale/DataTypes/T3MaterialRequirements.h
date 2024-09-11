@@ -7,9 +7,9 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 
 //||||||||||||||||||||||||||||| T3 MATERIAL REQUIREMENTS |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| T3 MATERIAL REQUIREMENTS |||||||||||||||||||||||||||||

@@ -23,8 +23,13 @@
 #include <stdlib.h>
 
 //Custom
+#include "../../Application/Application_Macros.h"
 #include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
-#include "../../AssimpHelper.h"
+#include "../../Helper/AssimpHelper.h"
+
+#include "D3DMeshDataToAssimpV1.h"
+#include "D3DMeshDataToAssimpV2.h"
+#include "D3DMeshDataToAssimpV3.h"
 
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V3 |||||||||||||||||||||||||||||
@@ -42,9 +47,9 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 
 	assimpMesh->mMaterialIndex = d3dmeshBatch.mMaterialIndex;
 
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX POSITIONS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH VERTICES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH VERTICES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH VERTICES ||||||||||||||||||||||||||||||||||||||||
 	//batch (doesn't work?)
 	//int vertexCount = (d3dmeshBatch.mMaxVertIndex + 1) - d3dmeshBatch.mMinVertIndex;
 	//int vertexStart = d3dmeshBatch.mMinVertIndex;
@@ -107,9 +112,9 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
 
-	//|||||||||||||||||||||||||||||||||||||||| MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
 
 	std::vector<aiFace> faces;
 
@@ -205,15 +210,21 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 
 	aiNode* d3dmeshParentNode = new aiNode;
 	d3dmeshParentNode->mName = aiString(d3dmeshFile->d3dmeshHeader.mName);
+
+#if defined (ASSIMP_EXPORT_D3DMESH_SHADOW)
 	d3dmeshParentNode->mChildren = new aiNode * [2];
 	d3dmeshParentNode->mNumChildren = 2;
+#else
+	d3dmeshParentNode->mChildren = new aiNode * [1];
+	d3dmeshParentNode->mNumChildren = 1;
+#endif
 
 	aiNode* defaultMeshParentNode = new aiNode;
 	defaultMeshParentNode->mName = aiString("Default");
 	defaultMeshParentNode->mChildren = new aiNode * [lodCount];
 	defaultMeshParentNode->mNumChildren = lodCount;
 
-#if defined (ASSIMP_EXPORT_SHADOW)
+#if defined (ASSIMP_EXPORT_D3DMESH_SHADOW)
 	aiNode* shadowMeshParentNode = new aiNode;
 	shadowMeshParentNode->mName = aiString("Shadow");
 	shadowMeshParentNode->mChildren = new aiNode * [lodCount];
@@ -221,7 +232,11 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 #endif
 
 	d3dmeshParentNode->mChildren[0] = defaultMeshParentNode;
+
+#if defined (ASSIMP_EXPORT_D3DMESH_SHADOW)
 	d3dmeshParentNode->mChildren[1] = shadowMeshParentNode;
+#endif
+
 	assimpScene->mRootNode->mChildren[0] = d3dmeshParentNode;
 
 	for (int i = 0; i < lodCount; i++)
@@ -229,7 +244,7 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 		defaultMeshParentNode->mChildren[i] = new aiNode;
 		defaultMeshParentNode->mChildren[i]->mName = "Default_LOD" + std::to_string(i);
 
-#if defined (ASSIMP_EXPORT_SHADOW)
+#if defined (ASSIMP_EXPORT_D3DMESH_SHADOW)
 		shadowMeshParentNode->mChildren[i] = new aiNode;
 		shadowMeshParentNode->mChildren[i]->mName = "Shadow_LOD" + std::to_string(i);
 #endif
@@ -279,13 +294,13 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	{
 		int defaultMeshCurrentLODLevelSubmeshCount = d3dmeshFile->d3dmeshHeader.mLODs[i].mBatches0_ArrayLength;
 
-#if defined (ASSIMP_EXPORT_SHADOW)
+#if defined (ASSIMP_EXPORT_D3DMESH_SHADOW)
 		int shadowMeshCurrentLODLevelSubmeshCount = d3dmeshFile->d3dmeshHeader.mLODs[i].mBatches1_ArrayLength;
 #endif
 
 		aiNode* defaultMeshParentLOD = defaultMeshParentNode->mChildren[i];
 
-#if defined (ASSIMP_EXPORT_SHADOW)
+#if defined (ASSIMP_EXPORT_D3DMESH_SHADOW)
 		aiNode* shadowMeshParentLOD = shadowMeshParentNode->mChildren[i];
 #endif
 
@@ -355,33 +370,8 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	Assimp::Exporter assimpExporter;
 	Assimp::ExportProperties* properties = new Assimp::ExportProperties;
 
-	//currenty supported assimp export formats
-	//[ASSIMP] ID : x Extension : x
-	//[ASSIMP] ID : stp Extension : stp
-	//[ASSIMP] ID : obj Extension : obj
-	//[ASSIMP] ID : objnomtl Extension : obj
-	//[ASSIMP] ID : stl Extension : stl
-	//[ASSIMP] ID : stlb Extension : stl
-	//[ASSIMP] ID : ply Extension : ply
-	//[ASSIMP] ID : plyb Extension : ply
-	//[ASSIMP] ID : 3ds Extension : 3ds
-	//[ASSIMP] ID : gltf2 Extension : gltf
-	//[ASSIMP] ID : glb2 Extension : glb
-	//[ASSIMP] ID : gltf Extension : gltf
-	//[ASSIMP] ID : glb Extension : glb
-	//[ASSIMP] ID : assbin Extension : assbin
-	//[ASSIMP] ID : assxml Extension : assxml
-	//[ASSIMP] ID : x3d Extension : x3d
-	//[ASSIMP] ID : fbx Extension : fbx
-	//[ASSIMP] ID : fbxa Extension : fbx
-	//[ASSIMP] ID : 3mf Extension : 3mf
-	//[ASSIMP] ID : pbrt Extension : pbrt
-	//[ASSIMP] ID : assjson Extension : json
-	std::string id = "fbx";
-	std::string extension = "fbx";
-
 	//construct our final exported file path for the final mesh
-	std::string exportPath = outputFolderName + "/" + fileName + "." + extension;
+	std::string exportPath = outputFolderName + "/" + fileName + "." + ASSIMP_EXPORT_EXTENSION;
 
 	std::cout << "[ASSIMP EXPORT] Exporting..." << std::endl;
 
@@ -390,7 +380,7 @@ static void ExportD3DMeshToAssimpV3(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	aiAttachLogStream(&assimpExportStream);
 
 	//export our final model using assimp
-	aiReturn exportResult = assimpExporter.Export(assimpScene, id, exportPath, aiProcess_FindInvalidData | aiProcess_ValidateDataStructure, properties);
+	aiReturn exportResult = assimpExporter.Export(assimpScene, ASSIMP_EXPORT_ID, exportPath, aiProcess_FindInvalidData | aiProcess_ValidateDataStructure, properties);
 
 	//print to the console if we ran int oa problem
 	if (exportResult == aiReturn_FAILURE || exportResult == aiReturn_OUTOFMEMORY)

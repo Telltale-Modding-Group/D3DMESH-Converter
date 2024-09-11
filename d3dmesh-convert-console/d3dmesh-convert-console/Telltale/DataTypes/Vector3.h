@@ -6,10 +6,13 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 
 //||||||||||||||||||||||||||||| VECTOR 3 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| VECTOR 3 |||||||||||||||||||||||||||||
@@ -60,6 +63,13 @@ struct Vector3
 		z = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
+	Vector3(glm::vec3 newVector)
+	{
+		x = newVector.x;
+		y = newVector.y;
+		z = newVector.z;
+	};
+
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -70,140 +80,6 @@ struct Vector3
 		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, z); //[4 BYTES]
 	};
-
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-
-	//Negative Vector3
-	Vector3 operator-()
-	{
-		x = -x;
-		y = -y;
-		z = -z;
-		return *this;
-	};
-
-	//Add Vector3
-	Vector3 operator+(const Vector3& b)
-	{
-		x += b.x;
-		y += b.y;
-		z += b.z;
-		return *this;
-	};
-
-	//Add Vector3
-	Vector3 operator+=(const Vector3& b)
-	{
-		x += b.x;
-		y += b.y;
-		z += b.z;
-		return *this;
-	};
-
-	//Subtract Vector3
-	Vector3 operator-(const Vector3& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		z -= b.z;
-		return *this;
-	};
-
-	//Subtract Vector3
-	Vector3 operator-=(const Vector3& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		z -= b.z;
-		return *this;
-	};
-
-	//Multiply Vector3
-	Vector3 operator*(const Vector3& b)
-	{
-		x *= b.x;
-		y *= b.y;
-		z *= b.z;
-		return *this;
-	};
-
-	//Multiply Vector3
-	Vector3 operator*=(const Vector3& b)
-	{
-		x *= b.x;
-		y *= b.y;
-		z *= b.z;
-		return *this;
-	};
-
-	//Divide Vector3
-	Vector3 operator/(const Vector3& b)
-	{
-		x /= b.x;
-		y /= b.y;
-		z /= b.z;
-		return *this;
-	};
-
-	//Divide Vector3
-	Vector3 operator/=(const Vector3& b)
-	{
-		x /= b.x;
-		y /= b.y;
-		z /= b.z;
-		return *this;
-	};
-
-	//Multiply float
-	Vector3 operator*(const float& b)
-	{
-		x *= b;
-		y *= b;
-		z *= b;
-		return *this;
-	};
-
-	//Multiply float
-	Vector3 operator*=(const float& b)
-	{
-		x *= b;
-		y *= b;
-		z *= b;
-		return *this;
-	};
-
-	//Divide float
-	Vector3 operator/(const float& b)
-	{
-		x /= b;
-		y /= b;
-		z /= b;
-		return *this;
-	};
-
-	//Divide float
-	Vector3 operator/=(const float& b)
-	{
-		x /= b;
-		y /= b;
-		z /= b;
-		return *this;
-	};
-
-	float Length()
-	{
-		return sqrtf(x * x + y * y + z * z);;
-	}
-
-	void Normalize()
-	{
-		float vectorLength = Length();
-		x /= vectorLength;
-		y /= vectorLength;
-		z /= vectorLength;
-	}
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

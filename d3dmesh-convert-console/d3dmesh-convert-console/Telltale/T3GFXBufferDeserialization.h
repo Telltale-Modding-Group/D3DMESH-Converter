@@ -7,8 +7,8 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "../../BinaryDeserialization.h"
-#include "../../BinaryHelper.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Binary/BinaryHelper.h"
 #include "../../Telltale/DataTypes/Vector2.h"
 #include "../../Telltale/DataTypes/Vector3.h"
 #include "../../Telltale/DataTypes/Vector4.h"
@@ -409,8 +409,6 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	if (mPositionWScale.x != 0.0f)
 	{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for x axis
 		firstValue = CombineBits(firstValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -418,8 +416,6 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	else if (mPositionWScale.y != 0.0f)
 	{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for y axis
 		secondValue = CombineBits(secondValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -427,8 +423,6 @@ static Vector3 ReadT3GFXBuffer_UnsignedNormalized_3x10BitInteger_2BitInteger(std
 	//|||||||||||||||||||||||||||||||||||||||| UN10x3_UN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	else if (mPositionWScale.z != 0.0f)
 	{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for z axis
 		thirdValue = CombineBits(thirdValue, 10, fourthValue, 2);
 	}
 
@@ -470,8 +464,6 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE X AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	if (mPositionWScale.x != 0.0f)
 	{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for x axis
 		firstValue = CombineBits(firstValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -479,8 +471,6 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Y AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	else if (mPositionWScale.y != 0.0f)
 	{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for y axis
 		secondValue = CombineBits(secondValue, 10, fourthValue, 2);
 	}
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
@@ -488,8 +478,6 @@ static Vector3 ReadT3GFXBuffer_Normalized_3x10BitInteger_2BitInteger(std::ifstre
 	//|||||||||||||||||||||||||||||||||||||||| SN10x3_SN2 - MORE Z AXIS PRECISION ||||||||||||||||||||||||||||||||||||||||
 	else if (mPositionWScale.z != 0.0f)
 	{
-		//---------------------BIT COMBINE---------------------
-		//combine last bits for z axis
 		thirdValue = CombineBits(thirdValue, 10, fourthValue, 2);
 	}
 

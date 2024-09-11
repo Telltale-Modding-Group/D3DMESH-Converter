@@ -6,10 +6,13 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 
 //||||||||||||||||||||||||||||| VECTOR 4 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| VECTOR 4 |||||||||||||||||||||||||||||
@@ -68,6 +71,14 @@ struct Vector4
 		w = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
+	Vector4(glm::vec4 newVector)
+	{
+		x = newVector.x;
+		y = newVector.y;
+		z = newVector.z;
+		w = newVector.w;
+	};
+
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -78,140 +89,6 @@ struct Vector4
 		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, z); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, w); //[4 BYTES]
-	};
-
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-
-	//Negative Vector4
-	Vector4 operator-()
-	{
-		x = -x;
-		y = -y;
-		z = -z;
-		w = -w;
-		return *this;
-	};
-
-	//Add Vector4
-	Vector4 operator+(const Vector4& b)
-	{
-		x += b.x;
-		y += b.y;
-		z += b.z;
-		w += b.w;
-		return *this;
-	};
-
-	//Add Vector4
-	Vector4 operator+=(const Vector4& b)
-	{
-		x += b.x;
-		y += b.y;
-		z += b.z;
-		w += b.w;
-		return *this;
-	};
-
-	//Subtract Vector4
-	Vector4 operator-(const Vector4& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		z -= b.z;
-		w -= b.w;
-		return *this;
-	};
-
-	//Subtract Vector4
-	Vector4 operator-=(const Vector4& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		z -= b.z;
-		w -= b.w;
-		return *this;
-	};
-
-	//Multiply Vector4
-	Vector4 operator*(const Vector4& b)
-	{
-		x *= b.x;
-		y *= b.y;
-		z *= b.z;
-		w *= b.w;
-		return *this;
-	};
-
-	//Multiply Vector4
-	Vector4 operator*=(const Vector4& b)
-	{
-		x *= b.x;
-		y *= b.y;
-		z *= b.z;
-		w *= b.w;
-		return *this;
-	};
-
-	//Divide Vector4
-	Vector4 operator/(const Vector4& b)
-	{
-		x /= b.x;
-		y /= b.y;
-		z /= b.z;
-		w /= b.w;
-		return *this;
-	};
-
-	//Divide Vector4
-	Vector4 operator/=(const Vector4& b)
-	{
-		x /= b.x;
-		y /= b.y;
-		z /= b.z;
-		w /= b.w;
-		return *this;
-	};
-
-	//Multiply float
-	Vector4 operator*(const float& b)
-	{
-		x *= b;
-		y *= b;
-		z *= b;
-		w *= b;
-		return *this;
-	};
-
-	//Multiply float
-	Vector4 operator*=(const float& b)
-	{
-		x *= b;
-		y *= b;
-		z *= b;
-		w *= b;
-		return *this;
-	};
-
-	//Divide float
-	Vector4 operator/(const float& b)
-	{
-		x /= b;
-		y /= b;
-		z /= b;
-		w /= b;
-		return *this;
-	};
-
-	//Divide float
-	Vector4 operator/=(const float& b)
-	{
-		x /= b;
-		y /= b;
-		z /= b;
-		w /= b;
-		return *this;
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

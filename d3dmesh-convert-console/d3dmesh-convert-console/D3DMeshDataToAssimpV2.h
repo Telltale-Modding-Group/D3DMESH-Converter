@@ -23,8 +23,9 @@
 #include <stdlib.h>
 
 //Custom
+#include "../../Application/Application_Macros.h"
 #include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
-#include "../../AssimpHelper.h"
+#include "../../Helper/AssimpHelper.h"
 
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP V2 |||||||||||||||||||||||||||||
@@ -326,33 +327,8 @@ static void ExportD3DMeshToAssimpV2(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	Assimp::Exporter assimpExporter;
 	Assimp::ExportProperties* properties = new Assimp::ExportProperties;
 
-	//currenty supported assimp export formats
-	//[ASSIMP] ID : x Extension : x
-	//[ASSIMP] ID : stp Extension : stp
-	//[ASSIMP] ID : obj Extension : obj
-	//[ASSIMP] ID : objnomtl Extension : obj
-	//[ASSIMP] ID : stl Extension : stl
-	//[ASSIMP] ID : stlb Extension : stl
-	//[ASSIMP] ID : ply Extension : ply
-	//[ASSIMP] ID : plyb Extension : ply
-	//[ASSIMP] ID : 3ds Extension : 3ds
-	//[ASSIMP] ID : gltf2 Extension : gltf
-	//[ASSIMP] ID : glb2 Extension : glb
-	//[ASSIMP] ID : gltf Extension : gltf
-	//[ASSIMP] ID : glb Extension : glb
-	//[ASSIMP] ID : assbin Extension : assbin
-	//[ASSIMP] ID : assxml Extension : assxml
-	//[ASSIMP] ID : x3d Extension : x3d
-	//[ASSIMP] ID : fbx Extension : fbx
-	//[ASSIMP] ID : fbxa Extension : fbx
-	//[ASSIMP] ID : 3mf Extension : 3mf
-	//[ASSIMP] ID : pbrt Extension : pbrt
-	//[ASSIMP] ID : assjson Extension : json
-	std::string id = "fbx";
-	std::string extension = "fbx";
-
 	//construct our final exported file path for the final mesh
-	std::string exportPath = outputFolderName + "/" + fileName + "." + extension;
+	std::string exportPath = outputFolderName + "/" + fileName + "." + ASSIMP_EXPORT_EXTENSION;
 
 	std::cout << "[ASSIMP EXPORT] Exporting..." << std::endl;
 
@@ -361,7 +337,7 @@ static void ExportD3DMeshToAssimpV2(TelltaleD3DMeshFileV55* d3dmeshFile, std::st
 	aiAttachLogStream(&assimpExportStream);
 
 	//export our final model using assimp
-	aiReturn exportResult = assimpExporter.Export(assimpScene, id, exportPath, aiProcess_FindInvalidData | aiProcess_ValidateDataStructure, properties);
+	aiReturn exportResult = assimpExporter.Export(assimpScene, ASSIMP_EXPORT_ID, exportPath, aiProcess_FindInvalidData | aiProcess_ValidateDataStructure, properties);
 
 	//print to the console if we ran int oa problem
 	if (exportResult == aiReturn_FAILURE || exportResult == aiReturn_OUTOFMEMORY)

@@ -7,9 +7,9 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 #include "../../Telltale/DataTypes/TelltaleMetaHeaderVersion6.h"
 #include "../../Telltale/DataTypes/TelltaleD3DMeshHeaderV55.h"
 #include "../../Telltale/DataTypes/TelltaleD3DMeshDataV55.h"

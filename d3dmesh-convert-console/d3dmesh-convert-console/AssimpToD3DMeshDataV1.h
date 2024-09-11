@@ -13,6 +13,9 @@
 #include <assimp/postprocess.h>
 #include <assimp/cimport.h>
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Standard C++ Library
 #include <string>
 #include <iostream>
@@ -25,8 +28,8 @@
 //Custom
 #include "../../CustomTypes/FileEntry.h"
 #include "../../Telltale/DataTypes/TelltaleD3DMeshFileV55.h"
-#include "../../Json.h"
-#include "../../AssimpHelper.h"
+#include "../../Helper/JsonHelper.h"
+#include "../../Helper/AssimpHelper.h"
 
 //||||||||||||||||||||||||||||| ASSIMP TO D3DMESH DATA V1 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| ASSIMP TO D3DMESH DATA V1 |||||||||||||||||||||||||||||
@@ -94,8 +97,8 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	std::vector<Vector4> assimpMeshVertexUVChannel;
 	std::vector<Vector4> assimpMeshVertexColorChannel;
 
-	Vector4 newD3DMeshBoundingBoxMin = Vector4();
-	Vector4 newD3DMeshBoundingBoxMax = Vector4();
+	glm::vec3 newD3DMeshBoundingBoxMin = glm::vec3(0.0f);
+	glm::vec3 newD3DMeshBoundingBoxMax = glm::vec3(0.0f);
 
 	for (int i = 0; i < pScene->mNumMeshes; i++)
 	{
@@ -159,26 +162,19 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 				assimpMeshVertexColorChannel.push_back(Vector4(0, 0, 0, 1));
 		}
 
-		Vector4 assimpMeshBoundingBoxMin = GetVector4FromAssimpVector3(assimpMesh->mAABB.mMin);
-		Vector4 assimpMeshBoundingBoxMax = GetVector4FromAssimpVector3(assimpMesh->mAABB.mMax);
+		glm::vec3 assimpMeshBoundingBoxMin = Get_vec3_FromAssimpVector3(assimpMesh->mAABB.mMin);
+		glm::vec3 assimpMeshBoundingBoxMax = Get_vec3_FromAssimpVector3(assimpMesh->mAABB.mMax);
 
-		newD3DMeshBoundingBoxMin.x = fmin(newD3DMeshBoundingBoxMin.x, assimpMeshBoundingBoxMin.x);
-		newD3DMeshBoundingBoxMin.y = fmin(newD3DMeshBoundingBoxMin.y, assimpMeshBoundingBoxMin.y);
-		newD3DMeshBoundingBoxMin.z = fmin(newD3DMeshBoundingBoxMin.z, assimpMeshBoundingBoxMin.z);
-		newD3DMeshBoundingBoxMin.w = fmin(newD3DMeshBoundingBoxMin.w, assimpMeshBoundingBoxMin.w);
-
-		newD3DMeshBoundingBoxMax.x = fmax(newD3DMeshBoundingBoxMax.x, assimpMeshBoundingBoxMax.x);
-		newD3DMeshBoundingBoxMax.y = fmax(newD3DMeshBoundingBoxMax.y, assimpMeshBoundingBoxMax.y);
-		newD3DMeshBoundingBoxMax.z = fmax(newD3DMeshBoundingBoxMax.z, assimpMeshBoundingBoxMax.z);
-		newD3DMeshBoundingBoxMax.w = fmax(newD3DMeshBoundingBoxMax.w, assimpMeshBoundingBoxMax.w);
+		newD3DMeshBoundingBoxMin = glm::min(newD3DMeshBoundingBoxMin, assimpMeshBoundingBoxMin);
+		newD3DMeshBoundingBoxMax = glm::min(newD3DMeshBoundingBoxMax, assimpMeshBoundingBoxMax);
 	}
 
 	assimpMeshVertexUVs.push_back(assimpMeshVertexUVChannel);
 	assimpMeshVertexColors.push_back(assimpMeshVertexColorChannel);
 
 	BoundingBox newD3DMeshBoundingBox = BoundingBox();
-	newD3DMeshBoundingBox.mMin = Vector3(newD3DMeshBoundingBoxMin.x, newD3DMeshBoundingBoxMin.y, newD3DMeshBoundingBoxMin.z);
-	newD3DMeshBoundingBox.mMax = Vector3(newD3DMeshBoundingBoxMax.x, newD3DMeshBoundingBoxMax.y, newD3DMeshBoundingBoxMax.z);
+	newD3DMeshBoundingBox.mMin = Vector3(newD3DMeshBoundingBoxMin);
+	newD3DMeshBoundingBox.mMax = Vector3(newD3DMeshBoundingBoxMax);
 	Vector3 newD3DMeshBoundingBoxCenter = newD3DMeshBoundingBox.CalculateCenter();
 
 	Vector3 newPositionScale = newD3DMeshBoundingBox.CalculateSize();
@@ -191,8 +187,8 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//newPositionOffset -= newD3DMeshBoundingBoxCenter; //subtract by center offset
 	//newPositionOffset = -newPositionOffset;
 
-	Vector3 newPositionOffset = Vector3();
-	newPositionOffset = -newD3DMeshBoundingBoxCenter;
+	glm::vec3 newPositionOffset = glm::vec3(0.0f);
+	newPositionOffset = -Get_vec3_FromVector3(newD3DMeshBoundingBoxCenter);
 
 	if(originalD3DMesh.IsVertexPositionFormatUnsignedNormalized())
 		newPositionOffset += newD3DMeshBoundingBox.CalculateExtents(); //subtract by center offset
@@ -210,7 +206,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	originalD3DMesh.d3dmeshHeader.mBoundingBox = newD3DMeshBoundingBox;
 	originalD3DMesh.d3dmeshHeader.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
-	originalD3DMesh.d3dmeshHeader.mPositionOffset = newPositionOffset;
+	originalD3DMesh.d3dmeshHeader.mPositionOffset = Vector3(newPositionOffset);
 	originalD3DMesh.d3dmeshHeader.mPositionScale = newPositionScale;
 	originalD3DMesh.d3dmeshHeader.mPositionWScale = newPositionWScale;
 

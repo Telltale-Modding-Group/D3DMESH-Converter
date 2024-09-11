@@ -6,10 +6,13 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 
 //||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| VECTOR 2 |||||||||||||||||||||||||||||
@@ -52,6 +55,12 @@ struct Vector2
 		y = ReadFloat32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
+	Vector2(glm::vec2 newVector)
+	{
+		x = newVector.x;
+		y = newVector.y;
+	};
+
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -60,114 +69,6 @@ struct Vector2
 	{
 		WriteFloat32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteFloat32ToBinary(outputFileStream, y); //[4 BYTES]
-	};
-
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| OPERATOR OVERLOADS |||||||||||||||||||||||||||||
-
-	//Negative Vector2
-	Vector2 operator-()
-	{
-		x = -x;
-		y = -y;
-		return *this;
-	};
-
-	//Add Vector2
-	Vector2 operator+(const Vector2& b)
-	{
-		x += b.x;
-		y += b.y;
-		return *this;
-	};
-
-	//Add Vector2
-	Vector2 operator+=(const Vector2& b)
-	{
-		x += b.x;
-		y += b.y;
-		return *this;
-	};
-
-	//Subtract Vector2
-	Vector2 operator-(const Vector2& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		return *this;
-	};
-
-	//Subtract Vector2
-	Vector2 operator-=(const Vector2& b)
-	{
-		x -= b.x;
-		y -= b.y;
-		return *this;
-	};
-
-	//Multiply Vector2
-	Vector2 operator*(const Vector2& b)
-	{
-		x *= b.x;
-		y *= b.y;
-		return *this;
-	};
-
-	//Multiply Vector2
-	Vector2 operator*=(const Vector2& b)
-	{
-		x *= b.x;
-		y *= b.y;
-		return *this;
-	};
-
-	//Divide Vector2
-	Vector2 operator/(const Vector2& b)
-	{
-		x /= b.x;
-		y /= b.y;
-		return *this;
-	};
-
-	//Divide Vector2
-	Vector2 operator/=(const Vector2& b)
-	{
-		x /= b.x;
-		y /= b.y;
-		return *this;
-	};
-
-	//Multiply float
-	Vector2 operator*(const float& b)
-	{
-		x *= b;
-		y *= b;
-		return *this;
-	};
-
-	//Multiply float
-	Vector2 operator*=(const float& b)
-	{
-		x *= b;
-		y *= b;
-		return *this;
-	};
-
-	//Divide float
-	Vector2 operator/(const float& b)
-	{
-		x /= b;
-		y /= b;
-		return *this;
-	};
-
-	//Divide float
-	Vector2 operator/=(const float& b)
-	{
-		x /= b;
-		y /= b;
-		return *this;
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||

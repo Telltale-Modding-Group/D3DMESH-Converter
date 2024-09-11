@@ -7,9 +7,9 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
 //Custom
-#include "../../BinarySerialization.h"
-#include "../../BinaryDeserialization.h"
-#include "../../Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 #include "../../Telltale/DataTypes/ResourceGroupMembershipMapEntry.h"
 
 //||||||||||||||||||||||||||||| RESOURCE GROUP MEMBERSHIP |||||||||||||||||||||||||||||

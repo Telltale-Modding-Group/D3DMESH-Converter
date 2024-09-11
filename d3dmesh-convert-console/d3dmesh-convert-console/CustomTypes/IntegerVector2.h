@@ -6,10 +6,13 @@
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 
+//THIRD PARTY: GLM Library
+#include <glm.hpp>
+
 //Custom
-#include "BinarySerialization.h"
-#include "BinaryDeserialization.h"
-#include "Json.h"
+#include "../../Binary/BinarySerialization.h"
+#include "../../Binary/BinaryDeserialization.h"
+#include "../../Helper/JsonHelper.h"
 
 //||||||||||||||||||||||||||||| INTEGER VECTOR 2 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INTEGER VECTOR 2 |||||||||||||||||||||||||||||
@@ -52,6 +55,12 @@ struct IntegerVector2
 	{
 		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 		y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
+	};
+
+	IntegerVector2(glm::ivec2 newVector)
+	{
+		x = newVector.x;
+		y = newVector.y;
 	};
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
