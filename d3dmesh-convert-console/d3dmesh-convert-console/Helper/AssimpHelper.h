@@ -125,15 +125,15 @@ static glm::vec4 Get_vec4_FromAssimpVector3(aiVector3D value)
 
 static glm::ivec4 Get_ivec4_FromAssimpVector3(aiVector3D value)
 {
-    return glm::ivec4(value.x, value.y, value.z, 0.0f);
+    return glm::ivec4((int)value.x, (int)value.y, (int)value.z, 0);
 }
 
 static glm::uvec4 Get_uvec4_FromAssimpVector3(aiVector3D value)
 {
-    return glm::uvec4(value.x, value.y, value.z, 0.0f);
+    return glm::uvec4((unsigned int)value.x, (unsigned int)value.y, (unsigned int)value.z, 0);
 }
 
-//vec4 <- aiVector3D
+//vec3 <- aiVector3D
 static glm::vec3 Get_vec3_FromAssimpVector3(aiVector3D value)
 {
     return glm::vec3(value.x, value.y, value.z);
@@ -141,12 +141,12 @@ static glm::vec3 Get_vec3_FromAssimpVector3(aiVector3D value)
 
 static glm::ivec3 Get_ivec3_FromAssimpVector3(aiVector3D value)
 {
-    return glm::ivec3(value.x, value.y, value.z);
+    return glm::ivec3((int)value.x, (int)value.y, (int)value.z);
 }
 
 static glm::uvec3 Get_uvec3_FromAssimpVector3(aiVector3D value)
 {
-    return glm::uvec3(value.x, value.y, value.z);
+    return glm::uvec3((unsigned int)value.x, (unsigned int)value.y, (unsigned int)value.z);
 }
 
 //vec4 <- aiColor4D
@@ -157,12 +157,12 @@ static glm::vec4 Get_vec4_FromAssimpColor4(aiColor4D value)
 
 static glm::ivec4 Get_ivec4_FromAssimpColor4(aiColor4D value)
 {
-    return glm::ivec4(value.r, value.g, value.b, value.a);
+    return glm::ivec4((int)value.r, (int)value.g, (int)value.b, (int)value.a);
 }
 
 static glm::uvec4 Get_uvec4_FromAssimpColor4(aiColor4D value)
 {
-    return glm::uvec4(value.r, value.g, value.b, value.a);
+    return glm::uvec4((unsigned int)value.r, (unsigned int)value.g, (unsigned int)value.b, (unsigned int)value.a);
 }
 
 //vec2 <- aiVector3D
@@ -173,12 +173,12 @@ static glm::vec2 Get_vec2_FromAssimpVector3(aiVector3D value)
 
 static glm::ivec2 Get_ivec2_FromAssimpVector3(aiVector3D value)
 {
-    return glm::ivec2(value.x, value.y);
+    return glm::ivec2((int)value.x, (int)value.y);
 }
 
 static glm::uvec2 Get_uvec2_FromAssimpVector3(aiVector3D value)
 {
-    return glm::uvec2(value.x, value.y);
+    return glm::uvec2((unsigned int)value.x, (unsigned int)value.y);
 }
 
 //||||||||||||||||||||||||||||| TANGENT RECALCULATIONS |||||||||||||||||||||||||||||

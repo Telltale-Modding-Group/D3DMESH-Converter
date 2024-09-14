@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TELLTALE_INTERNAL_RESOURCE_H
-#define TELLTALE_INTERNAL_RESOURCE_H
+#ifndef HANDLE_PROPERTY_SET_H
+#define HANDLE_PROPERTY_SET_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
@@ -12,53 +12,39 @@
 #include "../../Helper/JsonHelper.h"
 #include "../../Telltale/DataTypes/Symbol.h"
 
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| HANDLE PROPERTY SET |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| HANDLE PROPERTY SET |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| HANDLE PROPERTY SET |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [x BYTES]
+/// [12 BYTES]
 /// </summary>
-struct TelltaleInternalResource
+struct HandlePropertySet
 {
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mInternalResourceSymbol;
-
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mInternalResourceType;
-
 	/// <summary>
 	/// [4 BYTES]
 	/// </summary>
-	unsigned int mInternalResourceBlockSize;
+	unsigned int mhMaterial_BlockSize;
 
 	/// <summary>
-	/// [x BYTES]
+	/// [8 BYTES]
 	/// </summary>
-	std::vector<char> mInternalResourceData;
+	Symbol mhMaterial;
 
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 
-	TelltaleInternalResource()
+	HandlePropertySet()
 	{
-		mInternalResourceSymbol = {};
-		mInternalResourceType = {};
-		mInternalResourceBlockSize = 0;
-		mInternalResourceData = {};
+		mhMaterial_BlockSize = 12;
+		mhMaterial = {};
 	};
 
-	TelltaleInternalResource(std::ifstream* inputFileStream)
+	HandlePropertySet(std::ifstream* inputFileStream)
 	{
-		mInternalResourceSymbol = Symbol(inputFileStream);
-		mInternalResourceType = Symbol(inputFileStream);
-		mInternalResourceBlockSize = ReadUInt32FromBinary(inputFileStream);
-		mInternalResourceData = ReadByteVectorBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
+		mhMaterial_BlockSize = ReadUInt32FromBinary(inputFileStream);
+		mhMaterial = Symbol(inputFileStream);
 	};
 
 	//||||||||||||||||||||||||||||| UPDATE STRUCTURES |||||||||||||||||||||||||||||
@@ -67,9 +53,9 @@ struct TelltaleInternalResource
 	//NOTE: This is critical as any mishap in regards to new/removed data will crash the game.
 	//So in advance we need to update all structural values (block sizes, array lengths, array capacities) to make sure everything lines up.
 
-	void UpdateStructures()
+	void UpdateStructure()
 	{
-
+		mhMaterial_BlockSize = GetByteSize();
 	}
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -78,11 +64,8 @@ struct TelltaleInternalResource
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		//begin serialization
-		mInternalResourceSymbol.BinarySerialize(outputFileStream);
-		mInternalResourceType.BinarySerialize(outputFileStream);
-		WriteUInt32ToBinary(outputFileStream, mInternalResourceBlockSize);
-		WriteByteVectorBufferToBinary(outputFileStream, mInternalResourceData);
+		WriteUInt32ToBinary(outputFileStream, mhMaterial_BlockSize);
+		mhMaterial.BinarySerialize(outputFileStream);
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -91,11 +74,9 @@ struct TelltaleInternalResource
 
 	std::string ToString() const
 	{
-		std::string output = "";
-		output += "[TelltaleInternalResource] mInternalResourceSymbol: " + mInternalResourceSymbol.ToString() + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceType: " + mInternalResourceType.ToString() + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceBlockSize: " + std::to_string(mInternalResourceBlockSize) + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceData [" + std::to_string(mInternalResourceBlockSize - 4) + "BYTES]";
+		std::string output = "\n";
+		output += "[HandlePropertySet] mBlockSize: " + std::to_string(mhMaterial_BlockSize) + "\n";
+		output += "[HandlePropertySet] mhMaterial: " + mhMaterial.ToString();
 		return output;
 	};
 
@@ -107,12 +88,9 @@ struct TelltaleInternalResource
 
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
-	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(
-		TelltaleInternalResource, 
-		mInternalResourceSymbol, 
-		mInternalResourceType, 
-		mInternalResourceBlockSize,
-		mInternalResourceData)
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(HandlePropertySet,
+		mhMaterial_BlockSize,
+		mhMaterial)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -122,16 +100,14 @@ struct TelltaleInternalResource
 	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
 
 	/// <summary>
-	/// [x BYTES]
+	/// [12 BYTES]
 	/// </summary>
 	/// <returns></returns>
 	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += mInternalResourceSymbol.GetByteSize(); //[8 BYTES] mInternalResourceSymbol
-		totalByteSize += mInternalResourceType.GetByteSize(); //[8 BYTES] mInternalResourceType
-		totalByteSize += 4; //[4 BYTES] mInternalResourceBlockSize
-		totalByteSize += mInternalResourceBlockSize - 4; //[x BYTES] mInternalResourceData
+		totalByteSize += 4; //mhMaterial_BlockSize [4 BYTES]
+		totalByteSize += mhMaterial.GetByteSize(); //mhMaterial [8 BYTES]
 		return totalByteSize;
 	}
 };

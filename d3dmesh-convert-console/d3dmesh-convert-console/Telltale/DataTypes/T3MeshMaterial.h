@@ -13,6 +13,7 @@
 #include "../../Telltale/DataTypes/Symbol.h"
 #include "../../Telltale/DataTypes/BoundingBox.h"
 #include "../../Telltale/DataTypes/BoundingSphere.h"
+#include "../../Telltale/DataTypes/HandlePropertySet.h"
 
 //||||||||||||||||||||||||||||| T3 MESH MATERIAL |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| T3 MESH MATERIAL |||||||||||||||||||||||||||||
@@ -24,14 +25,9 @@
 struct T3MeshMaterial
 {
 	/// <summary>
-	/// [4 BYTES]
+	/// [12 BYTES]
 	/// </summary>
-	unsigned int mhMaterial_BlockSize;
-
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mhMaterial;
+	HandlePropertySet mMaterialPropertySetHandle;
 
 	/// <summary>
 	/// [8 BYTES]
@@ -64,8 +60,7 @@ struct T3MeshMaterial
 
 	T3MeshMaterial()
 	{
-		mhMaterial_BlockSize = 12;
-		mhMaterial = {};
+		mMaterialPropertySetHandle = {};
 		mBaseMaterialName = {};
 		mLegacyRenderTextureProperty = {};
 		mBoundingBox = {};
@@ -75,8 +70,7 @@ struct T3MeshMaterial
 
 	T3MeshMaterial(std::ifstream* inputFileStream)
 	{
-		mhMaterial_BlockSize = ReadUInt32FromBinary(inputFileStream);
-		mhMaterial = Symbol(inputFileStream);
+		mMaterialPropertySetHandle = HandlePropertySet(inputFileStream);
 		mBaseMaterialName = Symbol(inputFileStream);
 		mLegacyRenderTextureProperty = Symbol(inputFileStream);
 		mBoundingBox = BoundingBox(inputFileStream);
@@ -92,9 +86,7 @@ struct T3MeshMaterial
 
 	void UpdateStructure()
 	{
-		mhMaterial_BlockSize = 4;
-		mhMaterial_BlockSize += mhMaterial.GetByteSize();
-
+		mMaterialPropertySetHandle.UpdateStructure();
 		mBoundingSphere.UpdateStructures();
 	}
 
@@ -104,8 +96,7 @@ struct T3MeshMaterial
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		WriteUInt32ToBinary(outputFileStream, mhMaterial_BlockSize);
-		mhMaterial.BinarySerialize(outputFileStream);
+		mMaterialPropertySetHandle.BinarySerialize(outputFileStream);
 		mBaseMaterialName.BinarySerialize(outputFileStream);
 		mLegacyRenderTextureProperty.BinarySerialize(outputFileStream);
 		mBoundingBox.BinarySerialize(outputFileStream);
@@ -120,8 +111,7 @@ struct T3MeshMaterial
 	std::string ToString() const
 	{
 		std::string output = "\n";
-		output += "[T3MeshMaterial] mBlockSize: " + std::to_string(mhMaterial_BlockSize) + "\n";
-		output += "[T3MeshMaterial] mhMaterial: " + mhMaterial.ToString() + "\n";
+		output += "[T3MeshMaterial] mMaterialPropertySetHandle: " + mMaterialPropertySetHandle.ToString() + "\n";
 		output += "[T3MeshMaterial] mBaseMaterialName: " + mBaseMaterialName.ToString() + "\n";
 		output += "[T3MeshMaterial] mLegacyRenderTextureProperty: " + mLegacyRenderTextureProperty.ToString() + "\n";
 		output += "[T3MeshMaterial] mBoundingBox: " + mBoundingBox.ToString() + "\n";
@@ -139,8 +129,7 @@ struct T3MeshMaterial
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
 	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(T3MeshMaterial, 
-		mhMaterial_BlockSize,
-		mhMaterial,
+		mMaterialPropertySetHandle,
 		mBaseMaterialName,
 		mLegacyRenderTextureProperty,
 		mBoundingBox,
@@ -161,8 +150,7 @@ struct T3MeshMaterial
 	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += 4; //mhMaterial_BlockSize [4 BYTES]
-		totalByteSize += mhMaterial.GetByteSize(); //mhMaterial [8 BYTES]
+		totalByteSize += mMaterialPropertySetHandle.GetByteSize(); //mMaterialPropertySetHandle [12 BYTES]
 		totalByteSize += mBaseMaterialName.GetByteSize(); //mBaseMaterialName [8 BYTES]
 		totalByteSize += mLegacyRenderTextureProperty.GetByteSize(); //mLegacyRenderTextureProperty [8 BYTES]
 		totalByteSize += mBoundingBox.GetByteSize(); //mBoundingBox [24 BYTES]

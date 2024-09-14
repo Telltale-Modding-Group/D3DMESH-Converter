@@ -236,28 +236,68 @@ struct T3MeshLOD
 
 	void UpdateStructure() 
 	{
+		//temp variables, used to recalculate the bounding box/sphere for the current T3MeshLOD
+		glm::vec3 mLOD_newBoundingBoxMinimum = glm::vec3(FLT_MAX);
+		glm::vec3 mLOD_newBoundingBoxMaximum = glm::vec3(FLT_MIN);
+
+		//start at 0, since we will recalculate primitive count based on the T3MeshBatches in the current T3MeshLOD
+		mNumPrimitives = 0;
+
+		//make sure array lengths match the size of the actual arrays
 		mBatches0_ArrayLength = mBatches0.size();
 		mBatches1_ArrayLength = mBatches1.size();
 		mBones_ArrayLength = mBones.size();
 
+		//recalculate based on new array lengths
+		mNumBatches = mBatches0_ArrayLength + mBatches1_ArrayLength;
+
+		//recalculate the binary size of the array from scratch
 		mBatches0_ArrayCapacity = 4; //[4 BYTES] block size uint32 itself
 		mBatches0_ArrayCapacity += 4; //[4 BYTES] mBatches0_ArrayLength
 
 		for (int i = 0; i < mBatches0_ArrayLength; i++)
+		{
+			//accumulate binary size of the current T3MeshBatch
 			mBatches0_ArrayCapacity += mBatches0[i].GetByteSize();
 
+			//accumulate primitive count for the current LOD level
+			mNumPrimitives += mBatches0[i].mNumPrimitives;
+
+			//calculate new min/max for the current LOD level using each T3MeshBatch bounding box
+			mLOD_newBoundingBoxMinimum = glm::min(mLOD_newBoundingBoxMinimum, Get_vec3_FromVector3(mBatches0[i].mBoundingBox.mMin));
+			mLOD_newBoundingBoxMaximum = glm::max(mLOD_newBoundingBoxMaximum, Get_vec3_FromVector3(mBatches0[i].mBoundingBox.mMax));
+		}
+
+		//recalculate the binary size of the array from scratch
 		mBatches1_ArrayCapacity = 4; //[4 BYTES] block size uint32 itself
 		mBatches1_ArrayCapacity += 4; //[4 BYTES] mBatches1_ArrayLength
 
 		for (int i = 0; i < mBatches1_ArrayLength; i++)
+		{
+			//accumulate binary size of the current T3MeshBatch
 			mBatches1_ArrayCapacity += mBatches1[i].GetByteSize();
 
+			//accumulate primitive count for the current LOD level
+			mNumPrimitives += mBatches1[i].mNumPrimitives;
+
+			//calculate new min/max for the current LOD level using each T3MeshBatch bounding box
+			mLOD_newBoundingBoxMinimum = glm::min(mLOD_newBoundingBoxMinimum, Get_vec3_FromVector3(mBatches1[i].mBoundingBox.mMin));
+			mLOD_newBoundingBoxMaximum = glm::max(mLOD_newBoundingBoxMaximum, Get_vec3_FromVector3(mBatches1[i].mBoundingBox.mMax));
+		}
+
+		//recalculate the binary size of the array from scratch
 		mBones_ArrayCapacity = 4; //[4 BYTES] block size uint32 itself
 		mBones_ArrayCapacity += 4; //[4 BYTES] mBones_ArrayLength
 		mBones_ArrayCapacity += 8 * mBones_ArrayLength; //8 is size of Symbol
+
+		//recalculate block size from scratch
 		mVertexStreams_BlockSize = 4; //[4 BYTES] block size uint32 itself
 		mVertexStreams_BlockSize += 4; //[4 BYTES] mVertexStreams
-		mNumBatches = mBatches0_ArrayLength + mBatches1_ArrayLength;
+
+		//using the newly calculated min/max, update the bounding box for the current LOD level, and set the bounding sphere as well using that information.
+		mBoundingBox.mMin = Vector3(mLOD_newBoundingBoxMinimum);
+		mBoundingBox.mMax = Vector3(mLOD_newBoundingBoxMaximum);
+		mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(mBoundingBox);
 	}
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||

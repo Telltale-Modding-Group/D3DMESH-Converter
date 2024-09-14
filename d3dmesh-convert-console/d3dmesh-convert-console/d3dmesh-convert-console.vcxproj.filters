@@ -25,8 +25,20 @@
     <Filter Include="Header Files\Telltale\Enums">
       <UniqueIdentifier>{247d4498-e591-4986-9fc7-10cec587ed7d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Header Files\External">
-      <UniqueIdentifier>{ee50ff97-6e38-45c9-b26e-4370a3f7bbde}</UniqueIdentifier>
+    <Filter Include="Header Files\Application">
+      <UniqueIdentifier>{3ee5e02a-0cda-4440-b91d-1f754499388e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Binary">
+      <UniqueIdentifier>{6edc87d8-9096-4087-a811-6d627acf1bae}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Helper">
+      <UniqueIdentifier>{7dc01eca-d304-4912-89d7-50619697d6b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ExternalLibraries">
+      <UniqueIdentifier>{91a19b32-a7db-4b24-beda-8b5ea0484f6b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\ExternalLibraries\mikktspace">
+      <UniqueIdentifier>{20dfbde1-1df7-42d6-8625-943685ebcafc}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -34,26 +46,11 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="ExternalLibraries\mikktspace\mikktspace.c">
-      <Filter>Header Files\External</Filter>
+      <Filter>Header Files\ExternalLibraries\mikktspace</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BinarySerialization.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryDeserialization.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="BinaryHelper.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Json.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="D3DMeshDataToAssimpV1.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AssimpHelper.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="D3DMeshDataToAssimpV2.h">
@@ -200,17 +197,89 @@
     <ClInclude Include="Telltale\DataTypes\Vector4.h">
       <Filter>Header Files\Telltale\DataTypes</Filter>
     </ClInclude>
-    <ClInclude Include="Math.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ExternalLibraries\mikktspace\mikktspace.h">
-      <Filter>Header Files\External</Filter>
-    </ClInclude>
-    <ClInclude Include="MikkTSpace.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="AssimpMeshProxy.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_Macros.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMesh.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportAssimp.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMesh.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMeshJson.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMeshJsonAndAssimp.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMeshAndSkeleton.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMeshJson_ExportD3DMesh.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadD3DMeshJsonAndAssimp_ExportD3DMesh.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadSkeleton.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadSkeleton_ExportSkeleton.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadSkeleton_ExportSkeletonJson.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Application\Application_ReadSkeletonJson_ExportSkeleton.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="Binary\BinaryDeserialization.h">
+      <Filter>Header Files\Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="Binary\BinaryHelper.h">
+      <Filter>Header Files\Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="Binary\BinarySerialization.h">
+      <Filter>Header Files\Binary</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\AssimpHelper.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\GLMHelper.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\JsonHelper.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\MikkTSpaceHelper.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="ExternalLibraries\mikktspace\mikktspace.h">
+      <Filter>Header Files\ExternalLibraries\mikktspace</Filter>
+    </ClInclude>
+    <ClInclude Include="Telltale\DataTypes\HandlePropertySet.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper\XAtlasHelper.h">
+      <Filter>Header Files\Helper</Filter>
+    </ClInclude>
+    <ClInclude Include="Telltale\DataTypes\T3MeshEffectPreload.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Telltale\DataTypes\T3MeshEffectPreloadEntry.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Telltale\DataTypes\T3MeshEffectPreloadDynamicFeatures.h">
+      <Filter>Header Files\Telltale\DataTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="Telltale\Enums\T3EffectType.h">
+      <Filter>Header Files\Telltale\Enums</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

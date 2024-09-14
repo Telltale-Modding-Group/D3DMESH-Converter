@@ -43,8 +43,8 @@
 #define D3DMESH_EXTENSION ".d3dmesh"
 #define SKL_EXTENSION ".skl"
 #define JSON_EXTENSION ".json"
-//#define ASSIMP_EXTENSION ".fbx"
-#define ASSIMP_EXTENSION ".glb"
+#define ASSIMP_EXTENSION ".fbx"
+//#define ASSIMP_EXTENSION ".glb"
 
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS / DEBUG DIRECTORIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS / DEBUG DIRECTORIES |||||||||||||||||||||||||||||

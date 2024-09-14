@@ -525,6 +525,31 @@ public:
 		return true;
 	}
 
+	//||||||||||||||||||||||||||||| DEBUG |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| DEBUG |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| DEBUG |||||||||||||||||||||||||||||
+
+	void PrintMeshInfo()
+	{
+		int totalDefaultMeshBatchCount = 0;
+		int totalDefaultShadowBatchCount = 0;
+
+		for (int i = 0; i < d3dmeshHeader.mLODs_ArrayLength; i++)
+		{
+			totalDefaultMeshBatchCount += d3dmeshHeader.mLODs[i].mBatches0_ArrayLength;
+			totalDefaultShadowBatchCount += d3dmeshHeader.mLODs[i].mBatches1_ArrayLength;
+		}
+
+		std::cout << "[D3DMESH INFO] Total Vertex Count: " << d3dmeshData.vertexPositions[0].size() << std::endl;
+		std::cout << "[D3DMESH INFO] Total Triangle Count: " << d3dmeshData.indexBuffers[0].size() << std::endl;
+		std::cout << "[D3DMESH INFO] LODs: " << d3dmeshHeader.mLODs_ArrayLength << std::endl;
+		std::cout << "[D3DMESH INFO] Total T3MeshBatches: " << (totalDefaultMeshBatchCount + totalDefaultShadowBatchCount) << std::endl;
+		std::cout << "[D3DMESH INFO] Default T3MeshBatches: " << totalDefaultMeshBatchCount << std::endl;
+		std::cout << "[D3DMESH INFO] Shadow T3MeshBatches: " << totalDefaultShadowBatchCount << std::endl;
+		std::cout << "[D3DMESH INFO] Materials: " << d3dmeshHeader.mMaterials_ArrayLength << std::endl;
+		std::cout << "[D3DMESH INFO] Bones: " << d3dmeshHeader.mBones_ArrayLength << std::endl;
+	}
+
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||

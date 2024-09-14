@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TELLTALE_INTERNAL_RESOURCE_H
-#define TELLTALE_INTERNAL_RESOURCE_H
+#ifndef T3_MESH_EFFECT_PRELOAD_DYNAMIC_FEATURES_H
+#define T3_MESH_EFFECT_PRELOAD_DYNAMIC_FEATURES_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
@@ -10,55 +10,36 @@
 #include "../../Binary/BinarySerialization.h"
 #include "../../Binary/BinaryDeserialization.h"
 #include "../../Helper/JsonHelper.h"
-#include "../../Telltale/DataTypes/Symbol.h"
 
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T3 MESH EFFECT PRELOAD DYNAMIC FEATURES |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T3 MESH EFFECT PRELOAD DYNAMIC FEATURES |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T3 MESH EFFECT PRELOAD DYNAMIC FEATURES |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [x BYTES]
+/// [x BYTES] 
 /// </summary>
-struct TelltaleInternalResource
+struct T3MeshEffectPreloadDynamicFeatures
 {
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mInternalResourceSymbol;
-
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mInternalResourceType;
-
-	/// <summary>
-	/// [4 BYTES]
-	/// </summary>
-	unsigned int mInternalResourceBlockSize;
-
-	/// <summary>
-	/// [x BYTES]
-	/// </summary>
-	std::vector<char> mInternalResourceData;
+	unsigned int mBlockSize;
+	unsigned int mDynamicFeatures; //BitSetBase<1> mDynamicFeatures;
+	unsigned int mPriority;
 
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 
-	TelltaleInternalResource()
+	T3MeshEffectPreloadDynamicFeatures()
 	{
-		mInternalResourceSymbol = {};
-		mInternalResourceType = {};
-		mInternalResourceBlockSize = 0;
-		mInternalResourceData = {};
+		mBlockSize = 0;
+		mDynamicFeatures = 0;
+		mPriority = 0;
 	};
 
-	TelltaleInternalResource(std::ifstream* inputFileStream)
+	T3MeshEffectPreloadDynamicFeatures(std::ifstream* inputFileStream)
 	{
-		mInternalResourceSymbol = Symbol(inputFileStream);
-		mInternalResourceType = Symbol(inputFileStream);
-		mInternalResourceBlockSize = ReadUInt32FromBinary(inputFileStream);
-		mInternalResourceData = ReadByteVectorBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
+		mBlockSize = ReadUInt32FromBinary(inputFileStream);
+		mDynamicFeatures = ReadUInt32FromBinary(inputFileStream);
+		mPriority = ReadUInt32FromBinary(inputFileStream);
 	};
 
 	//||||||||||||||||||||||||||||| UPDATE STRUCTURES |||||||||||||||||||||||||||||
@@ -69,7 +50,8 @@ struct TelltaleInternalResource
 
 	void UpdateStructures()
 	{
-
+		mBlockSize = 4; //[4 BYTES] mDynamicFeatures
+		mBlockSize += 4; //[4 BYTES] mPriority
 	}
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -78,11 +60,9 @@ struct TelltaleInternalResource
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		//begin serialization
-		mInternalResourceSymbol.BinarySerialize(outputFileStream);
-		mInternalResourceType.BinarySerialize(outputFileStream);
-		WriteUInt32ToBinary(outputFileStream, mInternalResourceBlockSize);
-		WriteByteVectorBufferToBinary(outputFileStream, mInternalResourceData);
+		WriteUInt32ToBinary(outputFileStream, mBlockSize);
+		WriteUInt32ToBinary(outputFileStream, mDynamicFeatures);
+		WriteUInt32ToBinary(outputFileStream, mPriority);
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -92,10 +72,9 @@ struct TelltaleInternalResource
 	std::string ToString() const
 	{
 		std::string output = "";
-		output += "[TelltaleInternalResource] mInternalResourceSymbol: " + mInternalResourceSymbol.ToString() + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceType: " + mInternalResourceType.ToString() + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceBlockSize: " + std::to_string(mInternalResourceBlockSize) + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceData [" + std::to_string(mInternalResourceBlockSize - 4) + "BYTES]";
+		output += "[T3MeshEffectPreloadDynamicFeatures] mBlockSize: " + std::to_string(mBlockSize) + "\n";
+		output += "[T3MeshEffectPreloadDynamicFeatures] mDynamicFeatures: " + std::to_string(mDynamicFeatures) + "\n";
+		output += "[T3MeshEffectPreloadDynamicFeatures] mPriority: " + std::to_string(mPriority);
 		return output;
 	};
 
@@ -107,12 +86,7 @@ struct TelltaleInternalResource
 
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
-	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(
-		TelltaleInternalResource, 
-		mInternalResourceSymbol, 
-		mInternalResourceType, 
-		mInternalResourceBlockSize,
-		mInternalResourceData)
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(T3MeshEffectPreloadDynamicFeatures, mBlockSize, mDynamicFeatures, mPriority)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -122,16 +96,15 @@ struct TelltaleInternalResource
 	//So for saftey I will just manually calculate the byte size of the object here to what telltale expects.
 
 	/// <summary>
-	/// [x BYTES]
+	/// [12 BYTES]
 	/// </summary>
 	/// <returns></returns>
 	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += mInternalResourceSymbol.GetByteSize(); //[8 BYTES] mInternalResourceSymbol
-		totalByteSize += mInternalResourceType.GetByteSize(); //[8 BYTES] mInternalResourceType
-		totalByteSize += 4; //[4 BYTES] mInternalResourceBlockSize
-		totalByteSize += mInternalResourceBlockSize - 4; //[x BYTES] mInternalResourceData
+		totalByteSize += 4; //[4 BYTES] mBlockSize
+		totalByteSize += 4; //[4 BYTES] mDynamicFeatures
+		totalByteSize += 4; //[4 BYTES] mPriority
 		return totalByteSize;
 	}
 };

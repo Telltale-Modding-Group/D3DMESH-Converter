@@ -72,7 +72,7 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LibraryPath>$(ProjectDir)ExternalLibraries\assimp;$(LibraryPath)</LibraryPath>
-    <IncludePath>$(ProjectDir)ExternalLibraries\json;$(ProjectDir)ExternalLibraries\assimp;$(IncludePath)</IncludePath>
+    <IncludePath>$(ProjectDir)ExternalLibraries\xatlas;$(ProjectDir)ExternalLibraries\json;$(ProjectDir)ExternalLibraries\glm;$(ProjectDir)ExternalLibraries\assimp;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -142,9 +142,24 @@
     <ClCompile Include="ExternalLibraries\mikktspace\mikktspace.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AssimpHelper.h" />
+    <ClInclude Include="Application\Application_Macros.h" />
+    <ClInclude Include="Application\Application_ReadD3DMesh.h" />
+    <ClInclude Include="Application\Application_ReadD3DMeshAndSkeleton.h" />
+    <ClInclude Include="Application\Application_ReadD3DMeshJsonAndAssimp_ExportD3DMesh.h" />
+    <ClInclude Include="Application\Application_ReadD3DMeshJson_ExportD3DMesh.h" />
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportAssimp.h" />
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMesh.h" />
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMeshJson.h" />
+    <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMeshJsonAndAssimp.h" />
+    <ClInclude Include="Application\Application_ReadSkeleton.h" />
+    <ClInclude Include="Application\Application_ReadSkeletonJson_ExportSkeleton.h" />
+    <ClInclude Include="Application\Application_ReadSkeleton_ExportSkeleton.h" />
+    <ClInclude Include="Application\Application_ReadSkeleton_ExportSkeletonJson.h" />
     <ClInclude Include="AssimpMeshProxy.h" />
     <ClInclude Include="AssimpToD3DMeshDataV1.h" />
+    <ClInclude Include="Binary\BinaryDeserialization.h" />
+    <ClInclude Include="Binary\BinaryHelper.h" />
+    <ClInclude Include="Binary\BinarySerialization.h" />
     <ClInclude Include="CustomTypes\FileEntry.h" />
     <ClInclude Include="CustomTypes\IntegerVector2.h" />
     <ClInclude Include="CustomTypes\IntegerVector3.h" />
@@ -157,16 +172,16 @@
     <ClInclude Include="D3DMeshDataToAssimpV2.h" />
     <ClInclude Include="D3DMeshDataToAssimpV3.h" />
     <ClInclude Include="ExternalLibraries\mikktspace\mikktspace.h" />
-    <ClInclude Include="Json.h" />
-    <ClInclude Include="BinaryDeserialization.h" />
-    <ClInclude Include="BinaryHelper.h" />
-    <ClInclude Include="BinarySerialization.h" />
-    <ClInclude Include="Math.h" />
-    <ClInclude Include="MikkTSpace.h" />
+    <ClInclude Include="Helper\AssimpHelper.h" />
+    <ClInclude Include="Helper\GLMHelper.h" />
+    <ClInclude Include="Helper\JsonHelper.h" />
+    <ClInclude Include="Helper\MikkTSpaceHelper.h" />
+    <ClInclude Include="Helper\XAtlasHelper.h" />
     <ClInclude Include="Telltale\DataTypes\BoneConstraints.h" />
     <ClInclude Include="Telltale\DataTypes\BoundingBox.h" />
     <ClInclude Include="Telltale\DataTypes\BoundingSphere.h" />
     <ClInclude Include="Telltale\DataTypes\GFXPlatformAttributeParams.h" />
+    <ClInclude Include="Telltale\DataTypes\HandlePropertySet.h" />
     <ClInclude Include="Telltale\DataTypes\Quaternion.h" />
     <ClInclude Include="Telltale\DataTypes\ResourceGroupMembership.h" />
     <ClInclude Include="Telltale\DataTypes\ResourceGroupMembershipMapEntry.h" />
@@ -177,6 +192,9 @@
     <ClInclude Include="Telltale\DataTypes\T3MaterialRequirements.h" />
     <ClInclude Include="Telltale\DataTypes\T3MeshBatch.h" />
     <ClInclude Include="Telltale\DataTypes\T3MeshBoneEntry.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshEffectPreload.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshEffectPreloadDynamicFeatures.h" />
+    <ClInclude Include="Telltale\DataTypes\T3MeshEffectPreloadEntry.h" />
     <ClInclude Include="Telltale\DataTypes\T3MeshLocalTransformEntry.h" />
     <ClInclude Include="Telltale\DataTypes\T3MeshLOD.h" />
     <ClInclude Include="Telltale\DataTypes\T3MeshMaterial.h" />
@@ -196,6 +214,7 @@
     <ClInclude Include="Telltale\Enums\GFXPlatformBufferUsage.h" />
     <ClInclude Include="Telltale\Enums\GFXPlatformFormat.h" />
     <ClInclude Include="Telltale\Enums\GFXPlatformVertexAttribute.h" />
+    <ClInclude Include="Telltale\Enums\T3EffectType.h" />
     <ClInclude Include="Telltale\Enums\T3MeshBatchUsageFlag.h" />
     <ClInclude Include="Telltale\Enums\T3ResourceUsage.h" />
     <ClInclude Include="Telltale\T3GFXBufferDeserialization.h" />

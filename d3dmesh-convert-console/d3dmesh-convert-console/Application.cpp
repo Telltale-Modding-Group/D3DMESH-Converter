@@ -36,7 +36,7 @@ int main()
 	//Application_ReadD3DMesh_ExportD3DMeshJsonAndAssimp();
 	//Application_ReadD3DMeshJson_ExportD3DMesh();
 	//Application_ReadD3DMeshAndSkeleton();
-	//Application_ReadD3DMeshJsonAndAssimp_ExportD3DMesh();
+	Application_ReadD3DMeshJsonAndAssimp_ExportD3DMesh();
 
 	return 0;
 }

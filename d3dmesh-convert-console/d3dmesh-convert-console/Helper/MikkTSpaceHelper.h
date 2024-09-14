@@ -11,7 +11,7 @@
 
 //THIRD PARTY: mikktspace
 #define __cplusplus
-#include <mikktspace.h>
+#include "../../ExternalLibraries/mikktspace/mikktspace.h"
 
 //Custom
 #include "../../AssimpMeshProxy.h"
@@ -23,7 +23,6 @@ public:
     {
         iface.m_getNumFaces = get_num_faces;
         iface.m_getNumVerticesOfFace = get_num_vertices_of_face;
-
         iface.m_getNormal = get_normal;
         iface.m_getPosition = get_position;
         iface.m_getTexCoord = get_tex_coords;
@@ -44,7 +43,7 @@ private:
 
     static int get_vertex_index(const SMikkTSpaceContext* context, int iFace, int iVert)
     {
-        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*> (context->m_pUserData);
+        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*>(context->m_pUserData);
 
         auto face_size = get_num_vertices_of_face(context, iFace);
         auto indices_index = (iFace * face_size) + iVert;
@@ -55,7 +54,7 @@ private:
 
     static int get_num_faces(const SMikkTSpaceContext* context)
     {
-        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*> (context->m_pUserData);
+        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*>(context->m_pUserData);
 
         float f_size = (float)working_mesh->faceCount;
         int i_size = (int)working_mesh->faceCount;
@@ -70,7 +69,7 @@ private:
 
     static void get_position(const SMikkTSpaceContext* context, float outpos[], int iFace, int iVert)
     {
-        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*> (context->m_pUserData);
+        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*>(context->m_pUserData);
         auto index = get_vertex_index(context, iFace, iVert);
         outpos[0] = working_mesh->vertexPosition[index].x;
         outpos[1] = working_mesh->vertexPosition[index].y;
@@ -79,7 +78,7 @@ private:
 
     static void get_normal(const SMikkTSpaceContext* context, float outnormal[], int iFace, int iVert)
     {
-        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*> (context->m_pUserData);
+        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*>(context->m_pUserData);
         auto index = get_vertex_index(context, iFace, iVert);
         outnormal[0] = working_mesh->vertexNormal[index].x;
         outnormal[1] = working_mesh->vertexNormal[index].y;
@@ -88,7 +87,7 @@ private:
 
     static void get_tex_coords(const SMikkTSpaceContext* context, float outuv[], int iFace, int iVert)
     {
-        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*> (context->m_pUserData);
+        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*>(context->m_pUserData);
         auto index = get_vertex_index(context, iFace, iVert);
         outuv[0] = working_mesh->vertexUV[index].x;
         outuv[1] = working_mesh->vertexUV[index].y;
@@ -96,7 +95,7 @@ private:
 
     static void set_tspace_basic(const SMikkTSpaceContext* context, const float tangentu[], float fSign, int iFace, int iVert)
     {
-        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*> (context->m_pUserData);
+        AssimpMeshProxy* working_mesh = static_cast<AssimpMeshProxy*>(context->m_pUserData);
         auto index = get_vertex_index(context, iFace, iVert);
         auto* vertex = &working_mesh->vertexTangents[index];
 

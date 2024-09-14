@@ -62,8 +62,10 @@ void Application_ReadD3DMesh()
 
 			inputFileStream.close();
 
-			if (parsedD3DMesh.HasBones())
-				std::cout << "[D3DMESH INFO] " << fileEntry.filePath << " has bones!" << std::endl;
+			//if (parsedD3DMesh.HasBones())
+				//std::cout << "[D3DMESH INFO] " << fileEntry.filePath << " has bones!" << std::endl;
+
+			parsedD3DMesh.PrintMeshInfo();
 		}
 	}
 

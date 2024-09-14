@@ -67,14 +67,20 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	unsigned int assimpImportFlags =
 		aiProcess_Triangulate |
+		aiProcess_FindInvalidData | 
 		aiProcess_CalcTangentSpace |
 		aiProcess_GenNormals |
 		aiProcess_GenBoundingBoxes |
 		aiProcess_SortByPType |
 		aiProcess_JoinIdenticalVertices |
 		aiProcess_ImproveCacheLocality |
-		aiProcess_FindDegenerates | 
-		aiProcess_SplitLargeMeshes;
+		aiProcess_FindDegenerates |
+		aiProcess_FlipUVs | 
+		aiProcess_MakeLeftHanded | 
+		aiProcess_FlipWindingOrder
+		//aiProcess_ConvertToLeftHanded
+		//aiProcess_SplitLargeMeshes
+		;
 
 	const aiScene* pScene = assimpImporter.ReadFile(assimpFilePath->filePath.c_str(), assimpImportFlags);
 
@@ -122,11 +128,14 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		if (assimpMesh->HasTangentsAndBitangents())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
-				//assimpMeshVertexTangents.push_back(Vector4(1, 0, 0, 1));
-				assimpMeshVertexTangents.push_back(GetVector4FromAssimpVector3(assimpMesh->mTangents[j]));
-				//assimpMeshVertexTangents.push_back(GetVector4FromAssimpVector3(assimpMesh->mBitangents[j]));
+			{
+				//Vector4 existingTangent = Vector4(1, 0, 0, 1);
+				Vector4 existingTangent = GetVector4FromAssimpVector3(assimpMesh->mTangents[j]);
+				//Vector4 existingTangent = GetVector4FromAssimpVector3(assimpMesh->mBitangents[j]);
 
-			//std::vector<Vector4> newTangents = CalculateMikkTSpaceTangentsFromMesh(assimpMesh);
+				assimpMeshVertexTangents.push_back(existingTangent);
+			}
+
 			//std::vector<Vector4> newTangents = CalculateTangentsFromMesh(assimpMesh, 0);
 			//std::vector<Vector4> newTangents = CalculateMikkTangentsFromMesh(assimpMesh, 0);
 
@@ -166,7 +175,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		glm::vec3 assimpMeshBoundingBoxMax = Get_vec3_FromAssimpVector3(assimpMesh->mAABB.mMax);
 
 		newD3DMeshBoundingBoxMin = glm::min(newD3DMeshBoundingBoxMin, assimpMeshBoundingBoxMin);
-		newD3DMeshBoundingBoxMax = glm::min(newD3DMeshBoundingBoxMax, assimpMeshBoundingBoxMax);
+		newD3DMeshBoundingBoxMax = glm::max(newD3DMeshBoundingBoxMax, assimpMeshBoundingBoxMax);
 	}
 
 	assimpMeshVertexUVs.push_back(assimpMeshVertexUVChannel);
@@ -191,7 +200,7 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	newPositionOffset = -Get_vec3_FromVector3(newD3DMeshBoundingBoxCenter);
 
 	if(originalD3DMesh.IsVertexPositionFormatUnsignedNormalized())
-		newPositionOffset += newD3DMeshBoundingBox.CalculateExtents(); //subtract by center offset
+		newPositionOffset += Get_vec3_FromVector3(newD3DMeshBoundingBox.CalculateExtents()); //subtract by center offset
 
 	newPositionOffset = -newPositionOffset;
 
@@ -310,8 +319,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//6. On the D3DMESH end there is no mBatches1 (shadow) mesh batches, there is only 1 single mBatches0 (default) mesh batch.
 	//7. On the D3DMESH end there is only one index buffer needed for rendering triangles (remember that initally most/if not all d3dmeshes has two index buffers?)
 
-	originalD3DMesh.d3dmeshHeader.mVertexCount = assimpMeshTotalVertexCount;
-
 	T3MeshLOD newLOD0 = T3MeshLOD();
 	T3MeshBatch fullDefaultSubmesh = T3MeshBatch();
 	T3MeshBatch fullShadowSubmesh = T3MeshBatch();
@@ -343,7 +350,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//set new LOD properties
 	newLOD0.mVertexStart = 0;
 	newLOD0.mVertexCount = assimpMeshTotalVertexCount;
-	newLOD0.mNumPrimitives = assimpMeshTotalTriangleCount * 2; //NOTE: this should be the total face count for both mBatches0 + mBatches1
 	newLOD0.mBoundingBox = newD3DMeshBoundingBox;
 	newLOD0.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 

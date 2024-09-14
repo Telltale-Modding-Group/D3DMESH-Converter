@@ -1,6 +1,6 @@
 #pragma once
-#ifndef TELLTALE_INTERNAL_RESOURCE_H
-#define TELLTALE_INTERNAL_RESOURCE_H
+#ifndef T3_MESH_EFFECT_PRELOAD_H
+#define T3_MESH_EFFECT_PRELOAD_H
 
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| INCLUDED DEPENDENCIES |||||||||||||||||||||||||||||
@@ -10,55 +10,46 @@
 #include "../../Binary/BinarySerialization.h"
 #include "../../Binary/BinaryDeserialization.h"
 #include "../../Helper/JsonHelper.h"
-#include "../../Telltale/DataTypes/Symbol.h"
+#include "../../Telltale/DataTypes/T3MeshEffectPreloadEntry.h"
 
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
-//||||||||||||||||||||||||||||| TELLTALE INTERNAL RESOURCE |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T3 MESH EFFECT PRELOAD |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T3 MESH EFFECT PRELOAD |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| T3 MESH EFFECT PRELOAD |||||||||||||||||||||||||||||
 
 /// <summary>
-/// [x BYTES]
+/// [x BYTES] 
 /// </summary>
-struct TelltaleInternalResource
+struct T3MeshEffectPreload
 {
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mInternalResourceSymbol;
-
-	/// <summary>
-	/// [8 BYTES]
-	/// </summary>
-	Symbol mInternalResourceType;
-
-	/// <summary>
-	/// [4 BYTES]
-	/// </summary>
-	unsigned int mInternalResourceBlockSize;
-
-	/// <summary>
-	/// [x BYTES]
-	/// </summary>
-	std::vector<char> mInternalResourceData;
+	unsigned int mEffectQuality;
+	unsigned int mEntries_ArrayCapacity;
+	unsigned int mEntries_ArrayLength;
+	std::vector<T3MeshEffectPreloadEntry> mEntries;
+	unsigned int mTotalEffectCount;
 
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| CONSTRUCTORS |||||||||||||||||||||||||||||
 
-	TelltaleInternalResource()
+	T3MeshEffectPreload()
 	{
-		mInternalResourceSymbol = {};
-		mInternalResourceType = {};
-		mInternalResourceBlockSize = 0;
-		mInternalResourceData = {};
+		mEffectQuality = 0;
+		mEntries_ArrayCapacity = 0;
+		mEntries_ArrayLength = 0;
+		mEntries = {};
+		mTotalEffectCount = 0;
 	};
 
-	TelltaleInternalResource(std::ifstream* inputFileStream)
+	T3MeshEffectPreload(std::ifstream* inputFileStream)
 	{
-		mInternalResourceSymbol = Symbol(inputFileStream);
-		mInternalResourceType = Symbol(inputFileStream);
-		mInternalResourceBlockSize = ReadUInt32FromBinary(inputFileStream);
-		mInternalResourceData = ReadByteVectorBufferFromBinary(inputFileStream, mInternalResourceBlockSize - 4); //skip this data block
+		mEffectQuality = ReadUInt32FromBinary(inputFileStream);
+		mEntries_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
+		mEntries_ArrayLength = ReadUInt32FromBinary(inputFileStream);
+		
+		for (int i = 0; i < mEntries_ArrayLength; i++)
+			mEntries.push_back(T3MeshEffectPreloadEntry(inputFileStream));
+
+		mTotalEffectCount = ReadUInt32FromBinary(inputFileStream);
 	};
 
 	//||||||||||||||||||||||||||||| UPDATE STRUCTURES |||||||||||||||||||||||||||||
@@ -69,7 +60,16 @@ struct TelltaleInternalResource
 
 	void UpdateStructures()
 	{
+		mEntries_ArrayLength = mEntries.size();
+		mEntries_ArrayCapacity = 8;
+		mTotalEffectCount = 0;
 
+		for (int i = 0; i < mEntries_ArrayLength; i++)
+		{
+			mEntries[i].UpdateStructures();
+			mEntries_ArrayCapacity += mEntries[i].GetByteSize();
+			mTotalEffectCount += mEntries[i].mDynamicEffectFeatures_ArrayLength;
+		}
 	}
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
@@ -78,11 +78,14 @@ struct TelltaleInternalResource
 
 	void BinarySerialize(std::ofstream* outputFileStream)
 	{
-		//begin serialization
-		mInternalResourceSymbol.BinarySerialize(outputFileStream);
-		mInternalResourceType.BinarySerialize(outputFileStream);
-		WriteUInt32ToBinary(outputFileStream, mInternalResourceBlockSize);
-		WriteByteVectorBufferToBinary(outputFileStream, mInternalResourceData);
+		WriteUInt32ToBinary(outputFileStream, mEffectQuality);
+		WriteUInt32ToBinary(outputFileStream, mEntries_ArrayCapacity);
+		WriteUInt32ToBinary(outputFileStream, mEntries_ArrayLength);
+
+		for (int i = 0; i < mEntries_ArrayLength; i++)
+			mEntries[i].BinarySerialize(outputFileStream);
+
+		WriteUInt32ToBinary(outputFileStream, mTotalEffectCount);
 	};
 
 	//||||||||||||||||||||||||||||| TO STRING |||||||||||||||||||||||||||||
@@ -92,10 +95,16 @@ struct TelltaleInternalResource
 	std::string ToString() const
 	{
 		std::string output = "";
-		output += "[TelltaleInternalResource] mInternalResourceSymbol: " + mInternalResourceSymbol.ToString() + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceType: " + mInternalResourceType.ToString() + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceBlockSize: " + std::to_string(mInternalResourceBlockSize) + "\n";
-		output += "[TelltaleInternalResource] mInternalResourceData [" + std::to_string(mInternalResourceBlockSize - 4) + "BYTES]";
+		output += "[T3MeshEffectPreload] mEffectQuality: " + std::to_string(mEffectQuality) + "\n";
+		output += "[T3MeshEffectPreload] mEntries_ArrayCapacity: " + std::to_string(mEntries_ArrayCapacity) + "\n";
+		output += "[T3MeshEffectPreload] mEntries_ArrayLength: " + std::to_string(mEntries_ArrayLength) + "\n";
+		output += "[T3MeshEffectPreload] ============ mEntries ARRAY START ============ \n";
+
+		for (int i = 0; i < mEntries_ArrayLength; i++)
+			output += mEntries[i].ToString() + "\n";
+
+		output += "[T3MeshEffectPreload] ============ mEntries ARRAY END ============ \n";
+		output += "[T3MeshEffectPreload] mTotalEffectCount: " + std::to_string(mTotalEffectCount);
 		return output;
 	};
 
@@ -107,12 +116,12 @@ struct TelltaleInternalResource
 
 	//These are supposed to be inside the class/struct
 	//NLOHMANN_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(...) //will not throw exceptions, fills in values with default constructor
-	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(
-		TelltaleInternalResource, 
-		mInternalResourceSymbol, 
-		mInternalResourceType, 
-		mInternalResourceBlockSize,
-		mInternalResourceData)
+	NLOHMANN_ORDERED_DEFINE_TYPE_INTRUSIVE_WITH_DEFAULT(T3MeshEffectPreload, 
+		mEffectQuality,
+		mEntries_ArrayCapacity,
+		mEntries_ArrayLength,
+		mEntries,
+		mTotalEffectCount)
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -128,10 +137,14 @@ struct TelltaleInternalResource
 	unsigned int GetByteSize()
 	{
 		unsigned int totalByteSize = 0;
-		totalByteSize += mInternalResourceSymbol.GetByteSize(); //[8 BYTES] mInternalResourceSymbol
-		totalByteSize += mInternalResourceType.GetByteSize(); //[8 BYTES] mInternalResourceType
-		totalByteSize += 4; //[4 BYTES] mInternalResourceBlockSize
-		totalByteSize += mInternalResourceBlockSize - 4; //[x BYTES] mInternalResourceData
+		totalByteSize += 4; //[4 BYTES] mEffectQuality
+		totalByteSize += 4; //[4 BYTES] mEntries_ArrayCapacity
+		totalByteSize += 4; //[4 BYTES] mEntries_ArrayLength
+
+		for (int i = 0; i < mEntries_ArrayLength; i++) //mEntries
+			totalByteSize += mEntries[i].GetByteSize();
+
+		totalByteSize += 4; //[4 BYTES] mTotalEffectCount
 		return totalByteSize;
 	}
 };

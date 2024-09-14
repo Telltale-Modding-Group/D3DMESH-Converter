@@ -20,6 +20,7 @@
 #include "../../Telltale/DataTypes/T3GFXBuffer.h"
 #include "../../Telltale/DataTypes/GFXPlatformAttributeParams.h"
 #include "../../Telltale/DataTypes/T3MeshMaterial.h"
+#include "../../Telltale/DataTypes/T3MeshEffectPreload.h"
 
 //||||||||||||||||||||||||||||| TELLTALE D3DMESH HEADER V55 |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| TELLTALE D3DMESH HEADER V55 |||||||||||||||||||||||||||||
@@ -37,11 +38,9 @@ struct TelltaleD3DMeshHeaderV55
 	unsigned int mInternalResourcesCount;
 	std::vector<TelltaleInternalResource> mInternalResources;
 	unsigned int mToolPropsBlockSize;
-	//char* mToolPropsData;
 	std::vector<char> mToolPropsData;
 	char mHasOcclusionData;
 	unsigned int mOcclusionDataBlockSize;
-	//char* mOcclusionData;
 	std::vector<char> mOcclusionData;
 	unsigned int mT3MeshDataBlockSize;
 
@@ -65,7 +64,6 @@ struct TelltaleD3DMeshHeaderV55
 	/// </summary>
 	unsigned int mTextures_ArrayCapacity;
 	unsigned int mTextures_ArrayLength;
-	//char* mTexturesData;
 	std::vector<char> mTexturesData;
 
 	/// <summary>
@@ -88,7 +86,6 @@ struct TelltaleD3DMeshHeaderV55
 	/// </summary>
 	unsigned int mMaterialOverrides_ArrayCapacity;
 	unsigned int mMaterialOverrides_ArrayLength;
-	//char* mMaterialOverridesData;
 	std::vector<char> mMaterialOverridesData;
 
 	/// <summary>
@@ -125,9 +122,18 @@ struct TelltaleD3DMeshHeaderV55
 	Symbol mPropertyKeyBase;
 	unsigned int mVertexCount;
 	unsigned int mFlags;
-	unsigned int mMeshPreload_BlockSize;
-	//char* mMeshPreloadData;
-	std::vector<char> mMeshPreloadData;
+
+	/// <summary>
+	/// [4 bytes]
+	/// <para> (CALCULATION) to calculate array capacity... </para>
+	/// <para> Add 4, as this is the size of a uint32 that represents the array capacity. </para>
+	/// <para> Add 4, as this is the size of a uint32 that represents the amount of elements in the array. </para>
+	/// <para> Then add the result of [ (element byte size) x (amount of elements) ] </para>
+	/// </summary>
+	unsigned int mMeshPreload_ArrayCapacity;
+	unsigned int mMeshPreload_ArrayLength;
+	std::vector<T3MeshEffectPreload> mMeshPreload;
+
 	unsigned int UNKNOWN1;
 	unsigned int UNKNOWN2;
 	unsigned int mVertexCountPerInstance;
@@ -190,8 +196,9 @@ struct TelltaleD3DMeshHeaderV55
 		mPropertyKeyBase = {};
 		mVertexCount = 0;
 		mFlags = 0;
-		mMeshPreload_BlockSize = 0;
-		mMeshPreloadData = {};
+		mMeshPreload_ArrayCapacity = 0;
+		mMeshPreload_ArrayLength = 0;
+		mMeshPreload = {};
 		UNKNOWN1 = 0;
 		UNKNOWN2 = 0;
 		mVertexCountPerInstance = 0;
@@ -288,8 +295,14 @@ struct TelltaleD3DMeshHeaderV55
 		mPropertyKeyBase = Symbol(inputFileStream);
 		mVertexCount = ReadUInt32FromBinary(inputFileStream);
 		mFlags = ReadUInt32FromBinary(inputFileStream);
-		mMeshPreload_BlockSize = ReadUInt32FromBinary(inputFileStream);
-		mMeshPreloadData = ReadByteVectorBufferFromBinary(inputFileStream, mMeshPreload_BlockSize - 4); //IMPORTANT NOTE: this is mostly skipped (we still keep the block of bytes so we can write later)
+
+		//parse the mesh preload block
+		mMeshPreload_ArrayCapacity = ReadUInt32FromBinary(inputFileStream);
+		mMeshPreload_ArrayLength = ReadUInt32FromBinary(inputFileStream);
+
+		for (int i = 0; i < mMeshPreload_ArrayLength; i++)
+			mMeshPreload.push_back(T3MeshEffectPreload(inputFileStream));
+
 		UNKNOWN1 = ReadUInt32FromBinary(inputFileStream);
 		UNKNOWN2 = ReadUInt32FromBinary(inputFileStream);
 		mVertexCountPerInstance = ReadUInt32FromBinary(inputFileStream);
@@ -326,11 +339,13 @@ struct TelltaleD3DMeshHeaderV55
 
 		mLODs_ArrayLength = mLODs.size();
 		mLODs_ArrayCapacity = 8;
+		mVertexCount = 0;
 
 		for (int i = 0; i < mLODs_ArrayLength; i++) 
 		{
 			mLODs[i].UpdateStructure();
 			mLODs_ArrayCapacity += mLODs[i].GetByteSize();
+			mVertexCount += mLODs[i].mVertexCount;
 		}
 
 		mMaterials_ArrayLength = mMaterials.size();
@@ -362,6 +377,16 @@ struct TelltaleD3DMeshHeaderV55
 
 		mMaterialRequirements.UpdateStructures();
 		mBoundingSphere.UpdateStructures();
+
+		mMeshPreload_ArrayLength = mMeshPreload.size();
+		mMeshPreload_ArrayCapacity = 8;
+
+		for (int i = 0; i < mMeshPreload_ArrayLength; i++)
+		{
+			mMeshPreload[i].UpdateStructures();
+			mMeshPreload_ArrayCapacity += mMeshPreload[i].GetByteSize();
+		}
+
 		mAttributeCount = GFXPlatformAttributeParamsArray.size();
 		mIndexBufferCount = mIndexBuffers.size();
 		mVertexBufferCount = mVertexBuffers.size();
@@ -450,8 +475,13 @@ struct TelltaleD3DMeshHeaderV55
 		mPropertyKeyBase.BinarySerialize(outputFileStream);
 		WriteUInt32ToBinary(outputFileStream, mVertexCount);
 		WriteUInt32ToBinary(outputFileStream, mFlags);
-		WriteUInt32ToBinary(outputFileStream, mMeshPreload_BlockSize);
-		WriteByteVectorBufferToBinary(outputFileStream, mMeshPreloadData);
+
+		WriteUInt32ToBinary(outputFileStream, mMeshPreload_ArrayCapacity);
+		WriteUInt32ToBinary(outputFileStream, mMeshPreload_ArrayLength);
+
+		for (int i = 0; i < mMeshPreload_ArrayLength; i++)
+			mMeshPreload[i].BinarySerialize(outputFileStream);
+
 		WriteUInt32ToBinary(outputFileStream, UNKNOWN1);
 		WriteUInt32ToBinary(outputFileStream, UNKNOWN2);
 		WriteUInt32ToBinary(outputFileStream, mVertexCountPerInstance);
@@ -559,8 +589,17 @@ struct TelltaleD3DMeshHeaderV55
 		output += "[TelltaleD3DMeshHeaderV55] mPropertyKeyBase: " + mPropertyKeyBase.ToString() + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mVertexCount: " + std::to_string(mVertexCount) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mFlags: " + std::to_string(mFlags) + "\n";
-		output += "[TelltaleD3DMeshHeaderV55] mMeshPreload_BlockSize: " + std::to_string(mMeshPreload_BlockSize) + "\n";
-		output += "[TelltaleD3DMeshHeaderV55] mMeshPreloadData [" + std::to_string(mMeshPreload_BlockSize - 4) + " BYTES] \n";
+		output += "[TelltaleD3DMeshHeaderV55] mMeshPreload_ArrayCapacity: " + std::to_string(mMeshPreload_ArrayCapacity) + "\n";
+		output += "[TelltaleD3DMeshHeaderV55] mMeshPreload_ArrayLength: " + std::to_string(mMeshPreload_ArrayLength) + "\n";
+		output += "[TelltaleD3DMeshHeaderV55] ============ T3MeshEffectPreload ARRAY START ============ \n";
+
+		for (int i = 0; i < mMeshPreload_ArrayLength; i++)
+		{
+			output += "[TelltaleD3DMeshHeaderV55] ============ T3MeshEffectPreload " + std::to_string(i) + " ============ \n";
+			output += mMeshPreload[i].ToString() + "\n";
+		}
+
+		output += "[TelltaleD3DMeshHeaderV55] ============ T3MeshEffectPreload ARRAY END ============ \n";
 		output += "[TelltaleD3DMeshHeaderV55] UNKNOWN1: " + std::to_string(UNKNOWN1) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] UNKNOWN2: " + std::to_string(UNKNOWN2) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mVertexCountPerInstance: " + std::to_string(mVertexCountPerInstance) + "\n";
@@ -654,17 +693,18 @@ struct TelltaleD3DMeshHeaderV55
 		mPropertyKeyBase, //44
 		mVertexCount, //45
 		mFlags, //46
-		mMeshPreload_BlockSize, //47
-		mMeshPreloadData, //48
-		UNKNOWN1, //49
-		UNKNOWN2, //50
-		mVertexCountPerInstance, //51
-		mIndexBufferCount, //52
-		mVertexBufferCount, //53
-		mAttributeCount, //54
-		GFXPlatformAttributeParamsArray, //55
-		mIndexBuffers, //56
-		mVertexBuffers) //57
+		mMeshPreload_ArrayCapacity, //47
+		mMeshPreload_ArrayLength, //48
+		mMeshPreload, //49
+		UNKNOWN1, //50
+		UNKNOWN2, //51
+		mVertexCountPerInstance, //52
+		mIndexBufferCount, //53
+		mVertexBufferCount, //54
+		mAttributeCount, //55
+		GFXPlatformAttributeParamsArray, //56
+		mIndexBuffers, //57
+		mVertexBuffers) //58
 
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BYTE SIZE |||||||||||||||||||||||||||||
@@ -681,7 +721,7 @@ struct TelltaleD3DMeshHeaderV55
 		totalByteSize += 4; //[4 BYTES] mLODs_ArrayCapacity
 		totalByteSize += 4; //[4 BYTES] mLODs_ArrayLength
 
-		for (int i = 0; i < mLODs_ArrayLength; i++)
+		for (int i = 0; i < mLODs_ArrayLength; i++) //mLODs
 			totalByteSize += mLODs[i].GetByteSize(); //[x BYTES]
 
 		totalByteSize += 4; //[4 BYTES] mTextures_ArrayCapacity
@@ -690,7 +730,7 @@ struct TelltaleD3DMeshHeaderV55
 		totalByteSize += 4; //[4 BYTES] mMaterials_ArrayCapacity
 		totalByteSize += 4; //[4 BYTES] mMaterials_ArrayLength
 
-		for (int i = 0; i < mMaterials_ArrayLength; i++)
+		for (int i = 0; i < mMaterials_ArrayLength; i++) //mMaterials
 			totalByteSize += mMaterials[i].GetByteSize(); //[76 BYTES]
 
 		totalByteSize += 4; //[4 BYTES] mMaterialOverrides_ArrayCapacity
@@ -699,13 +739,13 @@ struct TelltaleD3DMeshHeaderV55
 		totalByteSize += 4; //[4 BYTES] mBones_ArrayCapacity
 		totalByteSize += 4; //[4 BYTES] mBones_ArrayLength
 
-		for (int i = 0; i < mBones_ArrayLength; i++)
+		for (int i = 0; i < mBones_ArrayLength; i++) //mBones
 			totalByteSize += mBones[i].GetByteSize(); //[x BYTES]
 
 		totalByteSize += 4; //[4 BYTES] mLocalTransforms_ArrayCapacity
 		totalByteSize += 4; //[4 BYTES] mLocalTransforms_ArrayLength
 
-		for (int i = 0; i < mLocalTransforms_ArrayLength; i++)
+		for (int i = 0; i < mLocalTransforms_ArrayLength; i++) //mLocalTransforms
 			totalByteSize += mLocalTransforms[i].GetByteSize(); //[x BYTES]
 
 		totalByteSize += mMaterialRequirements.GetByteSize(); //[40 BYTES] mMaterialRequirements
@@ -721,8 +761,12 @@ struct TelltaleD3DMeshHeaderV55
 		totalByteSize += mPropertyKeyBase.GetByteSize(); //[8 BYTES] mPropertyKeyBase
 		totalByteSize += 4; //[4 BYTES] mVertexCount
 		totalByteSize += 4; //[4 BYTES] mFlags
-		totalByteSize += 4; //[4 BYTES] mMeshPreload_BlockSize
-		totalByteSize += mMeshPreload_BlockSize - 4; //[x BYTES] mMeshPreloadData
+		totalByteSize += 4; //[4 BYTES] mMeshPreload_ArrayCapacity
+		totalByteSize += 4; //[4 BYTES] mMeshPreload_ArrayLength
+
+		for (int i = 0; i < mMeshPreload_ArrayLength; i++) //mMeshPreload
+			totalByteSize += mMeshPreload[i].GetByteSize(); //[x BYTES]
+
 		totalByteSize += 4; //[4 BYTES] UNKNOWN1
 		totalByteSize += 4; //[4 BYTES] UNKNOWN2
 		totalByteSize += 4; //[4 BYTES] mVertexCountPerInstance
@@ -730,13 +774,13 @@ struct TelltaleD3DMeshHeaderV55
 		totalByteSize += 4; //[4 BYTES] mVertexBufferCount
 		totalByteSize += 4; //[4 BYTES] mAttributeCount
 
-		for (int i = 0; i < mAttributeCount; i++)
+		for (int i = 0; i < mAttributeCount; i++) //GFXPlatformAttributeParamsArray
 			totalByteSize += GFXPlatformAttributeParamsArray[i].GetByteSize(); //[20 BYTES]
 
-		for (int i = 0; i < mIndexBufferCount; i++)
+		for (int i = 0; i < mIndexBufferCount; i++) //mIndexBuffers
 			totalByteSize += mIndexBuffers[i].GetByteSize(); //[20 BYTES]
 
-		for (int i = 0; i < mVertexBufferCount; i++)
+		for (int i = 0; i < mVertexBufferCount; i++) //mVertexBuffers
 			totalByteSize += mVertexBuffers[i].GetByteSize(); //[20 BYTES]
 
 		return totalByteSize;
