@@ -213,8 +213,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	else if (newPositionScale.z > newPositionScale.x && newPositionScale.z > newPositionScale.y)
 		newPositionWScale.z = newPositionScale.z * 3.0f;
 
-	originalD3DMesh.d3dmeshHeader.mBoundingBox = newD3DMeshBoundingBox;
-	originalD3DMesh.d3dmeshHeader.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 	originalD3DMesh.d3dmeshHeader.mPositionOffset = Vector3(newPositionOffset);
 	originalD3DMesh.d3dmeshHeader.mPositionScale = newPositionScale;
 	originalD3DMesh.d3dmeshHeader.mPositionWScale = newPositionWScale;
@@ -350,8 +348,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 	//set new LOD properties
 	newLOD0.mVertexStart = 0;
 	newLOD0.mVertexCount = assimpMeshTotalVertexCount;
-	newLOD0.mBoundingBox = newD3DMeshBoundingBox;
-	newLOD0.mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(newD3DMeshBoundingBox);
 
 	//copy original LOD properties
 	newLOD0.mVertexStreams = originalD3DMesh.d3dmeshHeader.mLODs[0].mVertexStreams;

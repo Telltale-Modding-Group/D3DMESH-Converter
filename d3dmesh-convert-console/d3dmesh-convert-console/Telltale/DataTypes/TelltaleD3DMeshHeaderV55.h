@@ -331,14 +331,24 @@ struct TelltaleD3DMeshHeaderV55
 
 	void UpdateStructures()
 	{
+		//temp variables, used to recalculate the bounding box/sphere for the current T3MeshLOD
+		glm::vec3 newBoundingBoxMinimum = glm::vec3(FLT_MAX);
+		glm::vec3 newBoundingBoxMaximum = glm::vec3(FLT_MIN);
+
+		//update the name block binary size if it was changed
 		mNameBlockSize = 8 + mName.length();
+
+		//set the count here to match the array length of the actual data
 		mInternalResourcesCount = mInternalResources.size();
 
 		for (int i = 0; i < mInternalResourcesCount; i++)
 			mInternalResources[i].UpdateStructures();
 
+		//set the count here to match the array length of the actual data
 		mLODs_ArrayLength = mLODs.size();
 		mLODs_ArrayCapacity = 8;
+
+		//start from zero, and recalculate the total vertex count of the object
 		mVertexCount = 0;
 
 		for (int i = 0; i < mLODs_ArrayLength; i++) 
@@ -346,6 +356,10 @@ struct TelltaleD3DMeshHeaderV55
 			mLODs[i].UpdateStructure();
 			mLODs_ArrayCapacity += mLODs[i].GetByteSize();
 			mVertexCount += mLODs[i].mVertexCount;
+
+			//calculate new min/max for the current LOD level using each T3MeshBatch bounding box
+			newBoundingBoxMinimum = glm::min(newBoundingBoxMinimum, Get_vec3_FromVector3(mLODs[i].mBoundingBox.mMin));
+			newBoundingBoxMaximum = glm::max(newBoundingBoxMaximum, Get_vec3_FromVector3(mLODs[i].mBoundingBox.mMax));
 		}
 
 		mMaterials_ArrayLength = mMaterials.size();
@@ -398,6 +412,10 @@ struct TelltaleD3DMeshHeaderV55
 			mVertexBuffers[i].UpdateVertexBuffer(&GFXPlatformAttributeParamsArray[i]);
 
 		mT3MeshDataBlockSize = GetT3MeshDataByteSize();
+
+		mBoundingBox.mMin = newBoundingBoxMinimum;
+		mBoundingBox.mMax = newBoundingBoxMaximum;
+		mBoundingSphere.SetBoundingSphereBasedOnBoundingBox(mBoundingBox);
 	}
 
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
