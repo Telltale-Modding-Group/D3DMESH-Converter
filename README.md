@@ -2,7 +2,7 @@
 This is an application designed for converting **.d3dmesh models (Telltale Tool Models)**, to a standard model format ***(.fbx, .dae, .gltf, .obj, and more)*** and back.
 
 ## DISCLAIMER (Please Read)
-**This project is a heavy work in progress and is unfinished. The only working game this has been tested for is [The Walking Dead Telltale Definitive Series Edition](https://store.steampowered.com/app/1449690/The_Walking_Dead_The_Telltale_Definitive_Series/). Anything other versions are most likely not going to work.**
+**This project is a heavy work in progress and is unfinished. The only working game this has been tested for is [The Walking Dead Telltale Definitive Series Edition](https://store.steampowered.com/app/1449690/The_Walking_Dead_The_Telltale_Definitive_Series/). Any other versions are most likely not going to work.**
 
 ## Description
 
