@@ -134,7 +134,7 @@ struct TelltaleD3DMeshHeaderV55
 	unsigned int mMeshPreload_ArrayLength;
 	std::vector<T3MeshEffectPreload> mMeshPreload;
 
-	unsigned int UNKNOWN1;
+	unsigned int mUVLayersCount;
 	unsigned int UNKNOWN2;
 	unsigned int mVertexCountPerInstance;
 	unsigned int mIndexBufferCount;
@@ -199,7 +199,7 @@ struct TelltaleD3DMeshHeaderV55
 		mMeshPreload_ArrayCapacity = 0;
 		mMeshPreload_ArrayLength = 0;
 		mMeshPreload = {};
-		UNKNOWN1 = 0;
+		mUVLayersCount = 0;
 		UNKNOWN2 = 0;
 		mVertexCountPerInstance = 0;
 		mIndexBufferCount = 0;
@@ -303,7 +303,13 @@ struct TelltaleD3DMeshHeaderV55
 		for (int i = 0; i < mMeshPreload_ArrayLength; i++)
 			mMeshPreload.push_back(T3MeshEffectPreload(inputFileStream));
 
-		UNKNOWN1 = ReadUInt32FromBinary(inputFileStream);
+		std::cout << inputFileStream->tellg();
+		mUVLayersCount = ReadUInt32FromBinary(inputFileStream);
+		for (int i = 0; i < mUVLayersCount; i++)
+		{
+			inputFileStream->seekg((int)inputFileStream->tellg()+20);
+		}
+
 		UNKNOWN2 = ReadUInt32FromBinary(inputFileStream);
 		mVertexCountPerInstance = ReadUInt32FromBinary(inputFileStream);
 		mIndexBufferCount = ReadUInt32FromBinary(inputFileStream);
@@ -500,7 +506,7 @@ struct TelltaleD3DMeshHeaderV55
 		for (int i = 0; i < mMeshPreload_ArrayLength; i++)
 			mMeshPreload[i].BinarySerialize(outputFileStream);
 
-		WriteUInt32ToBinary(outputFileStream, UNKNOWN1);
+		WriteUInt32ToBinary(outputFileStream, mUVLayersCount);
 		WriteUInt32ToBinary(outputFileStream, UNKNOWN2);
 		WriteUInt32ToBinary(outputFileStream, mVertexCountPerInstance);
 		WriteUInt32ToBinary(outputFileStream, mIndexBufferCount);
@@ -618,7 +624,7 @@ struct TelltaleD3DMeshHeaderV55
 		}
 
 		output += "[TelltaleD3DMeshHeaderV55] ============ T3MeshEffectPreload ARRAY END ============ \n";
-		output += "[TelltaleD3DMeshHeaderV55] UNKNOWN1: " + std::to_string(UNKNOWN1) + "\n";
+		output += "[TelltaleD3DMeshHeaderV55] mUVLayersCount: " + std::to_string(mUVLayersCount) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] UNKNOWN2: " + std::to_string(UNKNOWN2) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mVertexCountPerInstance: " + std::to_string(mVertexCountPerInstance) + "\n";
 		output += "[TelltaleD3DMeshHeaderV55] mIndexBufferCount: " + std::to_string(mIndexBufferCount) + "\n";
@@ -714,7 +720,7 @@ struct TelltaleD3DMeshHeaderV55
 		mMeshPreload_ArrayCapacity, //47
 		mMeshPreload_ArrayLength, //48
 		mMeshPreload, //49
-		UNKNOWN1, //50
+		mUVLayersCount, //50
 		UNKNOWN2, //51
 		mVertexCountPerInstance, //52
 		mIndexBufferCount, //53
