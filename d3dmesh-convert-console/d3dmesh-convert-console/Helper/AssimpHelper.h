@@ -24,6 +24,7 @@
 #include <vector>
 #include <filesystem>
 #include <stdlib.h>
+#include <algorithm>
 
 //Custom
 #include "../../Telltale/DataTypes/Vector4.h"
@@ -31,36 +32,123 @@
 #include "../../Helper/GLMHelper.h"
 #include "../../Helper/MikkTSpaceHelper.h"
 
+//||||||||||||||||||||||||||||| ASSIMP UTILITY |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| ASSIMP UTILITY |||||||||||||||||||||||||||||
+//||||||||||||||||||||||||||||| ASSIMP UTILITY |||||||||||||||||||||||||||||
+
+static std::vector<aiNode*> GetAssimpNodeChildrenAsVectorArray(aiNode* node)
+{
+    std::vector<aiNode*> nodeVectorArray;
+
+    for (int i = 0; i < node->mNumChildren; i++)
+        nodeVectorArray.push_back(node->mChildren[i]);
+
+    return nodeVectorArray;
+}
+
+static void SetAssimpNodeChildrenByVectorArray(aiNode* node, std::vector<aiNode*> vectorArray)
+{
+    node->mChildren = new aiNode * [vectorArray.size()];
+
+    for (int i = 0; i < vectorArray.size(); i++)
+        node->mChildren[i] = vectorArray[i];
+
+    node->mNumChildren = vectorArray.size();
+}
+
+/*
+static aiNode* ExtractAssimpNodeByNameFromChildren(std::string extractedNodeName, aiNode* node)
+{
+    aiNode* extractedNode = node->FindNode(extractedNodeName.c_str());
+
+    if (extractedNode == nullptr)
+        return nullptr;
+
+    std::vector<aiNode*> nodeChildren = GetAssimpNodeChildrenAsVectorArray(node);
+    std::vector<aiNode*>::iterator nodeChildArrayElement = std::find(nodeChildren.begin(), nodeChildren.end(), extractedNode);
+
+    if (nodeChildArrayElement != nodeChildren.end())
+        nodeChildren.erase(nodeChildArrayElement);
+
+    return extractedNode;
+}
+*/
+
+static aiNode* ExtractAssimpNodeFromChildren(aiNode* extractedNode, aiNode* node)
+{
+    std::vector<aiNode*> nodeChildren = GetAssimpNodeChildrenAsVectorArray(node);
+    std::vector<aiNode*>::iterator nodeChildArrayElement = std::find(nodeChildren.begin(), nodeChildren.end(), extractedNode);
+
+    if (nodeChildArrayElement != nodeChildren.end())
+        nodeChildren.erase(nodeChildArrayElement);
+
+    return extractedNode;
+}
+
+static aiNode* ExtractAssimpNodeByNameFromChildren(std::string extractedNodeName, aiNode* node)
+{
+    aiNode* extractedNode = node->FindNode(extractedNodeName.c_str());
+
+    if (extractedNode == nullptr)
+        return nullptr;
+
+    return ExtractAssimpNodeFromChildren(extractedNode, node);
+}
+
+static void ParentAssimpNodeToAssimpNode(aiNode* nodeToParent, aiNode* newParentNode)
+{
+    aiNode* currentNodeToParent = nodeToParent;
+
+    if (nodeToParent->mParent != nullptr)
+        currentNodeToParent = ExtractAssimpNodeFromChildren(nodeToParent, nodeToParent->mParent);
+
+    std::vector<aiNode*> newParentNodeChildren = GetAssimpNodeChildrenAsVectorArray(newParentNode);
+
+    newParentNodeChildren.push_back(currentNodeToParent);
+
+    SetAssimpNodeChildrenByVectorArray(newParentNode, newParentNodeChildren);
+}
+
 //||||||||||||||||||||||||||||| TELLTALE TYPES TO ASSIMP TYPES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| TELLTALE TYPES TO ASSIMP TYPES |||||||||||||||||||||||||||||
 //||||||||||||||||||||||||||||| TELLTALE TYPES TO ASSIMP TYPES |||||||||||||||||||||||||||||
 
-static aiVector3D GetAssimpVector3FromVector4(Vector4 value)
+static aiVector3D GetAssimpVector3FromVector3(Vector3& value)
+{
+    return aiVector3D(value.x, value.y, value.z);
+}
+
+static aiQuaternion GetAssimpQuaternionFromQuaternion(Quaternion& value)
+{
+    return aiQuaternion(value.x, value.y, value.z, value.w);
+}
+
+static aiVector3D GetAssimpVector3FromVector4(Vector4& value)
 {
 	return aiVector3D(value.x, value.y, value.z);
 }
 
-static aiColor4D GetAssimpColor4FromVector4(Vector4 value)
+static aiColor4D GetAssimpColor4FromVector4(Vector4& value)
 {
 	return aiColor4D(value.x, value.y, value.z, value.w);
 }
 
-static Vector4 GetVector4FromAssimpVector3(aiVector3D value)
+static Vector4 GetVector4FromAssimpVector3(aiVector3D& value)
 {
 	return Vector4(value.x, value.y, value.z, 0.0f);
 }
 
-static Vector4 GetVector4FromAssimpColor4(aiColor4D value)
+static Vector4 GetVector4FromAssimpColor4(aiColor4D& value)
 {
 	return Vector4(value.r, value.g, value.b, value.a);
 }
 
-static Vector3 GetVector3FromAssimpVector3(aiVector3D value)
+static Vector3 GetVector3FromAssimpVector3(aiVector3D& value)
 {
     return Vector3(value.x, value.y, value.z);
 }
 
-static Vector2 GetVector2FromAssimpVector3(aiVector3D value)
+static Vector2 GetVector2FromAssimpVector3(aiVector3D& value)
 {
     return Vector2(value.x, value.y);
 }
@@ -70,113 +158,113 @@ static Vector2 GetVector2FromAssimpVector3(aiVector3D value)
 //||||||||||||||||||||||||||||| GLM TYPES TO ASSIMP TYPES |||||||||||||||||||||||||||||
 
 //aiVector3D <- vec4
-static aiVector3D GetAssimpVector3From_vec4(glm::vec4 value)
+static aiVector3D GetAssimpVector3From_vec4(glm::vec4& value)
 {
     return aiVector3D(value.x, value.y, value.z);
 }
 
-static aiVector3D GetAssimpVector3From_ivec4(glm::ivec4 value)
+static aiVector3D GetAssimpVector3From_ivec4(glm::ivec4& value)
 {
     return aiVector3D(value.x, value.y, value.z);
 }
 
-static aiVector3D GetAssimpVector3From_uvec4(glm::uvec4 value)
+static aiVector3D GetAssimpVector3From_uvec4(glm::uvec4& value)
 {
     return aiVector3D(value.x, value.y, value.z);
 }
 
 //aiVector3D <- vec3
-static aiVector3D GetAssimpVector3From_vec3(glm::vec3 value)
+static aiVector3D GetAssimpVector3From_vec3(glm::vec3& value)
 {
     return aiVector3D(value.x, value.y, value.z);
 }
 
-static aiVector3D GetAssimpVector3From_ivec3(glm::ivec3 value)
+static aiVector3D GetAssimpVector3From_ivec3(glm::ivec3& value)
 {
     return aiVector3D(value.x, value.y, value.z);
 }
 
-static aiVector3D GetAssimpVector3From_uvec3(glm::uvec3 value)
+static aiVector3D GetAssimpVector3From_uvec3(glm::uvec3& value)
 {
     return aiVector3D(value.x, value.y, value.z);
 }
 
 //aiColor4D <- vec4
-static aiColor4D GetAssimpColor4From_vec4(glm::vec4 value)
+static aiColor4D GetAssimpColor4From_vec4(glm::vec4& value)
 {
     return aiColor4D(value.x, value.y, value.z, value.w);
 }
 
-static aiColor4D GetAssimpColor4From_ivec4(glm::ivec4 value)
+static aiColor4D GetAssimpColor4From_ivec4(glm::ivec4& value)
 {
     return aiColor4D(value.x, value.y, value.z, value.w);
 }
 
-static aiColor4D GetAssimpColor4From_uvec4(glm::uvec4 value)
+static aiColor4D GetAssimpColor4From_uvec4(glm::uvec4& value)
 {
     return aiColor4D(value.x, value.y, value.z, value.w);
 }
 
 //vec4 <- aiVector3D
-static glm::vec4 Get_vec4_FromAssimpVector3(aiVector3D value)
+static glm::vec4 Get_vec4_FromAssimpVector3(aiVector3D& value)
 {
     return glm::vec4(value.x, value.y, value.z, 0.0f);
 }
 
-static glm::ivec4 Get_ivec4_FromAssimpVector3(aiVector3D value)
+static glm::ivec4 Get_ivec4_FromAssimpVector3(aiVector3D& value)
 {
     return glm::ivec4((int)value.x, (int)value.y, (int)value.z, 0);
 }
 
-static glm::uvec4 Get_uvec4_FromAssimpVector3(aiVector3D value)
+static glm::uvec4 Get_uvec4_FromAssimpVector3(aiVector3D& value)
 {
     return glm::uvec4((unsigned int)value.x, (unsigned int)value.y, (unsigned int)value.z, 0);
 }
 
 //vec3 <- aiVector3D
-static glm::vec3 Get_vec3_FromAssimpVector3(aiVector3D value)
+static glm::vec3 Get_vec3_FromAssimpVector3(aiVector3D& value)
 {
     return glm::vec3(value.x, value.y, value.z);
 }
 
-static glm::ivec3 Get_ivec3_FromAssimpVector3(aiVector3D value)
+static glm::ivec3 Get_ivec3_FromAssimpVector3(aiVector3D& value)
 {
     return glm::ivec3((int)value.x, (int)value.y, (int)value.z);
 }
 
-static glm::uvec3 Get_uvec3_FromAssimpVector3(aiVector3D value)
+static glm::uvec3 Get_uvec3_FromAssimpVector3(aiVector3D& value)
 {
     return glm::uvec3((unsigned int)value.x, (unsigned int)value.y, (unsigned int)value.z);
 }
 
 //vec4 <- aiColor4D
-static glm::vec4 Get_vec4_FromAssimpColor4(aiColor4D value)
+static glm::vec4 Get_vec4_FromAssimpColor4(aiColor4D& value)
 {
     return glm::vec4(value.r, value.g, value.b, value.a);
 }
 
-static glm::ivec4 Get_ivec4_FromAssimpColor4(aiColor4D value)
+static glm::ivec4 Get_ivec4_FromAssimpColor4(aiColor4D& value)
 {
     return glm::ivec4((int)value.r, (int)value.g, (int)value.b, (int)value.a);
 }
 
-static glm::uvec4 Get_uvec4_FromAssimpColor4(aiColor4D value)
+static glm::uvec4 Get_uvec4_FromAssimpColor4(aiColor4D& value)
 {
     return glm::uvec4((unsigned int)value.r, (unsigned int)value.g, (unsigned int)value.b, (unsigned int)value.a);
 }
 
 //vec2 <- aiVector3D
-static glm::vec2 Get_vec2_FromAssimpVector3(aiVector3D value)
+static glm::vec2 Get_vec2_FromAssimpVector3(aiVector3D& value)
 {
     return glm::vec2(value.x, value.y);
 }
 
-static glm::ivec2 Get_ivec2_FromAssimpVector3(aiVector3D value)
+static glm::ivec2 Get_ivec2_FromAssimpVector3(aiVector3D& value)
 {
     return glm::ivec2((int)value.x, (int)value.y);
 }
 
-static glm::uvec2 Get_uvec2_FromAssimpVector3(aiVector3D value)
+static glm::uvec2 Get_uvec2_FromAssimpVector3(aiVector3D& value)
 {
     return glm::uvec2((unsigned int)value.x, (unsigned int)value.y);
 }
@@ -186,7 +274,7 @@ static glm::uvec2 Get_uvec2_FromAssimpVector3(aiVector3D value)
 //||||||||||||||||||||||||||||| TANGENT RECALCULATIONS |||||||||||||||||||||||||||||
 
 //https://terathon.com/blog/tangent-space.html
-static std::vector<Vector4> CalculateTangentsFromMesh(aiMesh* assimpMesh, unsigned int uvIndex = 0)
+static std::vector<Vector4> CalculateTangentsFromMesh(aiMesh*& assimpMesh, unsigned int uvIndex = 0)
 {
     std::vector<Vector4> newTangents;
 
@@ -268,7 +356,7 @@ static std::vector<Vector4> CalculateTangentsFromMesh(aiMesh* assimpMesh, unsign
     return newTangents;
 }
 
-static std::vector<Vector4> CalculateMikkTangentsFromMesh(aiMesh* assimpMesh, unsigned int uvIndex = 0)
+static std::vector<Vector4> CalculateMikkTangentsFromMesh(aiMesh*& assimpMesh, unsigned int uvIndex = 0)
 {
     AssimpMeshProxy assimpMeshProxy = AssimpMeshProxy(assimpMesh, uvIndex);
     CalcMikkTangentsHelper calcMikkTangents = CalcMikkTangentsHelper();

@@ -104,13 +104,35 @@ static void BuildAssimpMeshFromD3DMeshV3(aiMesh* assimpMesh, TelltaleD3DMeshFile
 			assimpMesh->mTextureCoords[j][i] = GetAssimpVector3FromVector4(d3dmeshFile->d3dmeshData.vertexUVs[j][i + vertexStart]);
 	}
 
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND WEIGHTS ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP RIGGING ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP RIGGING ||||||||||||||||||||||||||||||||||||||||
+	//|||||||||||||||||||||||||||||||||||||||| ASSIMP RIGGING ||||||||||||||||||||||||||||||||||||||||
 
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
-	//|||||||||||||||||||||||||||||||||||||||| VERTEX BLEND INDEXES ||||||||||||||||||||||||||||||||||||||||
+	if (d3dmeshFile->HasBones())
+	{
+		aiBone assimpBone = aiBone();
+		//assimpBone.mArmature
+		//assimpBone.mName
+		//assimpBone.mNode
+		//assimpBone.mOffsetMatrix
+		//assimpBone.mNumWeights
+		//assimpBone.mWeights
+
+		aiSkeleton assimpSkeleton = aiSkeleton();
+		//assimpSkeleton.mName
+		//assimpSkeleton.mNumBones
+		//assimpSkeleton.mBones
+
+		aiSkeletonBone assimpSkeletonBone = aiSkeletonBone();
+		//assimpSkeletonBone.mArmature
+		//assimpSkeletonBone.mLocalMatrix
+		//assimpSkeletonBone.mOffsetMatrix
+		//assimpSkeletonBone.mMeshId
+		//assimpSkeletonBone.mNode
+		//assimpSkeletonBone.mParent
+		//assimpSkeletonBone.mWeights
+		//assimpSkeletonBone.mNumnWeights
+	}
 
 	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||
 	//|||||||||||||||||||||||||||||||||||||||| ASSIMP MESH TRIANGLES ||||||||||||||||||||||||||||||||||||||||

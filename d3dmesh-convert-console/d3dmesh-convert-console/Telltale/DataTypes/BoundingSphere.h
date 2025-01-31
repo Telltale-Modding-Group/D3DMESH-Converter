@@ -55,7 +55,7 @@ struct BoundingSphere
 		mRadius = 0.0f;
 	};
 
-	BoundingSphere(std::ifstream* inputFileStream)
+	BoundingSphere(std::ifstream*& inputFileStream)
 	{
 		mBlockSize = ReadUInt32FromBinary(inputFileStream); //[4 BYTES]
 		mCenter = Vector3(inputFileStream); //[12 BYTES]
@@ -79,7 +79,7 @@ struct BoundingSphere
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
-	void BinarySerialize(std::ofstream* outputFileStream)
+	void BinarySerialize(std::ofstream*& outputFileStream)
 	{
 		WriteUInt32ToBinary(outputFileStream, mBlockSize); //[4 BYTES]
 		mCenter.BinarySerialize(outputFileStream); //[12 BYTES]

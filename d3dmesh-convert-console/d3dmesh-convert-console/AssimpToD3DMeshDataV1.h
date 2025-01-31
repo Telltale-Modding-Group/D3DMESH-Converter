@@ -84,9 +84,9 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	const aiScene* pScene = assimpImporter.ReadFile(assimpFilePath->filePath.c_str(), assimpImportFlags);
 
-	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
-	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (MESH EXTRACTION) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (MESH EXTRACTION) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (MESH EXTRACTION) |||||||||||||||||||||||||||||
 	std::vector<Vector4> assimpMeshVertexPositions;
 	std::vector<Vector4> assimpMeshVertexNormals;
 	std::vector<Vector4> assimpMeshVertexTangents;
@@ -121,7 +121,6 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 		if (assimpMesh->HasNormals())
 		{
 			for (int j = 0; j < assimpMesh->mNumVertices; j++)
-				//assimpMeshVertexNormals.push_back(Vector4(0, 1, 0, 1));
 				assimpMeshVertexNormals.push_back(GetVector4FromAssimpVector3(assimpMesh->mNormals[j]));
 		}
 
@@ -180,6 +179,16 @@ static void ConvertAssimpToD3DMeshDataV1(FileEntry* d3dmeshJsonFilePath, FileEnt
 
 	assimpMeshVertexUVs.push_back(assimpMeshVertexUVChannel);
 	assimpMeshVertexColors.push_back(assimpMeshVertexColorChannel);
+
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (BONE EXTRACTION) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (BONE EXTRACTION) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (BONE EXTRACTION) |||||||||||||||||||||||||||||
+
+
+
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
+	//||||||||||||||||||||||||||||| D3DMESH DATA TO ASSIMP CONVERSION (VERTEX) |||||||||||||||||||||||||||||
 
 	BoundingBox newD3DMeshBoundingBox = BoundingBox();
 	newD3DMeshBoundingBox.mMin = Vector3(newD3DMeshBoundingBoxMin);

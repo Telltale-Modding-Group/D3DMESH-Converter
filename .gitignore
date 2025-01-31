@@ -23,6 +23,7 @@ d3dmesh-convert-console/d3dmesh-convert-console/DebugWorkingDirectory/OutputD3DM
 d3dmesh-convert-console/d3dmesh-convert-console/DebugWorkingDirectory/OutputJSON_TO_SKL/
 d3dmesh-convert-console/d3dmesh-convert-console/DebugWorkingDirectory/OutputASSIMP_TO_D3DMESH/
 d3dmesh-convert-console/d3dmesh-convert-console/DebugWorkingDirectory/OutputD3DMESH_JSON_AND_ASSIMP/
+d3dmesh-convert-console/d3dmesh-convert-console/DebugWorkingDirectory
 
 # Prerequisites
 *.d

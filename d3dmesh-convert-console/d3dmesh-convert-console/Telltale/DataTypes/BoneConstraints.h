@@ -50,7 +50,7 @@ public:
 		mAxisRange2 = {};
 	};
 
-	BoneConstraints(std::ifstream* inputFileStream)
+	BoneConstraints(std::ifstream*& inputFileStream)
 	{
 		mBlockSize_BoneContraints = ReadUInt32FromBinary(inputFileStream);
 		mBoneType = (BoneType)ReadInt32FromBinary(inputFileStream);
@@ -82,7 +82,7 @@ public:
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
-	void BinarySerialize(std::ofstream* outputFileStream)
+	void BinarySerialize(std::ofstream*& outputFileStream)
 	{
 		WriteUInt32ToBinary(outputFileStream, mBlockSize_BoneContraints);
 		WriteUInt32ToBinary(outputFileStream, mBoneType);

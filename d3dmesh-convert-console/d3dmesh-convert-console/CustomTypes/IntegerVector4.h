@@ -65,7 +65,7 @@ struct IntegerVector4
 		this->w = w;
 	};
 
-	IntegerVector4(std::ifstream* inputFileStream)
+	IntegerVector4(std::ifstream*& inputFileStream)
 	{
 		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 		y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
@@ -73,7 +73,7 @@ struct IntegerVector4
 		w = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
-	IntegerVector4(glm::ivec4 newVector)
+	IntegerVector4(glm::ivec4& newVector)
 	{
 		x = newVector.x;
 		y = newVector.y;
@@ -85,7 +85,7 @@ struct IntegerVector4
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
-	void BinarySerialize(std::ofstream* outputFileStream)
+	void BinarySerialize(std::ofstream*& outputFileStream)
 	{
 		WriteInt32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, y); //[4 BYTES]

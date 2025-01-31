@@ -153,6 +153,7 @@
     <ClInclude Include="Application\Application_ReadD3DMesh_ExportD3DMeshJsonAndAssimp.h" />
     <ClInclude Include="Application\Application_ReadSkeleton.h" />
     <ClInclude Include="Application\Application_ReadSkeletonJson_ExportSkeleton.h" />
+    <ClInclude Include="Application\Application_ReadSkeleton_ExportAssimp.h" />
     <ClInclude Include="Application\Application_ReadSkeleton_ExportSkeleton.h" />
     <ClInclude Include="Application\Application_ReadSkeleton_ExportSkeletonJson.h" />
     <ClInclude Include="AssimpMeshProxy.h" />
@@ -177,6 +178,7 @@
     <ClInclude Include="Helper\JsonHelper.h" />
     <ClInclude Include="Helper\MikkTSpaceHelper.h" />
     <ClInclude Include="Helper\XAtlasHelper.h" />
+    <ClInclude Include="SkeletonToAssimpV1.h" />
     <ClInclude Include="Telltale\DataTypes\BoneConstraints.h" />
     <ClInclude Include="Telltale\DataTypes\BoundingBox.h" />
     <ClInclude Include="Telltale\DataTypes\BoundingSphere.h" />

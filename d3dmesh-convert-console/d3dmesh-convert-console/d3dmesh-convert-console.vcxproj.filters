@@ -281,5 +281,11 @@
     <ClInclude Include="Telltale\Enums\T3EffectType.h">
       <Filter>Header Files\Telltale\Enums</Filter>
     </ClInclude>
+    <ClInclude Include="Application\Application_ReadSkeleton_ExportAssimp.h">
+      <Filter>Header Files\Application</Filter>
+    </ClInclude>
+    <ClInclude Include="SkeletonToAssimpV1.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -51,13 +51,13 @@ struct IntegerVector2
 		this->y = y;
 	};
 
-	IntegerVector2(std::ifstream* inputFileStream)
+	IntegerVector2(std::ifstream*& inputFileStream)
 	{
 		x = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 		y = ReadInt32FromBinary(inputFileStream); //[4 BYTES]
 	};
 
-	IntegerVector2(glm::ivec2 newVector)
+	IntegerVector2(glm::ivec2& newVector)
 	{
 		x = newVector.x;
 		y = newVector.y;
@@ -67,7 +67,7 @@ struct IntegerVector2
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
-	void BinarySerialize(std::ofstream* outputFileStream)
+	void BinarySerialize(std::ofstream*& outputFileStream)
 	{
 		WriteInt32ToBinary(outputFileStream, x); //[4 BYTES]
 		WriteInt32ToBinary(outputFileStream, y); //[4 BYTES]

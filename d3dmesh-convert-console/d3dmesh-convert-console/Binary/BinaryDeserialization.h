@@ -28,7 +28,7 @@
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static unsigned long long ReadUInt64FromBinary(std::ifstream* inputFileStream)
+static unsigned long long ReadUInt64FromBinary(std::ifstream*& inputFileStream)
 {
 	unsigned long long uint64_value = 0;
 	inputFileStream->read((char*)&uint64_value, sizeof(unsigned long long));
@@ -44,7 +44,7 @@ static unsigned long long ReadUInt64FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static long long ReadInt64FromBinary(std::ifstream* inputFileStream)
+static long long ReadInt64FromBinary(std::ifstream*& inputFileStream)
 {
 	long long int64_value = 0;
 	inputFileStream->read((char*)&int64_value, sizeof(long long));
@@ -60,7 +60,7 @@ static long long ReadInt64FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static double ReadDouble64FromBinary(std::ifstream* inputFileStream)
+static double ReadDouble64FromBinary(std::ifstream*& inputFileStream)
 {
 	double double64_value = 0;
 	inputFileStream->read((char*)&double64_value, sizeof(double));
@@ -76,7 +76,7 @@ static double ReadDouble64FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static unsigned int ReadUInt32FromBinary(std::ifstream* inputFileStream)
+static unsigned int ReadUInt32FromBinary(std::ifstream*& inputFileStream)
 {
 	unsigned int uint32_value = 0;
 	inputFileStream->read((char*)&uint32_value, sizeof(unsigned int));
@@ -92,7 +92,7 @@ static unsigned int ReadUInt32FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static int ReadInt32FromBinary(std::ifstream* inputFileStream)
+static int ReadInt32FromBinary(std::ifstream*& inputFileStream)
 {
 	int int32_value = 0;
 	inputFileStream->read((char*)&int32_value, sizeof(int));
@@ -108,7 +108,7 @@ static int ReadInt32FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static float ReadFloat32FromBinary(std::ifstream* inputFileStream)
+static float ReadFloat32FromBinary(std::ifstream*& inputFileStream)
 {
 	float float32_value = 0;
 	inputFileStream->read((char*)&float32_value, sizeof(float));
@@ -124,7 +124,7 @@ static float ReadFloat32FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static unsigned short ReadUInt16FromBinary(std::ifstream* inputFileStream)
+static unsigned short ReadUInt16FromBinary(std::ifstream*& inputFileStream)
 {
 	unsigned short uint16_value = 0;
 	inputFileStream->read((char*)&uint16_value, sizeof(unsigned short));
@@ -140,7 +140,7 @@ static unsigned short ReadUInt16FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static short ReadInt16FromBinary(std::ifstream* inputFileStream)
+static short ReadInt16FromBinary(std::ifstream*& inputFileStream)
 {
 	short int16_value = 0;
 	inputFileStream->read((char*)&int16_value, sizeof(short));
@@ -156,7 +156,7 @@ static short ReadInt16FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static float ReadFloat16FromBinary(std::ifstream* inputFileStream)
+static float ReadFloat16FromBinary(std::ifstream*& inputFileStream)
 {
 	return HalfToFloat(ReadUInt16FromBinary(inputFileStream));
 }
@@ -170,7 +170,7 @@ static float ReadFloat16FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static unsigned char ReadUInt8FromBinary(std::ifstream* inputFileStream)
+static unsigned char ReadUInt8FromBinary(std::ifstream*& inputFileStream)
 {
 	unsigned char uint8_value = 0;
 	inputFileStream->read((char*)&uint8_value, sizeof(unsigned char));
@@ -186,7 +186,7 @@ static unsigned char ReadUInt8FromBinary(std::ifstream* inputFileStream)
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static char ReadInt8FromBinary(std::ifstream* inputFileStream)
+static char ReadInt8FromBinary(std::ifstream*& inputFileStream)
 {
 	char int8_value = 0;
 	inputFileStream->read((char*)&int8_value, sizeof(char));
@@ -203,14 +203,14 @@ static char ReadInt8FromBinary(std::ifstream* inputFileStream)
 /// <param name="inputFileStream"></param>
 /// <param name="blockSize"></param>
 /// <returns></returns>
-static char* ReadByteBufferFromBinary(std::ifstream* inputFileStream, int blockSize)
+static char* ReadByteBufferFromBinary(std::ifstream*& inputFileStream, int blockSize)
 {
 	char* byteBuffer = new char[blockSize];
 	inputFileStream->read(byteBuffer, blockSize);
 	return byteBuffer;
 }
 
-static std::vector<char> ReadByteVectorBufferFromBinary(std::ifstream* inputFileStream, int blockSize)
+static std::vector<char> ReadByteVectorBufferFromBinary(std::ifstream*& inputFileStream, int blockSize)
 {
 	std::vector<char> vectorData;
 
@@ -230,7 +230,7 @@ static std::vector<char> ReadByteVectorBufferFromBinary(std::ifstream* inputFile
 /// <param name="inputFileStream"></param>
 /// <param name="stringLength"></param>
 /// <returns></returns>
-static std::string ReadFixedStringFromBinary(std::ifstream* inputFileStream, int stringLength)
+static std::string ReadFixedStringFromBinary(std::ifstream*& inputFileStream, int stringLength)
 {
 	std::string writtenString = "";
 
@@ -246,7 +246,7 @@ static std::string ReadFixedStringFromBinary(std::ifstream* inputFileStream, int
 /// </summary>
 /// <param name="inputFileStream"></param>
 /// <returns></returns>
-static std::string ReadLengthPrefixedStringFromBinary(std::ifstream* inputFileStream)
+static std::string ReadLengthPrefixedStringFromBinary(std::ifstream*& inputFileStream)
 {
 	int stringLength = ReadInt32FromBinary(inputFileStream);
 	return ReadFixedStringFromBinary(inputFileStream, stringLength);

@@ -13,7 +13,7 @@
 #include "../../AssimpMeshProxy.h"
 #include "../../Telltale/DataTypes/Vector3.h"
 
-static void Test(AssimpMeshProxy assimpMeshProxy)
+static void Test(AssimpMeshProxy& assimpMeshProxy)
 {
 	xatlas::MeshDecl meshDeclaration = xatlas::MeshDecl();
 

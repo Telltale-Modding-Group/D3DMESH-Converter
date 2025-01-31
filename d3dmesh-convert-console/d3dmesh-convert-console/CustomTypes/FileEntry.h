@@ -41,7 +41,7 @@ struct FileEntry
 		fileSize = 0;
 	};
 
-	FileEntry(std::filesystem::path file)
+	FileEntry(std::filesystem::path& file)
 	{
 		filePath = file.string();
 		fileNameWithExtension = file.filename().string();

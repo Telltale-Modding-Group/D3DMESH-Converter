@@ -51,8 +51,8 @@
 //||||||||||||||||||||||||||||| PREPROCESSOR MACROS / DEBUG DIRECTORIES |||||||||||||||||||||||||||||
 
 //input directories
-//#define INPUT_DIRECTORY_D3DMESH "DebugWorkingDirectory/InputD3DMESH"
-#define INPUT_DIRECTORY_D3DMESH "DebugWorkingDirectory/InputD3DMESH_MODIFIED"
+#define INPUT_DIRECTORY_D3DMESH "DebugWorkingDirectory/InputD3DMESH"
+//#define INPUT_DIRECTORY_D3DMESH "DebugWorkingDirectory/InputD3DMESH_MODIFIED"
 #define INPUT_DIRECTORY_D3DMESH_AND_SKL "DebugWorkingDirectory/InputD3DMESH_AND_SKL"
 #define INPUT_DIRECTORY_D3DMESH_JSON "DebugWorkingDirectory/InputD3DMESH_JSON"
 #define INPUT_DIRECTORY_D3DMESH_JSON_AND_ASSIMP "DebugWorkingDirectory/InputD3DMESH_JSON_AND_ASSIMP"
@@ -69,5 +69,6 @@
 #define OUTPUT_DIRECTORY_JSON_TO_SKL "DebugWorkingDirectory/OutputJSON_TO_SKL/"
 #define OUTPUT_DIRECTORY_SKL_TO_JSON "DebugWorkingDirectory/OutputSKL_TO_JSON/"
 #define OUTPUT_DIRECTORY_SKL_TO_SKL "DebugWorkingDirectory/OutputSKL_TO_SKL/"
+#define OUTPUT_DIRECTORY_SKL_TO_ASSIMP "DebugWorkingDirectory/OutputSKL_TO_ASSIMP/"
 
 #endif

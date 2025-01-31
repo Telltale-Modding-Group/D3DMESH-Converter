@@ -45,7 +45,7 @@ struct BoundingBox
 		mMax = {};
 	};
 
-	BoundingBox(std::ifstream* inputFileStream)
+	BoundingBox(std::ifstream*& inputFileStream)
 	{
 		mMin = Vector3(inputFileStream); //[12 BYTES]
 		mMax = Vector3(inputFileStream); //[12 BYTES]
@@ -79,7 +79,7 @@ struct BoundingBox
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 	//||||||||||||||||||||||||||||| BINARY SERIALIZE |||||||||||||||||||||||||||||
 
-	void BinarySerialize(std::ofstream* outputFileStream)
+	void BinarySerialize(std::ofstream*& outputFileStream)
 	{
 		mMin.BinarySerialize(outputFileStream); //[12 BYTES]
 		mMax.BinarySerialize(outputFileStream); //[12 BYTES]

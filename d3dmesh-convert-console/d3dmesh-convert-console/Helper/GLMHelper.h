@@ -42,13 +42,13 @@
 #include "../../CustomTypes/UnsignedIntegerVector4.h"
 
 //quat
-static glm::quat Get_quat_FromQuaternion(Quaternion quaternion)
+static glm::quat Get_quat_FromQuaternion(Quaternion& quaternion) 
 {
 	return glm::quat(quaternion.x, quaternion.y, quaternion.z, quaternion.w);
 }
 
 //vec
-static glm::vec2 Get_vec2_FromVector2(Vector2 vector)
+static glm::vec2 Get_vec2_FromVector2(Vector2& vector)
 {
 	return glm::vec2(vector.x, vector.y);
 }
@@ -58,39 +58,39 @@ static glm::vec3 Get_vec3_FromVector3(Vector3 vector)
 	return glm::vec3(vector.x, vector.y, vector.z);
 }
 
-static glm::vec4 Get_vec4_FromVector4(Vector4 vector)
+static glm::vec4 Get_vec4_FromVector4(Vector4& vector)
 {
 	return glm::vec4(vector.x, vector.y, vector.z, vector.w);
 }
 
 //ivec
-static glm::ivec2 Get_ivec2_FromIntegerVector2(IntegerVector2 vector)
+static glm::ivec2 Get_ivec2_FromIntegerVector2(IntegerVector2& vector)
 {
 	return glm::ivec2(vector.x, vector.y);
 }
 
-static glm::ivec3 Get_ivec3_FromIntegerVector3(IntegerVector3 vector)
+static glm::ivec3 Get_ivec3_FromIntegerVector3(IntegerVector3& vector)
 {
 	return glm::ivec3(vector.x, vector.y, vector.z);
 }
 
-static glm::ivec4 Get_ivec4_FromIntegerVector4(IntegerVector4 vector)
+static glm::ivec4 Get_ivec4_FromIntegerVector4(IntegerVector4& vector)
 {
 	return glm::ivec4(vector.x, vector.y, vector.z, vector.w);
 }
 
 //uvec
-static glm::uvec2 Get_uvec2_FromUnsignedIntegerVector2(UnsignedIntegerVector2 vector)
+static glm::uvec2 Get_uvec2_FromUnsignedIntegerVector2(UnsignedIntegerVector2& vector)
 {
 	return glm::uvec2(vector.x, vector.y);
 }
 
-static glm::uvec3 Get_uvec3_FromUnsignedIntegerVector3(UnsignedIntegerVector3 vector)
+static glm::uvec3 Get_uvec3_FromUnsignedIntegerVector3(UnsignedIntegerVector3& vector)
 {
 	return glm::uvec3(vector.x, vector.y, vector.z);
 }
 
-static glm::uvec4 Get_uvec4_FromUnsignedIntegerVector4(UnsignedIntegerVector4 vector)
+static glm::uvec4 Get_uvec4_FromUnsignedIntegerVector4(UnsignedIntegerVector4& vector)
 {
 	return glm::uvec4(vector.x, vector.y, vector.z, vector.w);
 }
