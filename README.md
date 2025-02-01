@@ -2,7 +2,7 @@
 This is an application designed for converting **.d3dmesh models (Telltale Tool Models)**, to a standard model format ***(.fbx, .dae, .gltf, .obj, and more)*** and back.
 
 ## DISCLAIMER (Please Read)
-**This project is a heavy work in progress and is unfinished. The only working game this has been tested for is [The Walking Dead Telltale Definitive Series Edition](https://store.steampowered.com/app/1449690/The_Walking_Dead_The_Telltale_Definitive_Series/). Anything other versions are most likely not going to work.**
+**This project is a heavy work in progress and is unfinished. The only working game this has been tested for is [The Walking Dead Telltale Definitive Series Edition](https://store.steampowered.com/app/1449690/The_Walking_Dead_The_Telltale_Definitive_Series/). Any other versions are most likely not going to work.**
 
 ## Description
 
@@ -33,15 +33,3 @@ In addition for converting ***.d3dmesh*** to a standard model format. There is a
 
 ![screenshot2](GithubContent/screenshot2.png)
 *(NOTE: In-game screenshots of a modified test scene using the [Relight Editor](https://github.com/Telltale-Modding-Group/TTDS-Relighting) for previewing modified/new d3dmesh assets)*
-
-![early-switch-test-1](GithubContent/early-switch-test-1.png)
-*(NOTE: Created by [Arizzble](https://github.com/Arizzble). In-game screenshots of a modified mesh asset with coresponding modified textures via [Telltale Texture Tool](https://github.com/Telltale-Modding-Group/Telltale-Texture-Tool))*
-
-![early-switch-test-2](GithubContent/early-switch-test-2.png)
-*(NOTE: Created by [Arizzble](https://github.com/Arizzble). In-game screenshots of a modified mesh asset with coresponding modified textures via [Telltale Texture Tool](https://github.com/Telltale-Modding-Group/Telltale-Texture-Tool))*
-
-![early-thomas-train-test-1](GithubContent/early-thomas-train-test-1.png)
-*(NOTE: Created by [Arizzble](https://github.com/Arizzble). In-game screenshots of a modified mesh asset with coresponding modified textures via [Telltale Texture Tool](https://github.com/Telltale-Modding-Group/Telltale-Texture-Tool))*
-
-![early-thomas-train-test-2](GithubContent/early-thomas-train-test-2.png)
-*(NOTE: Created by [Arizzble](https://github.com/Arizzble). In-game screenshots of a modified mesh asset with coresponding modified textures via [Telltale Texture Tool](https://github.com/Telltale-Modding-Group/Telltale-Texture-Tool))*
